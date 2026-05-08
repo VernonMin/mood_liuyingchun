@@ -1011,7 +1011,7 @@ function getBeijingDateStr() {
 
 let _currentDataUrl = '';
 
-function drawCard() {
+async function drawCard() {
   const quote = document.getElementById('quote').textContent;
   const activeBtn = document.querySelector('.mood-btn.active');
   const dateStr = getBeijingDateStr();
@@ -1143,7 +1143,7 @@ function drawCard() {
 }
 
 async function doShare() {
-  _currentDataUrl = drawCard();
+  _currentDataUrl = await drawCard();
   document.getElementById('previewImg').src = _currentDataUrl;
   document.getElementById('previewMask').classList.add('show');
 }
