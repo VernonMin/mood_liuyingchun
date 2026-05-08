@@ -648,6 +648,116 @@
 
   .preview-close-btn:hover { background: rgba(255,255,255,0.3); }
 
+  /* 复盘弹窗 */
+  .reflect-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(80,30,80,0.45);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    padding: 24px;
+  }
+  .reflect-mask.show { opacity: 1; pointer-events: all; }
+
+  .reflect-card {
+    background: linear-gradient(160deg, #fff4f9, #f5eeff);
+    border-radius: 28px;
+    padding: 36px 28px 28px;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 12px 48px rgba(180,80,180,0.22);
+    border: 1.5px solid rgba(240,180,220,0.5);
+    transform: translateY(16px);
+    transition: transform 0.3s;
+  }
+  .reflect-mask.show .reflect-card { transform: translateY(0); }
+
+  .reflect-emoji { font-size: 40px; text-align: center; margin-bottom: 14px; }
+
+  .reflect-greeting {
+    text-align: center;
+    font-size: 15px;
+    color: #5a4060;
+    line-height: 1.9;
+    margin-bottom: 18px;
+  }
+  .reflect-greeting strong {
+    display: block;
+    font-size: 17px;
+    color: #c0529a;
+    margin-bottom: 4px;
+  }
+
+  .reflect-prompt {
+    font-size: 14px;
+    color: #9060b0;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .reflect-input {
+    width: 100%;
+    min-height: 100px;
+    border: 1.5px solid #e8c4de;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #4a3060;
+    font-family: inherit;
+    background: rgba(255,255,255,0.8);
+    resize: vertical;
+    outline: none;
+    line-height: 1.7;
+    transition: border-color 0.2s;
+  }
+  .reflect-input:focus { border-color: #d966a0; }
+  .reflect-input::placeholder { color: #d0b0e0; }
+
+  .reflect-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .reflect-save-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #f472b6, #c084fc);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .reflect-save-btn:hover { transform: translateY(-1px); }
+  .reflect-skip-btn {
+    flex: 1;
+    background: transparent;
+    color: #c09ad4;
+    border: 1.5px solid #e0c4f0;
+    padding: 12px;
+    border-radius: 50px;
+    font-size: 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .reflect-status {
+    text-align: center;
+    font-size: 12px;
+    color: #c084fc;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+
   /* 浮动 emoji */
   .floating-emoji {
     position: fixed;
@@ -759,29 +869,43 @@
   </div>
 </div>
 
+<div class="reflect-mask" id="reflectMask">
+  <div class="reflect-card">
+    <div class="reflect-emoji" id="reflectEmoji">😴</div>
+    <div class="reflect-greeting" id="reflectGreeting"></div>
+    <div class="reflect-prompt" id="reflectPrompt"></div>
+    <textarea class="reflect-input" id="reflectInput" placeholder="写在这里，只有你自己看得到…" maxlength="500"></textarea>
+    <div class="reflect-actions">
+      <button class="reflect-save-btn" onclick="saveNote()">保存下来</button>
+      <button class="reflect-skip-btn" onclick="closeReflect()">跳过</button>
+    </div>
+    <div class="reflect-status" id="reflectStatus"></div>
+  </div>
+</div>
+
 <script>
 const quotes = [
   "刘迎春今天也在好好的，这件事本身，就已经很好了。",
   "认识刘迎春，是一件很幸运的事。",
   "刘迎春这个名字，念出来就觉得很软。",
   "刘迎春身边的人，都会不自觉地比平时更温柔一些。",
-  "有她在的地方，气氛会轻一点，也会暖一点。",
-  "今天又过了一天，不管怎么样，都算数。",
-  "不需要做什么，光是在，就已经很好了。",
-  "她说话的时候，让人觉得被认真听到了。",
+  "刘迎春在的地方，气氛会轻一点，也会暖一点。",
+  "刘迎春今天又过了一天，不管怎么样，都算数。",
+  "刘迎春不需要做什么，光是在，就已经很好了。",
+  "刘迎春说话的时候，让人觉得被认真听到了。",
   "刘迎春很好，比她自己以为的还要好很多。",
-  "随手做的一件小事，也带着只有她才有的那种感觉。",
-  "今天有没有开心一下？希望有，哪怕一点点。",
+  "刘迎春随手做的一件小事，也带着只有她才有的那种感觉。",
+  "刘迎春今天有没有开心一下？希望有，哪怕一点点。",
   "刘迎春身上有一种温柔，不用说出来，待着就能感觉到。",
-  "今天也认真地活着，这件事，悄悄地了不起。",
-  "累了就好好休息。",
-  "有没有好好吃饭？记得吃饭。",
-  "和她在一起的时间，回想起来都是轻的。",
-  "今天也好好的，这就是今天最好的消息。",
-  "有她在，好像什么事情都会变得没那么难。",
+  "刘迎春今天也认真地活着，这件事，悄悄地了不起。",
+  "刘迎春，累了就好好休息。",
+  "刘迎春，有没有好好吃饭？记得吃饭。",
+  "和刘迎春在一起的时间，回想起来都是轻的。",
+  "刘迎春今天也好好的，这就是今天最好的消息。",
+  "有刘迎春在，好像什么事情都会变得没那么难。",
   "谢谢你今天也在，刘迎春。",
-  "如果春天是一个人，大概就是她的样子。",
-  "今天也被好好对待了吗？应该的。",
+  "如果春天是一个人，大概就是刘迎春的样子。",
+  "刘迎春今天也被好好对待了吗？应该的。",
 ];
 
 const emojis = ['🐶','🐾','🌸','✨','💕','🍡','🌷','💫','🎀','🍓'];
@@ -1235,6 +1359,10 @@ async function setMood(btn) {
   } catch {
     status.textContent = '记录失败，待会儿再试试';
   }
+
+  if (mood === '有点累' || mood === '不太好') {
+    openReflect(mood, emoji);
+  }
 }
 
 async function loadTodayMood() {
@@ -1282,6 +1410,61 @@ function renderHistory(moods) {
 }
 
 loadTodayMood();
+
+const reflectContent = {
+  '有点累': {
+    greeting: '<strong>有点累了吗，没关系的。</strong>刘迎春已经很努力了，累了就是需要好好休息的时候。',
+    prompt: '是什么让你今天觉得累了呢？',
+  },
+  '不太好': {
+    greeting: '<strong>刘迎春，今天不太好也没关系。</strong>不好的感受是真实的，说出来也许会轻一点。',
+    prompt: '是发生了什么事情吗，可以写下来。',
+  },
+};
+
+let _reflectMood = '';
+
+async function openReflect(mood, emoji) {
+  _reflectMood = mood;
+  const c = reflectContent[mood];
+  document.getElementById('reflectEmoji').textContent = emoji;
+  document.getElementById('reflectGreeting').innerHTML = c.greeting;
+  document.getElementById('reflectPrompt').textContent = c.prompt;
+  document.getElementById('reflectStatus').textContent = '';
+
+  // 加载今天已存的记录
+  try {
+    const res = await fetch('/api/note');
+    const data = await res.json();
+    document.getElementById('reflectInput').value = data.note ? data.note.text : '';
+  } catch {
+    document.getElementById('reflectInput').value = '';
+  }
+
+  document.getElementById('reflectMask').classList.add('show');
+}
+
+function closeReflect() {
+  document.getElementById('reflectMask').classList.remove('show');
+}
+
+async function saveNote() {
+  const text = document.getElementById('reflectInput').value.trim();
+  const status = document.getElementById('reflectStatus');
+  if (!text) { closeReflect(); return; }
+  status.textContent = '保存中…';
+  try {
+    await fetch('/api/note', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, mood: _reflectMood }),
+    });
+    status.textContent = '已保存 🐾';
+    setTimeout(closeReflect, 800);
+  } catch {
+    status.textContent = '保存失败，请稍后再试';
+  }
+}
 </script>
 </body>
 </html>
