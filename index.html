@@ -46,12 +46,9 @@
   }
 
   .splash-dog {
-    width: 120px;
-    height: 120px;
+    font-size: 80px;
     display: block;
-    margin: 0 auto;
     animation: splashDog 0.8s ease-out both;
-    object-fit: contain;
   }
 
   @keyframes splashDog {
@@ -782,7 +779,7 @@
 
 <!-- 欢迎屏 -->
 <div id="splash" onclick="dismissSplash()">
-  <img class="splash-dog" src="avatar.png" alt="">
+  <span class="splash-dog">🐶</span>
   <p class="splash-line splash-greeting" id="splashGreeting"></p>
   <p class="splash-line splash-sub" id="splashSub"></p>
   <span class="splash-hint">轻触任意处进入 🐾</span>
