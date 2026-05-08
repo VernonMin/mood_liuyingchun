@@ -1110,6 +1110,10 @@ function drawCard() {
   // 心情 badge
   if (activeBtn) {
     const badgeY = cy + ch - 130;
+    // 「今日心情」标签
+    ctx.fillStyle = '#c9a0d8';
+    ctx.font = `400 13px "PingFang SC","Microsoft YaHei",sans-serif`;
+    ctx.fillText('刘迎春今日心情', W / 2, badgeY - 44);
     roundRect(ctx, W/2 - 100, badgeY - 32, 200, 48, 24);
     ctx.fillStyle = 'rgba(245,198,232,0.35)';
     ctx.fill();
