@@ -414,6 +414,68 @@
     transition: opacity 0.3s;
   }
 
+  /* 分享按钮 */
+  .share-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+  }
+
+  .share-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.7);
+    border: 1.5px solid #f5c6e8;
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: #c490d1;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .share-btn.ready {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .share-btn:hover {
+    background: linear-gradient(135deg, #ffe4f5, #f0e0ff);
+    border-color: #d966a0;
+    color: #d966a0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(217,102,160,0.2);
+  }
+
+  .share-btn:active { transform: scale(0.96); }
+
+  .share-toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(90,64,96,0.88);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    z-index: 9000;
+    white-space: nowrap;
+  }
+
+  .share-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
   /* 浮动 emoji */
   .floating-emoji {
     position: fixed;
@@ -471,6 +533,12 @@
 
   <button class="btn" onclick="praise()">🐾 夸 我 ！</button>
 
+  <div class="share-row">
+    <button class="share-btn" id="shareBtn" onclick="doShare()">
+      <span>🔗</span><span>分享这条</span>
+    </button>
+  </div>
+
   <div class="counter">
     <p>今天已被夸了 <span id="count">0</span> 次 🐾</p>
   </div>
@@ -499,6 +567,8 @@
   </div>
 </div>
 </div>
+
+<div class="share-toast" id="shareToast"></div>
 
 <script>
 const quotes = [
@@ -565,9 +635,43 @@ function praise() {
   saveCount(count);
   document.getElementById('count').textContent = count;
   updateSideCount(count);
+  document.getElementById('shareBtn').classList.add('ready');
 
   launchConfetti();
   spawnEmojis();
+}
+
+function buildShareText() {
+  const quote = document.getElementById('quote').textContent;
+  const activeBtn = document.querySelector('.mood-btn.active');
+  const moodPart = activeBtn
+    ? `今天心情：${activeBtn.dataset.emoji} ${activeBtn.dataset.mood}\n`
+    : '';
+  const countPart = `今天已被夸了 ${count} 次 🐾`;
+  return `${moodPart}「${quote}」\n\n${countPart}`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('shareToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+async function doShare() {
+  const text = buildShareText();
+  if (navigator.share) {
+    try {
+      await navigator.share({ text });
+    } catch {}
+  } else {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('已复制到剪贴板 🐾');
+    } catch {
+      showToast('复制失败，请手动截图分享');
+    }
+  }
 }
 
 function spawnEmojis() {
