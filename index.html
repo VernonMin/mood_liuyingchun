@@ -820,6 +820,110 @@
     color: #7a6020;
   }
 
+  /* 好心情罐子弹窗 */
+  .jar-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(120, 80, 20, 0.35);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    padding: 24px;
+  }
+  .jar-mask.show { opacity: 1; pointer-events: all; }
+
+  .jar-card {
+    background: linear-gradient(160deg, #fffbf0, #fff8e1);
+    border-radius: 28px;
+    padding: 36px 28px 28px;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 12px 48px rgba(200,150,30,0.2);
+    border: 1.5px solid rgba(240,210,100,0.6);
+    transform: translateY(16px);
+    transition: transform 0.3s;
+  }
+  .jar-mask.show .jar-card { transform: translateY(0); }
+
+  .jar-emoji { font-size: 44px; text-align: center; margin-bottom: 12px; }
+
+  .jar-title {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 700;
+    color: #b07020;
+    margin-bottom: 8px;
+  }
+
+  .jar-sub {
+    text-align: center;
+    font-size: 14px;
+    color: #a08040;
+    line-height: 1.8;
+    margin-bottom: 18px;
+  }
+
+  .jar-input {
+    width: 100%;
+    border: 1.5px solid rgba(200,170,80,0.4);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #5a4010;
+    font-family: inherit;
+    background: rgba(255,252,230,0.9);
+    resize: vertical;
+    outline: none;
+    line-height: 1.7;
+    transition: border-color 0.2s;
+  }
+  .jar-input:focus { border-color: #d4a020; }
+  .jar-input::placeholder { color: #c8b070; }
+
+  .jar-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .jar-save-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #f5c842, #e8a020);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .jar-save-btn:hover { transform: translateY(-1px); }
+  .jar-skip-btn {
+    flex: 1;
+    background: transparent;
+    color: #c0a050;
+    border: 1.5px solid #e8d890;
+    padding: 12px;
+    border-radius: 50px;
+    font-size: 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .jar-status {
+    text-align: center;
+    font-size: 12px;
+    color: #d4a020;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+
   /* 浮动 emoji */
   .floating-emoji {
     position: fixed;
@@ -931,6 +1035,20 @@
   <p class="preview-hint">长按图片保存到相册</p>
   <div class="preview-actions">
     <button class="preview-close-btn" onclick="closePreview()">关闭</button>
+  </div>
+</div>
+
+<div class="jar-mask" id="jarMask">
+  <div class="jar-card">
+    <div class="jar-emoji">🫙</div>
+    <div class="jar-title">今天很好呀！</div>
+    <div class="jar-sub">把这份好心情存进罐子里吧<br>留着阴天的时候拿出来看看</div>
+    <textarea class="jar-input" id="jarInput" placeholder="今天什么让你开心了…" maxlength="200"></textarea>
+    <div class="jar-actions">
+      <button class="jar-save-btn" onclick="saveJar()">存进罐子 🫙</button>
+      <button class="jar-skip-btn" onclick="closeJar()">直接跳过</button>
+    </div>
+    <div class="jar-status" id="jarStatus"></div>
   </div>
 </div>
 
@@ -1439,6 +1557,8 @@ async function setMood(btn) {
 
   if (mood === '有点累' || mood === '不太好') {
     openReflect(mood, emoji);
+  } else if (mood === '很好') {
+    openJar();
   }
 }
 
@@ -1540,6 +1660,35 @@ async function saveNote() {
     setTimeout(closeReflect, 800);
   } catch {
     status.textContent = '保存失败，请稍后再试';
+  }
+}
+
+// 好心情罐子
+function openJar() {
+  document.getElementById('jarInput').value = '';
+  document.getElementById('jarStatus').textContent = '';
+  document.getElementById('jarMask').classList.add('show');
+}
+
+function closeJar() {
+  document.getElementById('jarMask').classList.remove('show');
+}
+
+async function saveJar() {
+  const text = document.getElementById('jarInput').value.trim();
+  const status = document.getElementById('jarStatus');
+  if (!text) { closeJar(); return; }
+  status.textContent = '存进去了…';
+  try {
+    await fetch('/api/jar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    status.textContent = '🫙 存好了，留着阴天用';
+    setTimeout(closeJar, 1000);
+  } catch {
+    status.textContent = '存失败了，待会儿再试';
   }
 }
 
