@@ -712,7 +712,7 @@
 
   <div class="share-row">
     <button class="share-btn" id="shareBtn" onclick="doShare()">
-      <span>🖼</span><span>保存分享</span>
+      <span>保存分享</span>
     </button>
   </div>
 
@@ -962,25 +962,26 @@ function drawCard() {
   ctx.lineTo(cx + cw - 80, divY);
   ctx.stroke();
 
-  // 大引号装饰
-  ctx.fillStyle = '#f0c0e0';
-  ctx.globalAlpha = 0.35;
-  ctx.font = `120px Georgia,serif`;
-  ctx.fillText('“', cx + 44, cy + 290);
-  ctx.globalAlpha = 1;
-
   // 文案正文（自动换行，居中）
-  const font = `500 28px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
+  const font = `500 30px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
   ctx.font = font;
   ctx.fillStyle = '#4a3060';
   const textMaxW = cw - 120;
   const lines = wrapText(ctx, quote, W / 2, textMaxW, 44);
-  const lineH = 46;
+  const lineH = 50;
   const blockH = lines.length * lineH;
-  const quoteZoneTop = cy + 230;
-  const quoteZoneH = ch - 310;
-  const textY = quoteZoneTop + (quoteZoneH - blockH) / 2;
+  // 文字区域：分隔线到心情badge之间，垂直居中
+  const zoneTop = divY + 60;
+  const zoneBot = cy + ch - 160;
+  const textY = zoneTop + (zoneBot - zoneTop - blockH) / 2 + lineH;
   lines.forEach((l, i) => ctx.fillText(l, W / 2, textY + i * lineH));
+
+  // 大引号装饰（跟随文字区域）
+  ctx.fillStyle = '#f0c0e0';
+  ctx.globalAlpha = 0.30;
+  ctx.font = `120px Georgia,serif`;
+  ctx.fillText('”', cx + 44, textY + 10);
+  ctx.globalAlpha = 1;
 
   // 心情 badge
   if (activeBtn) {
