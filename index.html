@@ -46,9 +46,12 @@
   }
 
   .splash-dog {
-    font-size: 80px;
+    width: 120px;
+    height: 120px;
     display: block;
+    margin: 0 auto;
     animation: splashDog 0.8s ease-out both;
+    object-fit: contain;
   }
 
   @keyframes splashDog {
@@ -157,10 +160,12 @@
 
   /* 小狗 */
   .dog {
-    font-size: 64px;
+    width: 90px;
+    height: 90px;
     display: inline-block;
     animation: dogWag 0.8s infinite alternate ease-in-out;
     transform-origin: bottom center;
+    object-fit: contain;
   }
 
   @keyframes dogWag {
@@ -777,7 +782,7 @@
 
 <!-- 欢迎屏 -->
 <div id="splash" onclick="dismissSplash()">
-  <span class="splash-dog">🐶</span>
+  <img class="splash-dog" src="avatar.png" alt="">
   <p class="splash-line splash-greeting" id="splashGreeting"></p>
   <p class="splash-line splash-sub" id="splashSub"></p>
   <span class="splash-hint">轻触任意处进入 🐾</span>
@@ -808,7 +813,7 @@
 
 <div id="main">
 <div class="machine">
-  <div class="dog">🐶</div>
+  <img class="dog" src="avatar.png" alt="">
   <h1>刘迎春专属夸夸机</h1>
 
   <p class="greeting" id="greeting"></p>
@@ -1062,10 +1067,12 @@ function drawCard() {
   ctx.fillStyle = 'rgba(255,255,255,0.95)';
   ctx.fillRect(cx, cy + 130, cw, 40);
 
-  // 🐶
-  ctx.textAlign = 'center';
-  ctx.font = '62px serif';
-  ctx.fillText('🐶', W / 2, cy + 92);
+  // 头像
+  const avatarImg = new Image();
+  avatarImg.src = 'avatar.png';
+  await new Promise(r => { avatarImg.complete ? r() : (avatarImg.onload = r); });
+  const aSize = 72;
+  ctx.drawImage(avatarImg, W / 2 - aSize / 2, cy + 22, aSize, aSize);
 
   // 标题
   ctx.fillStyle = '#d45c96';
@@ -1138,7 +1145,7 @@ function drawCard() {
   return cv.toDataURL('image/png');
 }
 
-function doShare() {
+async function doShare() {
   _currentDataUrl = drawCard();
   document.getElementById('previewImg').src = _currentDataUrl;
   document.getElementById('previewMask').classList.add('show');
