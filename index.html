@@ -637,7 +637,7 @@
 
 <!-- 右侧历史面板 -->
 <div class="history-panel" id="historyPanel">
-  <div class="history-title">历史心情</div>
+  <div class="history-title">刘迎春最近60天</div>
   <div id="historyList"><div class="history-empty">加载中…</div></div>
 </div>
 
@@ -1188,7 +1188,7 @@ function renderHistory(moods) {
     list.innerHTML = '<div class="history-empty">还没有记录 🐾</div>';
     return;
   }
-  list.innerHTML = moods.slice(0, 14).map(m => `
+  list.innerHTML = moods.slice(0, 60).map(m => `
     <div class="history-item">
       <span class="history-emoji">${m.emoji || '🙂'}</span>
       <span class="history-mood">${m.mood}</span>
