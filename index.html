@@ -453,6 +453,78 @@
 
   .share-btn:active { transform: scale(0.96); }
 
+  /* 预览弹窗 */
+  .preview-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(60,30,70,0.55);
+    backdrop-filter: blur(6px);
+    z-index: 8000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .preview-mask.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .preview-img {
+    max-width: 340px;
+    width: 100%;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    display: block;
+    transform: translateY(16px);
+    transition: transform 0.35s ease;
+  }
+
+  .preview-mask.show .preview-img {
+    transform: translateY(0);
+  }
+
+  .preview-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .preview-dl-btn {
+    background: linear-gradient(135deg, #f472b6, #c084fc);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    box-shadow: 0 6px 20px rgba(196,100,210,0.4);
+    transition: all 0.2s;
+  }
+
+  .preview-dl-btn:hover { transform: translateY(-2px); }
+
+  .preview-close-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    padding: 12px 24px;
+    font-size: 14px;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .preview-close-btn:hover { background: rgba(255,255,255,0.3); }
+
   /* 浮动 emoji */
   .floating-emoji {
     position: fixed;
@@ -545,6 +617,13 @@
 </div>
 </div>
 
+<div class="preview-mask" id="previewMask" onclick="closePreview(event)">
+  <img class="preview-img" id="previewImg" src="" alt="预览" />
+  <div class="preview-actions">
+    <button class="preview-dl-btn" onclick="downloadImage(event)">⬇ 保存图片</button>
+    <button class="preview-close-btn" onclick="closePreview()">关闭</button>
+  </div>
+</div>
 
 <script>
 const quotes = [
@@ -670,102 +749,148 @@ function getBeijingDateStr() {
   return `${d.getUTCFullYear()}.${String(d.getUTCMonth()+1).padStart(2,'0')}.${String(d.getUTCDate()).padStart(2,'0')}`;
 }
 
-function doShare() {
+let _currentDataUrl = '';
+
+function drawCard() {
   const quote = document.getElementById('quote').textContent;
   const activeBtn = document.querySelector('.mood-btn.active');
   const dateStr = getBeijingDateStr();
 
-  const W = 640, H = 860;
+  const W = 750, H = 1080;
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
   const ctx = cv.getContext('2d');
 
-  // 背景渐变
+  // 背景
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0,   '#ffe4f0');
-  bg.addColorStop(0.5, '#f5e6ff');
-  bg.addColorStop(1,   '#dff2ff');
+  bg.addColorStop(0, '#ffe0ee');
+  bg.addColorStop(0.55, '#efe0ff');
+  bg.addColorStop(1, '#d8eeff');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // 背景装饰爪印
-  ctx.font = '32px serif';
-  ctx.globalAlpha = 0.07;
-  const decos = ['🐾','🌸','✦'];
-  [[80,80],[560,120],[60,760],[580,700],[300,50],[120,440],[500,380]].forEach(([dx,dy],i) => {
-    ctx.fillText(decos[i % decos.length], dx, dy);
+  // 背景散点（柔和）
+  ctx.globalAlpha = 0.06;
+  ctx.font = '36px serif';
+  [[60,90],[680,80],[40,520],[700,480],[360,30],[100,960],[640,920],[380,1040]].forEach(([x,y]) => {
+    ctx.fillText('🐾', x, y);
   });
   ctx.globalAlpha = 1;
+
+  // 卡片阴影（模拟）
+  ctx.shadowColor = 'rgba(180,100,180,0.18)';
+  ctx.shadowBlur = 60;
+  ctx.shadowOffsetY = 16;
 
   // 白色卡片
-  const cx = 48, cy = 80, cw = W - 96, ch = H - 160;
-  roundRect(ctx, cx, cy, cw, ch, 36);
-  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  const cx = 52, cy = 90, cw = W - 104, ch = H - 180;
+  roundRect(ctx, cx, cy, cw, ch, 40);
+  ctx.fillStyle = 'rgba(255,255,255,0.95)';
   ctx.fill();
-  roundRect(ctx, cx, cy, cw, ch, 36);
-  ctx.strokeStyle = 'rgba(245,198,232,0.8)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
 
-  // 顶部标题区
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  // 卡片顶部粉色装饰条
+  roundRect(ctx, cx, cy, cw, 170, 40);
+  const headerGrad = ctx.createLinearGradient(cx, cy, cx + cw, cy + 170);
+  headerGrad.addColorStop(0, '#ffd6eb');
+  headerGrad.addColorStop(1, '#ecdeff');
+  ctx.fillStyle = headerGrad;
+  ctx.fill();
+
+  // 遮住底部圆角（让装饰条底部是直的）
+  ctx.fillStyle = 'rgba(255,255,255,0.95)';
+  ctx.fillRect(cx, cy + 130, cw, 40);
+
+  // 🐶
   ctx.textAlign = 'center';
-  ctx.font = '44px serif';
-  ctx.fillText('🐶', W / 2, cy + 76);
+  ctx.font = '62px serif';
+  ctx.fillText('🐶', W / 2, cy + 92);
 
-  ctx.fillStyle = '#d966a0';
-  ctx.font = `800 22px "PingFang SC","Microsoft YaHei",sans-serif`;
-  ctx.fillText('刘迎春专属夸夸机', W / 2, cy + 118);
+  // 标题
+  ctx.fillStyle = '#d45c96';
+  ctx.font = `700 22px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
+  ctx.fillText('刘迎春专属夸夸机', W / 2, cy + 146);
 
-  // 分隔线
-  const lineY = cy + 138;
-  const lineGrad = ctx.createLinearGradient(cx + 60, 0, cx + cw - 60, 0);
-  lineGrad.addColorStop(0, 'transparent');
-  lineGrad.addColorStop(0.5, '#f5c6e8');
-  lineGrad.addColorStop(1, 'transparent');
-  ctx.strokeStyle = lineGrad;
+  // 分隔线（渐变）
+  const divY = cy + 178;
+  const divGrad = ctx.createLinearGradient(cx + 80, 0, cx + cw - 80, 0);
+  divGrad.addColorStop(0, 'transparent');
+  divGrad.addColorStop(0.4, '#f0b8d8');
+  divGrad.addColorStop(0.6, '#d8b0f0');
+  divGrad.addColorStop(1, 'transparent');
+  ctx.strokeStyle = divGrad;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(cx + 60, lineY);
-  ctx.lineTo(cx + cw - 60, lineY);
+  ctx.moveTo(cx + 80, divY);
+  ctx.lineTo(cx + cw - 80, divY);
   ctx.stroke();
 
-  // 引号装饰
-  ctx.fillStyle = '#fdd';
-  ctx.font = `bold 100px Georgia,serif`;
-  ctx.globalAlpha = 0.25;
-  ctx.fillText('“', cx + 52, cy + 218);
+  // 大引号装饰
+  ctx.fillStyle = '#f0c0e0';
+  ctx.globalAlpha = 0.35;
+  ctx.font = `120px Georgia,serif`;
+  ctx.fillText('“', cx + 44, cy + 290);
   ctx.globalAlpha = 1;
 
-  // 夸夸文案（自动换行）
-  ctx.fillStyle = '#5a4060';
-  ctx.font = `500 24px "PingFang SC","Microsoft YaHei",sans-serif`;
-  const textMaxW = cw - 100;
-  const lines = wrapText(ctx, quote, W / 2, textMaxW, 38);
-  const totalH = lines.length * 40;
-  const textStartY = cy + 200 + (220 - totalH) / 2;
-  lines.forEach((l, i) => {
-    ctx.fillText(l, W / 2, textStartY + i * 40);
-  });
+  // 文案正文（自动换行，居中）
+  const font = `500 28px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
+  ctx.font = font;
+  ctx.fillStyle = '#4a3060';
+  const textMaxW = cw - 120;
+  const lines = wrapText(ctx, quote, W / 2, textMaxW, 44);
+  const lineH = 46;
+  const blockH = lines.length * lineH;
+  const quoteZoneTop = cy + 230;
+  const quoteZoneH = ch - 310;
+  const textY = quoteZoneTop + (quoteZoneH - blockH) / 2;
+  lines.forEach((l, i) => ctx.fillText(l, W / 2, textY + i * lineH));
 
-  // 心情（如果有）
+  // 心情 badge
   if (activeBtn) {
-    const moodY = cy + ch - 130;
-    ctx.font = '32px serif';
-    ctx.fillText(activeBtn.dataset.emoji, W / 2 - 50, moodY);
-    ctx.fillStyle = '#c490d1';
-    ctx.font = `500 18px "PingFang SC","Microsoft YaHei",sans-serif`;
-    ctx.fillText(`今天心情  ${activeBtn.dataset.mood}`, W / 2 + 16, moodY - 4);
+    const badgeY = cy + ch - 130;
+    roundRect(ctx, W/2 - 100, badgeY - 32, 200, 48, 24);
+    ctx.fillStyle = 'rgba(245,198,232,0.35)';
+    ctx.fill();
+    ctx.font = '26px serif';
+    ctx.fillText(activeBtn.dataset.emoji, W / 2 - 36, badgeY + 4);
+    ctx.fillStyle = '#b060b0';
+    ctx.font = `500 18px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
+    ctx.fillText(activeBtn.dataset.mood, W / 2 + 26, badgeY + 4);
   }
 
   // 底部日期
-  ctx.fillStyle = '#d4b0e0';
-  ctx.font = `400 14px "PingFang SC","Microsoft YaHei",sans-serif`;
-  ctx.fillText(dateStr + '  🐾', W / 2, cy + ch - 44);
+  ctx.fillStyle = '#cca8dc';
+  ctx.font = `400 15px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
+  ctx.fillText(dateStr, W / 2, cy + ch - 54);
 
-  // 下载
+  // 底部小爪印
+  ctx.font = '18px serif';
+  ctx.globalAlpha = 0.2;
+  ctx.fillText('🐾', W / 2, cy + ch - 28);
+  ctx.globalAlpha = 1;
+
+  return cv.toDataURL('image/png');
+}
+
+function doShare() {
+  _currentDataUrl = drawCard();
+  document.getElementById('previewImg').src = _currentDataUrl;
+  document.getElementById('previewMask').classList.add('show');
+}
+
+function closePreview(e) {
+  if (e && e.target !== document.getElementById('previewMask')) return;
+  document.getElementById('previewMask').classList.remove('show');
+}
+
+function downloadImage(e) {
+  e.stopPropagation();
   const a = document.createElement('a');
-  a.download = `刘迎春_${dateStr}.png`;
-  a.href = cv.toDataURL('image/png');
+  a.download = `刘迎春_${getBeijingDateStr()}.png`;
+  a.href = _currentDataUrl;
   a.click();
 }
 
