@@ -15,8 +15,15 @@
     align-items: center;
     justify-content: center;
     font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
+  }
+
+  @media (max-width: 780px) {
+    body {
+      justify-content: flex-start;
+      padding: 24px 0 40px;
+    }
   }
 
   /* 欢迎屏 */
