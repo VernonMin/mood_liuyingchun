@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>刘迎春专属夸夸机器</title>
+<title>刘迎春专属夸夸机</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -428,7 +428,7 @@
     background: rgba(255,255,255,0.7);
     border: 1.5px solid #f5c6e8;
     border-radius: 50px;
-    padding: 8px 20px;
+    padding: 8px 22px;
     font-size: 13px;
     color: #c490d1;
     cursor: pointer;
@@ -452,29 +452,6 @@
   }
 
   .share-btn:active { transform: scale(0.96); }
-
-  .share-toast {
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: rgba(90,64,96,0.88);
-    color: white;
-    padding: 10px 24px;
-    border-radius: 50px;
-    font-size: 13px;
-    letter-spacing: 1px;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
-    z-index: 9000;
-    white-space: nowrap;
-  }
-
-  .share-toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
 
   /* 浮动 emoji */
   .floating-emoji {
@@ -521,7 +498,7 @@
 <div id="main">
 <div class="machine">
   <div class="dog">🐶</div>
-  <h1>刘迎春专属夸夸机器</h1>
+  <h1>刘迎春专属夸夸机</h1>
   <p class="subtitle">每次点击，真理自动生成 ✦</p>
 
   <p class="greeting" id="greeting"></p>
@@ -535,7 +512,7 @@
 
   <div class="share-row">
     <button class="share-btn" id="shareBtn" onclick="doShare()">
-      <span>🔗</span><span>分享这条</span>
+      <span>🖼</span><span>保存图片</span>
     </button>
   </div>
 
@@ -568,7 +545,6 @@
 </div>
 </div>
 
-<div class="share-toast" id="shareToast"></div>
 
 <script>
 const quotes = [
@@ -641,37 +617,139 @@ function praise() {
   spawnEmojis();
 }
 
-function buildShareText() {
-  const quote = document.getElementById('quote').textContent;
-  const activeBtn = document.querySelector('.mood-btn.active');
-  const moodPart = activeBtn
-    ? `今天心情：${activeBtn.dataset.emoji} ${activeBtn.dataset.mood}\n`
-    : '';
-  const countPart = `今天已被夸了 ${count} 次 🐾`;
-  return `${moodPart}「${quote}」\n\n${countPart}`;
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
 }
 
-function showToast(msg) {
-  const t = document.getElementById('shareToast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-async function doShare() {
-  const text = buildShareText();
-  if (navigator.share) {
-    try {
-      await navigator.share({ text });
-    } catch {}
-  } else {
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast('已复制到剪贴板 🐾');
-    } catch {
-      showToast('复制失败，请手动截图分享');
+function wrapText(ctx, text, x, maxWidth, lineHeight) {
+  const chars = text.split('');
+  let line = '';
+  const lines = [];
+  for (const ch of chars) {
+    const test = line + ch;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = ch;
+    } else {
+      line = test;
     }
   }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function getBeijingDateStr() {
+  const d = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  return `${d.getUTCFullYear()}.${String(d.getUTCMonth()+1).padStart(2,'0')}.${String(d.getUTCDate()).padStart(2,'0')}`;
+}
+
+function doShare() {
+  const quote = document.getElementById('quote').textContent;
+  const activeBtn = document.querySelector('.mood-btn.active');
+  const dateStr = getBeijingDateStr();
+
+  const W = 640, H = 860;
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+
+  // 背景渐变
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0,   '#ffe4f0');
+  bg.addColorStop(0.5, '#f5e6ff');
+  bg.addColorStop(1,   '#dff2ff');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // 背景装饰爪印
+  ctx.font = '32px serif';
+  ctx.globalAlpha = 0.07;
+  const decos = ['🐾','🌸','✦'];
+  [[80,80],[560,120],[60,760],[580,700],[300,50],[120,440],[500,380]].forEach(([dx,dy],i) => {
+    ctx.fillText(decos[i % decos.length], dx, dy);
+  });
+  ctx.globalAlpha = 1;
+
+  // 白色卡片
+  const cx = 48, cy = 80, cw = W - 96, ch = H - 160;
+  roundRect(ctx, cx, cy, cw, ch, 36);
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.fill();
+  roundRect(ctx, cx, cy, cw, ch, 36);
+  ctx.strokeStyle = 'rgba(245,198,232,0.8)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 顶部标题区
+  ctx.textAlign = 'center';
+  ctx.font = '44px serif';
+  ctx.fillText('🐶', W / 2, cy + 76);
+
+  ctx.fillStyle = '#d966a0';
+  ctx.font = `800 22px "PingFang SC","Microsoft YaHei",sans-serif`;
+  ctx.fillText('刘迎春专属夸夸机', W / 2, cy + 118);
+
+  // 分隔线
+  const lineY = cy + 138;
+  const lineGrad = ctx.createLinearGradient(cx + 60, 0, cx + cw - 60, 0);
+  lineGrad.addColorStop(0, 'transparent');
+  lineGrad.addColorStop(0.5, '#f5c6e8');
+  lineGrad.addColorStop(1, 'transparent');
+  ctx.strokeStyle = lineGrad;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx + 60, lineY);
+  ctx.lineTo(cx + cw - 60, lineY);
+  ctx.stroke();
+
+  // 引号装饰
+  ctx.fillStyle = '#fdd';
+  ctx.font = `bold 100px Georgia,serif`;
+  ctx.globalAlpha = 0.25;
+  ctx.fillText('“', cx + 52, cy + 218);
+  ctx.globalAlpha = 1;
+
+  // 夸夸文案（自动换行）
+  ctx.fillStyle = '#5a4060';
+  ctx.font = `500 24px "PingFang SC","Microsoft YaHei",sans-serif`;
+  const textMaxW = cw - 100;
+  const lines = wrapText(ctx, quote, W / 2, textMaxW, 38);
+  const totalH = lines.length * 40;
+  const textStartY = cy + 200 + (220 - totalH) / 2;
+  lines.forEach((l, i) => {
+    ctx.fillText(l, W / 2, textStartY + i * 40);
+  });
+
+  // 心情（如果有）
+  if (activeBtn) {
+    const moodY = cy + ch - 130;
+    ctx.font = '32px serif';
+    ctx.fillText(activeBtn.dataset.emoji, W / 2 - 50, moodY);
+    ctx.fillStyle = '#c490d1';
+    ctx.font = `500 18px "PingFang SC","Microsoft YaHei",sans-serif`;
+    ctx.fillText(`今天心情  ${activeBtn.dataset.mood}`, W / 2 + 16, moodY - 4);
+  }
+
+  // 底部日期
+  ctx.fillStyle = '#d4b0e0';
+  ctx.font = `400 14px "PingFang SC","Microsoft YaHei",sans-serif`;
+  ctx.fillText(dateStr + '  🐾', W / 2, cy + ch - 44);
+
+  // 下载
+  const a = document.createElement('a');
+  a.download = `刘迎春_${dateStr}.png`;
+  a.href = cv.toDataURL('image/png');
+  a.click();
 }
 
 function spawnEmojis() {
