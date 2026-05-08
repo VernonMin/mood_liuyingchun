@@ -1730,7 +1730,7 @@ const reflectContent = {
 
 let _reflectMood = '';
 
-async function openReflect(mood, emoji) {
+function openReflect(mood, emoji) {
   _reflectMood = mood;
   const c = reflectContent[mood];
   document.getElementById('reflectEmoji').textContent = emoji;
@@ -1738,14 +1738,9 @@ async function openReflect(mood, emoji) {
   document.getElementById('reflectPrompt').textContent = c.prompt;
   document.getElementById('reflectStatus').textContent = '';
 
-  // 加载今天已存的记录
-  try {
-    const res = await fetch('/api/note');
-    const data = await res.json();
-    document.getElementById('reflectInput').value = data.note ? data.note.text : '';
-  } catch {
-    document.getElementById('reflectInput').value = '';
-  }
+  // 加载今天已存的记录（本地）
+  const saved = JSON.parse(localStorage.getItem(`lyc_note_${getBeijingDate()}`) || 'null');
+  document.getElementById('reflectInput').value = saved ? saved.text : '';
 
   document.getElementById('reflectMask').classList.add('show');
 }
@@ -1754,44 +1749,33 @@ function closeReflect() {
   document.getElementById('reflectMask').classList.remove('show');
 }
 
-async function saveNote() {
+function saveNote() {
   const text = document.getElementById('reflectInput').value.trim();
   const status = document.getElementById('reflectStatus');
   if (!text) { closeReflect(); return; }
-  status.textContent = '保存中…';
-  try {
-    await fetch('/api/note', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, mood: _reflectMood }),
-    });
-    status.textContent = '已保存 🐾';
-    setTimeout(closeReflect, 800);
-  } catch {
-    status.textContent = '保存失败，请稍后再试';
-  }
+  const beijing = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  localStorage.setItem(`lyc_note_${getBeijingDate()}`, JSON.stringify({
+    text, mood: _reflectMood, time: beijing.toISOString().slice(11, 16)
+  }));
+  status.textContent = '已保存 🐾';
+  setTimeout(closeReflect, 800);
 }
 
 // 好心情罐子
-async function openJarView() {
+function openJarView() {
   const list = document.getElementById('jarViewList');
-  list.innerHTML = '<div class="jar-empty">加载中…</div>';
   document.getElementById('jarViewMask').classList.add('show');
-  try {
-    const entries = await (await fetch('/api/jar')).json();
-    if (!entries.length) {
-      list.innerHTML = '<div class="jar-empty">还没有存过好心情<br>下次心情很好时记得存一条 🫙</div>';
-      return;
-    }
-    list.innerHTML = entries.map(e => `
-      <div class="jar-entry">
-        <div class="jar-entry-text">${e.text}</div>
-        <div class="jar-entry-date">${e.date} ${e.time || ''}</div>
-      </div>
-    `).join('');
-  } catch {
-    list.innerHTML = '<div class="jar-empty">加载失败，待会儿再试</div>';
+  const entries = JSON.parse(localStorage.getItem('lyc_jar') || '[]');
+  if (!entries.length) {
+    list.innerHTML = '<div class="jar-empty">还没有存过好心情<br>下次心情很好时记得存一条 🫙</div>';
+    return;
   }
+  list.innerHTML = entries.map(e => `
+    <div class="jar-entry">
+      <div class="jar-entry-text">${e.text}</div>
+      <div class="jar-entry-date">${e.date} ${e.time || ''}</div>
+    </div>
+  `).join('');
 }
 
 function closeJarView(e) {
@@ -1809,22 +1793,17 @@ function closeJar() {
   document.getElementById('jarMask').classList.remove('show');
 }
 
-async function saveJar() {
+function saveJar() {
   const text = document.getElementById('jarInput').value.trim();
   const status = document.getElementById('jarStatus');
   if (!text) { closeJar(); return; }
-  status.textContent = '存进去了…';
-  try {
-    await fetch('/api/jar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    status.textContent = '🫙 存好了，留着阴天用';
-    setTimeout(closeJar, 1000);
-  } catch {
-    status.textContent = '存失败了，待会儿再试';
-  }
+  const beijing = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  const entry = { text, date: getBeijingDate(), time: beijing.toISOString().slice(11, 16) };
+  const entries = JSON.parse(localStorage.getItem('lyc_jar') || '[]');
+  entries.unshift(entry);
+  localStorage.setItem('lyc_jar', JSON.stringify(entries));
+  status.textContent = '🫙 存好了，留着阴天用';
+  setTimeout(closeJar, 1000);
 }
 
 // 护眼模式
