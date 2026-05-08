@@ -760,6 +760,66 @@
     min-height: 18px;
   }
 
+  /* 护眼模式 */
+  #eyeCareOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 180, 60, 0.10);
+    pointer-events: none;
+    z-index: 99990;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  body.eye-care #eyeCareOverlay { opacity: 1; }
+
+  body.eye-care {
+    background: linear-gradient(160deg, #fdf0d5 0%, #fae8c8 50%, #f5e0b0 100%);
+  }
+  body.eye-care #splash {
+    background: linear-gradient(160deg, #fdf0d5 0%, #fae8c8 50%, #f5e0b0 100%);
+  }
+  body.eye-care .machine {
+    background: rgba(253, 243, 220, 0.95);
+    border-color: rgba(220, 180, 100, 0.4);
+  }
+  body.eye-care .quote-box {
+    background: linear-gradient(135deg, #fdf0d5, #f7e5c0);
+  }
+  body.eye-care .side-panel,
+  body.eye-care .history-panel {
+    background: rgba(253, 243, 220, 0.9);
+  }
+  body.eye-care .reflect-panel {
+    background: linear-gradient(160deg, #fdf4e3, #f7eacf);
+  }
+  body.eye-care .reflect-input {
+    background: rgba(255, 248, 230, 0.9);
+  }
+
+  #eyeCareBtn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 9000;
+    background: rgba(255,255,255,0.75);
+    border: 1.5px solid rgba(220,180,120,0.5);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: #a07040;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+  }
+  #eyeCareBtn:hover { background: rgba(255,240,200,0.9); }
+  body.eye-care #eyeCareBtn {
+    background: rgba(255, 220, 120, 0.85);
+    border-color: rgba(200,150,60,0.6);
+    color: #7a5010;
+  }
+
   /* 浮动 emoji */
   .floating-emoji {
     position: fixed;
@@ -776,6 +836,9 @@
 </style>
 </head>
 <body>
+
+<div id="eyeCareOverlay"></div>
+<button id="eyeCareBtn" onclick="toggleEyeCare()" title="护眼模式">🌙 护眼</button>
 
 <!-- 欢迎屏 -->
 <div id="splash" onclick="dismissSplash()">
@@ -1470,6 +1533,20 @@ async function saveNote() {
     status.textContent = '保存失败，请稍后再试';
   }
 }
+
+// 护眼模式
+function toggleEyeCare() {
+  const on = document.body.classList.toggle('eye-care');
+  document.getElementById('eyeCareBtn').textContent = on ? '☀️ 普通' : '🌙 护眼';
+  localStorage.setItem('eyeCare', on ? '1' : '');
+}
+
+(function initEyeCare() {
+  if (localStorage.getItem('eyeCare')) {
+    document.body.classList.add('eye-care');
+    document.getElementById('eyeCareBtn').textContent = '☀️ 普通';
+  }
+})();
 </script>
 </body>
 </html>
