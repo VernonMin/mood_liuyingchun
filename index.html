@@ -605,10 +605,17 @@
     transform: translateY(0);
   }
 
+  .preview-hint {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 14px;
+    letter-spacing: 1px;
+  }
+
   .preview-actions {
     display: flex;
     gap: 12px;
-    margin-top: 20px;
+    margin-top: 12px;
   }
 
   .preview-dl-btn {
@@ -746,8 +753,8 @@
 
 <div class="preview-mask" id="previewMask" onclick="closePreview(event)">
   <img class="preview-img" id="previewImg" src="" alt="预览" />
+  <p class="preview-hint">长按图片保存到相册</p>
   <div class="preview-actions">
-    <button class="preview-dl-btn" onclick="downloadImage(event)">💾 保存到相册</button>
     <button class="preview-close-btn" onclick="closePreview()">关闭</button>
   </div>
 </div>
