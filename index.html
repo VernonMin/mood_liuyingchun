@@ -698,7 +698,7 @@
 
   <div class="share-row">
     <button class="share-btn" id="shareBtn" onclick="doShare()">
-      <span>🖼</span><span>保存图片</span>
+      <span>🖼</span><span>保存分享</span>
     </button>
   </div>
 
@@ -740,7 +740,7 @@
 <div class="preview-mask" id="previewMask" onclick="closePreview(event)">
   <img class="preview-img" id="previewImg" src="" alt="预览" />
   <div class="preview-actions">
-    <button class="preview-dl-btn" onclick="downloadImage(event)">⬇ 保存图片</button>
+    <button class="preview-dl-btn" onclick="downloadImage(event)">💾 保存到相册</button>
     <button class="preview-close-btn" onclick="closePreview()">关闭</button>
   </div>
 </div>
@@ -1006,10 +1006,25 @@ function closePreview(e) {
   document.getElementById('previewMask').classList.remove('show');
 }
 
-function downloadImage(e) {
+async function downloadImage(e) {
   e.stopPropagation();
+  const filename = `刘迎春_${getBeijingDateStr()}.png`;
+
+  // 手机端：用系统分享（包含保存到相册选项）
+  if (navigator.canShare) {
+    try {
+      const blob = await (await fetch(_currentDataUrl)).blob();
+      const file = new File([blob], filename, { type: 'image/png' });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file] });
+        return;
+      }
+    } catch {}
+  }
+
+  // 桌面端降级：直接下载
   const a = document.createElement('a');
-  a.download = `刘迎春_${getBeijingDateStr()}.png`;
+  a.download = filename;
   a.href = _currentDataUrl;
   a.click();
 }
