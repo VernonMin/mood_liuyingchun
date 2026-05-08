@@ -334,8 +334,79 @@
 
   .side-mood-emoji.pop { transform: scale(1.4); }
 
+  /* 右侧历史面板 */
+  .history-panel {
+    position: fixed;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 20px 16px;
+    border: 2px solid rgba(255,200,230,0.6);
+    box-shadow: 0 4px 24px rgba(220,150,200,0.18);
+    z-index: 10;
+    width: 130px;
+    max-height: 70vh;
+    overflow-y: auto;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    scrollbar-width: none;
+  }
+
+  .history-panel::-webkit-scrollbar { display: none; }
+  .history-panel.show { opacity: 1; }
+
+  .history-title {
+    font-size: 10px;
+    color: #d4b0e0;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .history-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(245,198,232,0.4);
+  }
+
+  .history-item:last-child { border-bottom: none; }
+
+  .history-emoji { font-size: 22px; }
+
+  .history-mood {
+    font-size: 11px;
+    color: #7a5090;
+    font-weight: 600;
+  }
+
+  .history-date {
+    font-size: 10px;
+    color: #d4b0e0;
+    white-space: nowrap;
+  }
+
+  .history-count {
+    font-size: 10px;
+    color: #d966a0;
+  }
+
+  .history-empty {
+    font-size: 11px;
+    color: #d4b0e0;
+    text-align: center;
+    line-height: 1.8;
+    padding: 8px 0;
+  }
+
   @media (max-width: 780px) {
     .side-panel { display: none; }
+    .history-panel { display: none; }
   }
 
   .greeting {
@@ -562,6 +633,12 @@
     <span class="side-mood-emoji" id="sideMoodEmoji">🌸</span>
     <div class="side-label" id="sideMoodLabel">今日心情</div>
   </div>
+</div>
+
+<!-- 右侧历史面板 -->
+<div class="history-panel" id="historyPanel">
+  <div class="history-title">历史心情</div>
+  <div id="historyList"><div class="history-empty">加载中…</div></div>
 </div>
 
 <div class="paws" id="paws"></div>
@@ -1013,6 +1090,7 @@ function dismissSplash() {
     splash.style.display = 'none';
     main.classList.add('show');
     panel.classList.add('show');
+    document.getElementById('historyPanel').classList.add('show');
 
     const g = document.getElementById('greeting');
     g.textContent = greetingText;
@@ -1078,6 +1156,9 @@ async function setMood(btn) {
       body: JSON.stringify({ mood, emoji }),
     });
     status.textContent = `已记录：${emoji} ${mood}，谢谢你告诉我 🐾`;
+    // 刷新右侧历史
+    const res = await fetch('/api/mood');
+    renderHistory(await res.json());
   } catch {
     status.textContent = '记录失败，待会儿再试试';
   }
@@ -1095,7 +1176,25 @@ async function loadTodayMood() {
       document.getElementById('moodStatus').textContent = `今天已记录：${todayMood.emoji} ${todayMood.mood} 🐾`;
       updateSideMood(todayMood.emoji, todayMood.mood);
     }
-  } catch {}
+    renderHistory(moods);
+  } catch {
+    document.getElementById('historyList').innerHTML = '<div class="history-empty">暂无记录</div>';
+  }
+}
+
+function renderHistory(moods) {
+  const list = document.getElementById('historyList');
+  if (!moods.length) {
+    list.innerHTML = '<div class="history-empty">还没有记录 🐾</div>';
+    return;
+  }
+  list.innerHTML = moods.slice(0, 14).map(m => `
+    <div class="history-item">
+      <span class="history-emoji">${m.emoji || '🙂'}</span>
+      <span class="history-mood">${m.mood}</span>
+      <span class="history-date">${m.date.slice(5)}</span>
+    </div>
+  `).join('');
 }
 
 loadTodayMood();
