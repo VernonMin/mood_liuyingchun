@@ -82,6 +82,13 @@
     color: #ddbfee;
   }
 
+  .item-count {
+    font-size: 12px;
+    color: #d966a0;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
   .empty {
     text-align: center;
     color: #d4b0e0;
@@ -129,21 +136,35 @@ async function load() {
   const list = document.getElementById('list');
   list.innerHTML = '<div class="empty">加载中……</div>';
   try {
-    const res = await fetch('/api/mood');
-    const moods = await res.json();
-    if (!moods.length) {
+    const [moodRes, countRes] = await Promise.all([
+      fetch('/api/mood'),
+      fetch('/api/count'),
+    ]);
+    const moods = await moodRes.json();
+    const todayCount = (await countRes.json()).count;
+
+    if (!moods.length && !todayCount) {
       list.innerHTML = '<div class="empty">还没有记录 🐾<br>等她来填吧</div>';
       return;
     }
-    list.innerHTML = moods.map(m => `
-      <div class="item">
-        <div class="item-emoji">${m.emoji || '🙂'}</div>
-        <div class="item-info">
-          <div class="item-mood">${m.mood}</div>
-          <div class="item-date">${m.date} <span class="item-time">${m.time ? m.time + ' (北京时间)' : ''}</span></div>
+
+    // 以心情日期为基础，合并今日次数
+    const today = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    list.innerHTML = moods.map(m => {
+      const countBadge = m.date === today && todayCount
+        ? `<div class="item-count">🐾 今日被夸 ${todayCount} 次</div>`
+        : '';
+      return `
+        <div class="item">
+          <div class="item-emoji">${m.emoji || '🙂'}</div>
+          <div class="item-info">
+            <div class="item-mood">${m.mood}</div>
+            <div class="item-date">${m.date} <span class="item-time">${m.time ? m.time + ' (北京时间)' : ''}</span></div>
+            ${countBadge}
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   } catch (e) {
     list.innerHTML = '<div class="empty">加载失败，请检查网络 🐾</div>';
   }

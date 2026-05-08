@@ -575,24 +575,44 @@ const emojis = ['🐶','🐾','🌸','✨','💕','🍡','🌷','💫','🎀','�
 let lastIndex = -1;
 
 function getBeijingDate() {
-  const now = new Date();
-  const beijing = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  const beijing = new Date(Date.now() + 8 * 60 * 60 * 1000);
   return beijing.toISOString().slice(0, 10);
 }
 
-function loadCount() {
-  const today = getBeijingDate();
-  const saved = JSON.parse(localStorage.getItem('lyc_praise') || '{}');
-  if (saved.date === today) return saved.count;
-  return 0;
+let count = 0;
+
+function setCount(n) {
+  count = n;
+  document.getElementById('count').textContent = n;
+  updateSideCount(n);
 }
 
-function saveCount(n) {
-  localStorage.setItem('lyc_praise', JSON.stringify({ date: getBeijingDate(), count: n }));
+async function initCount() {
+  try {
+    const res = await fetch('/api/count');
+    const data = await res.json();
+    setCount(data.count);
+  } catch {
+    // 离线降级：读 localStorage
+    const saved = JSON.parse(localStorage.getItem('lyc_praise') || '{}');
+    if (saved.date === getBeijingDate()) setCount(saved.count || 0);
+  }
 }
 
-let count = loadCount();
-document.getElementById('count').textContent = count;
+async function incrementCount() {
+  // 乐观更新，立刻显示
+  setCount(count + 1);
+  try {
+    const res = await fetch('/api/count', { method: 'POST' });
+    const data = await res.json();
+    setCount(data.count); // 以服务器为准
+  } catch {
+    // 离线时本地缓存
+    localStorage.setItem('lyc_praise', JSON.stringify({ date: getBeijingDate(), count }));
+  }
+}
+
+initCount();
 
 function praise() {
   let index;
@@ -607,10 +627,7 @@ function praise() {
     el.classList.add('show');
   }, 150);
 
-  count++;
-  saveCount(count);
-  document.getElementById('count').textContent = count;
-  updateSideCount(count);
+  incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
 
   launchConfetti();
