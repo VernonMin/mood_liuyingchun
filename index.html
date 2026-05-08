@@ -831,6 +831,92 @@
     color: #7a6020;
   }
 
+  /* 打开罐子按钮 */
+  .jar-view-btn {
+    margin-top: 14px;
+    background: transparent;
+    border: 1.5px solid rgba(200,170,80,0.45);
+    border-radius: 50px;
+    padding: 7px 20px;
+    font-size: 13px;
+    color: #b08030;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .jar-view-btn:hover { background: rgba(255,240,180,0.4); }
+
+  /* 罐子查看弹窗 */
+  .jar-view-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(120, 80, 20, 0.35);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    padding: 24px;
+  }
+  .jar-view-mask.show { opacity: 1; pointer-events: all; }
+
+  .jar-view-card {
+    background: linear-gradient(160deg, #fffbf0, #fff8e1);
+    border-radius: 28px;
+    padding: 28px 24px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 48px rgba(200,150,30,0.2);
+    border: 1.5px solid rgba(240,210,100,0.6);
+    transform: translateY(16px);
+    transition: transform 0.3s;
+  }
+  .jar-view-mask.show .jar-view-card { transform: translateY(0); }
+
+  .jar-view-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .jar-view-title { font-size: 17px; font-weight: 700; color: #b07020; }
+  .jar-view-close {
+    background: none; border: none; font-size: 22px;
+    color: #c0a050; cursor: pointer; line-height: 1;
+  }
+  .jar-view-sub {
+    font-size: 13px; color: #a08040; margin-bottom: 16px;
+  }
+  .jar-view-list {
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .jar-entry {
+    background: rgba(255,248,210,0.7);
+    border-radius: 14px;
+    padding: 14px 16px;
+    border: 1px solid rgba(220,190,80,0.3);
+  }
+  .jar-entry-text { font-size: 15px; color: #5a4010; line-height: 1.7; }
+  .jar-entry-date { font-size: 11px; color: #c0a050; margin-top: 6px; }
+  .jar-empty { text-align: center; color: #c0a060; font-size: 14px; padding: 32px 0; }
+
+  body.eye-care .jar-view-card {
+    background: linear-gradient(160deg, #fdf6e3, #f9f0d0);
+    border-color: rgba(210, 180, 100, 0.5);
+  }
+  body.eye-care .jar-entry { background: rgba(253,243,210,0.8); }
+
   /* 好心情罐子弹窗 */
   .jar-mask {
     position: fixed;
@@ -1031,6 +1117,7 @@
       </button>
     </div>
     <p class="mood-status" id="moodStatus"></p>
+    <button class="jar-view-btn" onclick="openJarView()">🫙 打开罐子</button>
   </div>
 
   <!-- 手机端历史心情 -->
@@ -1046,6 +1133,17 @@
   <p class="preview-hint">长按图片保存到相册</p>
   <div class="preview-actions">
     <button class="preview-close-btn" onclick="closePreview()">关闭</button>
+  </div>
+</div>
+
+<div class="jar-view-mask" id="jarViewMask" onclick="closeJarView(event)">
+  <div class="jar-view-card">
+    <div class="jar-view-header">
+      <span class="jar-view-title">🫙 好心情罐子</span>
+      <button class="jar-view-close" onclick="closeJarView()">×</button>
+    </div>
+    <div class="jar-view-sub">阴天的时候，翻翻这里</div>
+    <div class="jar-view-list" id="jarViewList"></div>
   </div>
 </div>
 
@@ -1675,6 +1773,32 @@ async function saveNote() {
 }
 
 // 好心情罐子
+async function openJarView() {
+  const list = document.getElementById('jarViewList');
+  list.innerHTML = '<div class="jar-empty">加载中…</div>';
+  document.getElementById('jarViewMask').classList.add('show');
+  try {
+    const entries = await (await fetch('/api/jar')).json();
+    if (!entries.length) {
+      list.innerHTML = '<div class="jar-empty">还没有存过好心情<br>下次心情很好时记得存一条 🫙</div>';
+      return;
+    }
+    list.innerHTML = entries.map(e => `
+      <div class="jar-entry">
+        <div class="jar-entry-text">${e.text}</div>
+        <div class="jar-entry-date">${e.date} ${e.time || ''}</div>
+      </div>
+    `).join('');
+  } catch {
+    list.innerHTML = '<div class="jar-empty">加载失败，待会儿再试</div>';
+  }
+}
+
+function closeJarView(e) {
+  if (e && e.target !== document.getElementById('jarViewMask')) return;
+  document.getElementById('jarViewMask').classList.remove('show');
+}
+
 function openJar() {
   document.getElementById('jarInput').value = '';
   document.getElementById('jarStatus').textContent = '';
