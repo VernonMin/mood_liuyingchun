@@ -404,9 +404,47 @@
     padding: 8px 0;
   }
 
+  /* 手机内嵌历史 */
+  .mobile-history {
+    display: none;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1.5px dashed #f5d0ee;
+  }
+
+  .mobile-history-title {
+    font-size: 12px;
+    color: #d4b0e0;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .mobile-history-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .mobile-history-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: #fff0f8;
+    border-radius: 12px;
+    padding: 8px 4px;
+    border: 1.5px solid #f5c6e8;
+  }
+
+  .mobile-history-emoji { font-size: 20px; }
+  .mobile-history-mood { font-size: 10px; color: #7a5090; font-weight: 600; }
+  .mobile-history-date { font-size: 9px; color: #d4b0e0; }
+
   @media (max-width: 780px) {
     .side-panel { display: none; }
     .history-panel { display: none; }
+    .mobile-history { display: block; }
   }
 
   .greeting {
@@ -689,6 +727,12 @@
       </button>
     </div>
     <p class="mood-status" id="moodStatus"></p>
+  </div>
+
+  <!-- 手机端历史心情 -->
+  <div class="mobile-history">
+    <p class="mobile-history-title">刘迎春的历史心情</p>
+    <div class="mobile-history-grid" id="mobileHistoryList"></div>
   </div>
 </div>
 </div>
@@ -1182,9 +1226,11 @@ async function loadTodayMood() {
 }
 
 function renderHistory(moods) {
+  // 桌面端右侧面板
   const list = document.getElementById('historyList');
   if (!moods.length) {
     list.innerHTML = '<div class="history-empty">还没有记录 🐾</div>';
+    document.getElementById('mobileHistoryList').innerHTML = '';
     return;
   }
   list.innerHTML = moods.slice(0, 60).map(m => `
@@ -1192,6 +1238,15 @@ function renderHistory(moods) {
       <span class="history-emoji">${m.emoji || '🙂'}</span>
       <span class="history-mood">${m.mood}</span>
       <span class="history-date">${m.date.slice(5)}</span>
+    </div>
+  `).join('');
+
+  // 手机端网格
+  document.getElementById('mobileHistoryList').innerHTML = moods.slice(0, 60).map(m => `
+    <div class="mobile-history-item">
+      <span class="mobile-history-emoji">${m.emoji || '🙂'}</span>
+      <span class="mobile-history-mood">${m.mood}</span>
+      <span class="mobile-history-date">${m.date.slice(5)}</span>
     </div>
   `).join('');
 }
