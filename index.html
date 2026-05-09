@@ -450,6 +450,49 @@
   .mobile-history-mood { font-size: 10px; color: #7a5090; font-weight: 600; }
   .mobile-history-date { font-size: 9px; color: #d4b0e0; }
 
+  .festivals {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1.5px dashed #f5d0ee;
+  }
+  .festivals-title {
+    font-size: 12px;
+    color: #d4b0e0;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .festival-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #fff0f8;
+    border: 1.5px solid #f5c6e8;
+    margin-bottom: 8px;
+  }
+  .festival-item.today {
+    background: #fde8f5;
+    border-color: #e08acf;
+  }
+  .festival-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #7a5090;
+    font-weight: 600;
+  }
+  .festival-countdown {
+    font-size: 12px;
+    color: #b07abf;
+  }
+  .festival-item.today .festival-countdown {
+    color: #c0598a;
+    font-weight: 600;
+  }
+
   @media (max-width: 780px) {
     .side-panel { display: none; }
     .history-panel { display: none; }
@@ -937,6 +980,10 @@
     border-color: rgba(210, 180, 100, 0.5);
   }
   body.eye-care .jar-entry { background: rgba(253,243,210,0.8); }
+  body.eye-care .festival-item { background: #fdf6e3; border-color: rgba(210,180,100,0.4); }
+  body.eye-care .festival-item.today { background: #f9f0d0; border-color: rgba(190,150,80,0.6); }
+  body.eye-care .festival-left { color: #7a6030; }
+  body.eye-care .festival-countdown { color: #9a7840; }
 
   /* 好心情罐子弹窗 */
   .jar-mask {
@@ -1148,6 +1195,11 @@
     <p class="mobile-history-title">刘迎春的历史心情</p>
     <div class="mobile-history-grid" id="mobileHistoryList"></div>
   </div>
+
+  <div class="festivals">
+    <p class="festivals-title">刘迎春的小节日</p>
+    <div id="festivalList"></div>
+  </div>
 </div>
 </div>
 
@@ -1274,6 +1326,65 @@ async function incrementCount() {
 }
 
 initCount();
+
+function initFestivals() {
+  const festivals = [
+    { icon: '🏥', name: '护士节', month: 5, day: 12, todayText: '今天是护士节，辛苦了' },
+    { icon: '🎂', name: '生日', month: 12, day: 20, todayText: '生日快乐，迎春' },
+  ];
+
+  function getNextOccurrence(month, day) {
+    const now = Date.now() + 8 * 60 * 60 * 1000;
+    const b = new Date(now);
+    const y = b.getUTCFullYear();
+    let target = new Date(Date.UTC(y, month - 1, day, 0, 0, 0));
+    if (target <= new Date(now)) target.setUTCFullYear(y + 1);
+    return target;
+  }
+
+  function formatCountdown(ms) {
+    if (ms <= 0) return null;
+    const totalSec = Math.floor(ms / 1000);
+    const d = Math.floor(totalSec / 86400);
+    const h = Math.floor((totalSec % 86400) / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    const parts = [];
+    if (d > 0) parts.push(`${d}天`);
+    parts.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+    return parts.join(' ');
+  }
+
+  function render() {
+    const nowMs = Date.now() + 8 * 60 * 60 * 1000;
+    const b = new Date(nowMs);
+    const todayM = b.getUTCMonth() + 1;
+    const todayD = b.getUTCDate();
+
+    const list = document.getElementById('festivalList');
+    if (!list) return;
+    list.innerHTML = festivals.map(f => {
+      const isToday = todayM === f.month && todayD === f.day;
+      if (isToday) {
+        return `<div class="festival-item today">
+          <span class="festival-left">${f.icon} ${f.name}</span>
+          <span class="festival-countdown">${f.todayText}</span>
+        </div>`;
+      }
+      const target = getNextOccurrence(f.month, f.day);
+      const countdown = formatCountdown(target - new Date(nowMs));
+      return `<div class="festival-item">
+        <span class="festival-left">${f.icon} ${f.name}</span>
+        <span class="festival-countdown">还有 ${countdown}</span>
+      </div>`;
+    }).join('');
+  }
+
+  render();
+  setInterval(render, 1000);
+}
+
+initFestivals();
 
 async function praise() {
   incrementCount();
