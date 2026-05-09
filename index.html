@@ -450,10 +450,36 @@
   .mobile-history-mood { font-size: 10px; color: #7a5090; font-weight: 600; }
   .mobile-history-date { font-size: 9px; color: #d4b0e0; }
 
-  .festivals {
-    margin-top: 24px;
-    padding-top: 20px;
+  .bottom-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 28px;
+  }
+  .bottom-link-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #c9a0d8;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: color 0.2s;
+  }
+  .bottom-link-btn:hover,
+  .bottom-link-btn.open { color: #9a5cba; }
+  .bottom-drawer {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1.5px dashed #f5d0ee;
+  }
+  .bottom-drawer.open { display: block; }
+
+  .festivals {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
   }
   .festivals-title {
     font-size: 12px;
@@ -509,7 +535,7 @@
   @media (max-width: 780px) {
     .side-panel { display: none; }
     .history-panel { display: none; }
-    .mobile-history { display: block; }
+    .mobile-history { display: none; }
   }
 
   .greeting {
@@ -1179,11 +1205,6 @@
     <p>已被夸了 <span id="count">0</span> 次，越夸越可爱 🐾</p>
   </div>
 
-  <div class="festivals">
-    <p class="festivals-title">刘迎春的小节日</p>
-    <div id="festivalList"></div>
-  </div>
-
   <div class="mood-section">
     <p class="mood-label">迎春今天怎么样啦？</p>
     <div class="mood-options" id="moodOptions">
@@ -1208,8 +1229,17 @@
     <button class="jar-view-btn" onclick="openJarView()">🫙 好心情罐子</button>
   </div>
 
-  <!-- 手机端历史心情 -->
-  <div class="mobile-history">
+  <div class="bottom-links">
+    <button class="bottom-link-btn" onclick="togglePanel('festivalsPanel', this)">📅 刘迎春的小节日</button>
+    <button class="bottom-link-btn" onclick="togglePanel('historyDrawer', this)">📖 刘迎春的历史心情</button>
+  </div>
+
+  <div class="festivals bottom-drawer" id="festivalsPanel">
+    <p class="festivals-title">刘迎春的小节日</p>
+    <div id="festivalList"></div>
+  </div>
+
+  <div class="bottom-drawer" id="historyDrawer">
     <p class="mobile-history-title">刘迎春的历史心情</p>
     <div class="mobile-history-grid" id="mobileHistoryList"></div>
   </div>
@@ -1404,6 +1434,13 @@ function initFestivals() {
 }
 
 initFestivals();
+
+function togglePanel(id, btn) {
+  const panel = document.getElementById(id);
+  const isOpen = panel.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  if (isOpen && id === 'festivalsPanel') initFestivals();
+}
 
 async function praise() {
   incrementCount();
