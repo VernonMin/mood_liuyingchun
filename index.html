@@ -1940,19 +1940,33 @@ if (isNursesDay()) {
 }
 
 function launchNurseRain() {
-  const icons = ['🩺', '🩹', '❤️‍🩹', '💊', '🌡️', '🩻', '⭐', '🌸'];
-  const count = 60;
+  const petals = ['🌸', '🌺', '🌷', '💮'];
+  const hearts = ['❤️', '💗', '💕', '💖', '🩷'];
+  const count = 70;
   for (let i = 0; i < count; i++) {
     setTimeout(() => {
       const el = document.createElement('span');
       el.className = 'nurse-icon';
-      el.textContent = icons[Math.floor(Math.random() * icons.length)];
-      el.style.left = (Math.random() * 100) + 'vw';
-      el.style.fontSize = (14 + Math.random() * 18) + 'px';
-      el.style.animationDuration = (1.8 + Math.random() * 2) + 's';
+      const r = Math.random();
+      if (r < 0.45) {
+        el.textContent = petals[Math.floor(Math.random() * petals.length)];
+        el.style.fontSize = (14 + Math.random() * 14) + 'px';
+      } else if (r < 0.85) {
+        el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        el.style.fontSize = (12 + Math.random() * 12) + 'px';
+      } else {
+        el.textContent = '护士节快乐';
+        el.style.fontSize = '13px';
+        el.style.fontWeight = '600';
+        el.style.color = '#d06090';
+        el.style.whiteSpace = 'nowrap';
+        el.style.textShadow = '0 1px 4px rgba(255,255,255,0.8)';
+      }
+      el.style.left = (Math.random() * 96) + 'vw';
+      el.style.animationDuration = (2 + Math.random() * 2.5) + 's';
       document.body.appendChild(el);
       el.addEventListener('animationend', () => el.remove());
-    }, i * 60);
+    }, i * 55);
   }
 }
 
