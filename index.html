@@ -1929,6 +1929,7 @@ function dismissNursesDay() {
   const el = document.getElementById('nursesDay');
   el.classList.add('hide');
   el.classList.remove('show');
+  playNextBgm();
   const splash = document.getElementById('splash');
   splash.style.display = '';
   document.getElementById('splashGreeting').classList.remove('show');
@@ -1991,7 +1992,7 @@ let splashDismissed = false;
 function dismissSplash() {
   if (splashDismissed) return;
   splashDismissed = true;
-  playNextBgm();
+  if (!isNursesDay()) playNextBgm();
   const splash = document.getElementById('splash');
   const main = document.getElementById('main');
   const panel = document.getElementById('sidePanel');
