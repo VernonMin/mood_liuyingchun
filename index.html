@@ -468,6 +468,24 @@
   }
   .bottom-link-btn:hover { color: #9a5cba; }
 
+  @media (max-width: 780px) {
+    .bottom-links {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: 0;
+      padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+      background: rgba(255, 245, 252, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(220, 160, 230, 0.3);
+      z-index: 200;
+      gap: 24px;
+    }
+    .machine { padding-bottom: 60px; }
+  }
+
   .bottom-modal-mask {
     position: fixed;
     inset: 0;
