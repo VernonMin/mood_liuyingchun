@@ -1973,7 +1973,7 @@ function launchNurseRain() {
         el.style.textShadow = '0 1px 4px rgba(255,255,255,0.8)';
       }
       el.style.left = (Math.random() * 96) + 'vw';
-      el.style.animationDuration = (2 + Math.random() * 2.5) + 's';
+      el.style.animationDuration = (4 + Math.random() * 3) + 's';
       document.body.appendChild(el);
       el.addEventListener('animationend', () => el.remove());
     }, i * 55);
