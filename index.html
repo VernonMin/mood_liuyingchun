@@ -1187,6 +1187,34 @@
     0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
     100% { opacity: 0; transform: translateY(-180px) scale(0.4) rotate(25deg); }
   }
+  .nurse-icon {
+    position: fixed;
+    top: -60px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: nurseFall linear forwards;
+    user-select: none;
+  }
+  @keyframes nurseFall {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    70%  { opacity: 1; }
+    100% { transform: translateY(115vh) rotate(400deg) scale(0.8); opacity: 0; }
+  }
+
+  #nurseRainBtn {
+    display: none;
+    margin: 12px auto 0;
+    background: none;
+    border: 1.5px solid #e0a0cc;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: #b06090;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #nurseRainBtn:hover { background: #fde8f5; }
+
   #nursesDay {
     position: fixed;
     inset: 0;
@@ -1281,6 +1309,7 @@
   </div>
 
   <button class="btn" onclick="praise()">夸 我 ！</button>
+  <button id="nurseRainBtn" onclick="launchNurseRain()">🩺 护士节彩蛋</button>
 
   <div class="share-row">
     <button class="share-btn" id="shareBtn" onclick="doShare()">
@@ -1902,8 +1931,26 @@ function dismissNursesDay() {
 if (isNursesDay()) {
   const el = document.getElementById('nursesDay');
   requestAnimationFrame(() => el.classList.add('show'));
+  document.getElementById('nurseRainBtn').style.display = 'block';
 } else {
   document.getElementById('nursesDay').style.display = 'none';
+}
+
+function launchNurseRain() {
+  const icons = ['🩺', '🩹', '❤️‍🩹', '💊', '🌡️', '🩻', '⭐', '🌸'];
+  const count = 60;
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const el = document.createElement('span');
+      el.className = 'nurse-icon';
+      el.textContent = icons[Math.floor(Math.random() * icons.length)];
+      el.style.left = (Math.random() * 100) + 'vw';
+      el.style.fontSize = (14 + Math.random() * 18) + 'px';
+      el.style.animationDuration = (1.8 + Math.random() * 2) + 's';
+      document.body.appendChild(el);
+      el.addEventListener('animationend', () => el.remove());
+    }, i * 60);
+  }
 }
 
 const splashGreetings = [
