@@ -1218,19 +1218,7 @@
   }
   #nurseRainBtn:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(192,69,138,0.25); }
 
-  #nurseCardBtn {
-    display: none;
-    margin: 10px auto 0;
-    background: none;
-    border: none;
-    font-size: 12px;
-    color: #c080a0;
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  #nursesDay {
+#nursesDay {
     position: fixed;
     inset: 0;
     background: #fff5fc;
@@ -1325,7 +1313,6 @@
 
   <button class="btn" onclick="praise()">夸 我 ！</button>
   <button id="nurseRainBtn" onclick="launchNurseRain()">🩺 护士节限定彩蛋</button>
-  <button id="nurseCardBtn" onclick="showNurseCard()">生成卡片</button>
 
   <div class="share-row">
     <button class="share-btn" id="shareBtn" onclick="doShare()">
@@ -1952,70 +1939,11 @@ if (isNursesDay()) {
   document.getElementById('nursesDay').style.display = 'none';
 }
 
-function showNurseCard() {
-  const canvas = document.createElement('canvas');
-  const dpr = window.devicePixelRatio || 1;
-  const W = 750, H = 1000;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-
-  // 背景
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#fff0f8');
-  bg.addColorStop(1, '#fce4f4');
-  ctx.fillStyle = bg;
-  ctx.roundRect(0, 0, W, H, 40);
-  ctx.fill();
-
-  // 装饰边框点
-  const decos = ['🌸','💗','🌷','💕','🌺','🩷','💮'];
-  ctx.font = '28px serif';
-  ctx.textAlign = 'center';
-  for (let i = 0; i < 20; i++) {
-    const angle = (i / 20) * Math.PI * 2;
-    const rx = W / 2 + Math.cos(angle) * 290;
-    const ry = H / 2 + Math.sin(angle) * 390;
-    ctx.fillText(decos[i % decos.length], rx, ry);
-  }
-
-  // 主标题
-  ctx.fillStyle = '#c0508a';
-  ctx.font = 'bold 52px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('刘迎春', W / 2, H / 2 - 60);
-
-  ctx.fillStyle = '#7a4090';
-  ctx.font = 'bold 44px serif';
-  ctx.fillText('护士节快乐', W / 2, H / 2 + 20);
-
-  // 日期
-  ctx.fillStyle = '#d0a0c0';
-  ctx.font = '26px serif';
-  ctx.fillText('2026 · 5 · 12', W / 2, H / 2 + 90);
-
-  // 底部小字
-  ctx.fillStyle = '#e0b0d0';
-  ctx.font = '22px serif';
-  ctx.fillText('全院最好的护士，不接受反驳。', W / 2, H - 80);
-
-  const dataUrl = canvas.toDataURL('image/png');
-  document.getElementById('previewImg').src = dataUrl;
-  document.getElementById('previewMask').classList.add('show');
-}
 
 function launchNurseRain() {
-  document.getElementById('nurseCardBtn').style.display = 'none';
   const petals = ['🌸', '🌺', '🌷', '💮'];
   const hearts = ['❤️', '💗', '💕', '💖', '🩷'];
   const count = 70;
-  const totalDuration = count * 55 + 4500;
-  setTimeout(() => {
-    document.getElementById('nurseCardBtn').style.display = 'block';
-  }, totalDuration);
   for (let i = 0; i < count; i++) {
     setTimeout(() => {
       const el = document.createElement('span');
