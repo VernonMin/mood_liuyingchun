@@ -1929,10 +1929,14 @@ function dismissNursesDay() {
   const el = document.getElementById('nursesDay');
   el.classList.add('hide');
   el.classList.remove('show');
+  const splash = document.getElementById('splash');
+  splash.style.display = '';
 }
 
 if (isNursesDay()) {
   const el = document.getElementById('nursesDay');
+  const splash = document.getElementById('splash');
+  splash.style.display = 'none';
   requestAnimationFrame(() => el.classList.add('show'));
   document.getElementById('nurseRainBtn').style.display = 'block';
 } else {
