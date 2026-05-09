@@ -1059,7 +1059,7 @@
 </head>
 <body>
 
-<audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+<audio id="bgm" preload="none"></audio>
 <div id="eyeCareOverlay"></div>
 <button id="eyeCareBtn" onclick="toggleEyeCare()" title="护眼模式">🌙 护眼</button>
 <button id="bgmBtn" onclick="toggleBgm()" title="背景音乐">🎵</button>
@@ -1621,9 +1621,7 @@ let splashDismissed = false;
 function dismissSplash() {
   if (splashDismissed) return;
   splashDismissed = true;
-  const bgm = document.getElementById('bgm');
-  bgm.volume = 0.35;
-  bgm.play().catch(() => {});
+  playNextBgm();
   const splash = document.getElementById('splash');
   const main = document.getElementById('main');
   const panel = document.getElementById('sidePanel');
@@ -1848,17 +1846,33 @@ function saveJar() {
 }
 
 // 背景音乐
+const bgmList = ['bgm.mp3', 'bgm2.mp3', 'bgm3.mp3'];
+let bgmIndex = -1;
+
+function playNextBgm() {
+  const bgm = document.getElementById('bgm');
+  let next;
+  do { next = Math.floor(Math.random() * bgmList.length); } while (next === bgmIndex);
+  bgmIndex = next;
+  bgm.src = bgmList[bgmIndex];
+  bgm.volume = 0.35;
+  bgm.play().catch(() => {});
+}
+
 function toggleBgm() {
   const bgm = document.getElementById('bgm');
   const btn = document.getElementById('bgmBtn');
   if (bgm.paused) {
-    bgm.play();
+    if (!bgm.src || bgm.src === window.location.href) playNextBgm();
+    else bgm.play();
     btn.classList.remove('muted');
   } else {
     bgm.pause();
     btn.classList.add('muted');
   }
 }
+
+document.getElementById('bgm').addEventListener('ended', playNextBgm);
 
 // 护眼模式
 function toggleEyeCare() {
