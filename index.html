@@ -1856,7 +1856,11 @@ function playNextBgm() {
   bgmIndex = next;
   bgm.src = bgmList[bgmIndex];
   bgm.volume = 0.35;
-  bgm.play().catch(() => {});
+  bgm.load();
+  bgm.addEventListener('canplay', function handler() {
+    bgm.removeEventListener('canplay', handler);
+    bgm.play().catch(() => {});
+  });
 }
 
 function toggleBgm() {
