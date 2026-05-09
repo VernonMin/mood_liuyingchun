@@ -466,15 +466,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
+    padding: 8px 12px;
     border-radius: 12px;
+    background: transparent;
+    border: none;
+    margin-bottom: 4px;
+    opacity: 0.45;
+  }
+  .festival-item.nearest {
+    padding: 10px 14px;
     background: #fff0f8;
     border: 1.5px solid #f5c6e8;
-    margin-bottom: 8px;
+    opacity: 1;
   }
   .festival-item.today {
+    padding: 10px 14px;
     background: #fde8f5;
-    border-color: #e08acf;
+    border: 1.5px solid #e08acf;
+    opacity: 1;
   }
   .festival-left {
     display: flex;
@@ -483,6 +492,10 @@
     font-size: 13px;
     color: #7a5090;
     font-weight: 600;
+  }
+  .festival-item:not(.nearest):not(.today) .festival-left {
+    font-size: 12px;
+    font-weight: 400;
   }
   .festival-countdown {
     font-size: 12px;
@@ -980,7 +993,7 @@
     border-color: rgba(210, 180, 100, 0.5);
   }
   body.eye-care .jar-entry { background: rgba(253,243,210,0.8); }
-  body.eye-care .festival-item { background: #fdf6e3; border-color: rgba(210,180,100,0.4); }
+  body.eye-care .festival-item.nearest { background: #fdf6e3; border-color: rgba(210,180,100,0.4); }
   body.eye-care .festival-item.today { background: #f9f0d0; border-color: rgba(190,150,80,0.6); }
   body.eye-care .festival-left { color: #7a6030; }
   body.eye-care .festival-countdown { color: #9a7840; }
@@ -1361,19 +1374,25 @@ function initFestivals() {
     const todayM = b.getUTCMonth() + 1;
     const todayD = b.getUTCDate();
 
+    const withMs = festivals.map(f => {
+      const isToday = todayM === f.month && todayD === f.day;
+      const ms = isToday ? 0 : getNextOccurrence(f.month, f.day) - new Date(nowMs);
+      return { ...f, isToday, ms };
+    });
+    const nearestMs = Math.min(...withMs.map(f => f.ms));
+
     const list = document.getElementById('festivalList');
     if (!list) return;
-    list.innerHTML = festivals.map(f => {
-      const isToday = todayM === f.month && todayD === f.day;
-      if (isToday) {
+    list.innerHTML = withMs.map(f => {
+      if (f.isToday) {
         return `<div class="festival-item today">
           <span class="festival-left">${f.icon} ${f.name}</span>
           <span class="festival-countdown">${f.todayText}</span>
         </div>`;
       }
-      const target = getNextOccurrence(f.month, f.day);
-      const countdown = formatCountdown(target - new Date(nowMs));
-      return `<div class="festival-item">
+      const isNearest = f.ms === nearestMs;
+      const countdown = formatCountdown(f.ms);
+      return `<div class="festival-item${isNearest ? ' nearest' : ''}">
         <span class="festival-left">${f.icon} ${f.name}</span>
         <span class="festival-countdown">还有 ${countdown}</span>
       </div>`;
