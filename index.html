@@ -1203,17 +1203,20 @@
 
   #nurseRainBtn {
     display: none;
-    margin: 12px auto 0;
-    background: none;
-    border: 1.5px solid #e0a0cc;
-    border-radius: 20px;
-    padding: 8px 20px;
-    font-size: 13px;
-    color: #b06090;
+    margin: 16px auto 0;
+    background: linear-gradient(135deg, #e8609a, #c0458a);
+    border: none;
+    border-radius: 24px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
     cursor: pointer;
-    transition: background 0.2s;
+    box-shadow: 0 4px 16px rgba(192,69,138,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.5px;
   }
-  #nurseRainBtn:hover { background: #fde8f5; }
+  #nurseRainBtn:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(192,69,138,0.25); }
 
   #nursesDay {
     position: fixed;
