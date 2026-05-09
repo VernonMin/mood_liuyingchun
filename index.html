@@ -1252,24 +1252,39 @@ async function incrementCount() {
 
 initCount();
 
-function praise() {
+async function praise() {
+  incrementCount();
+  document.getElementById('shareBtn').classList.add('ready');
+  launchConfetti();
+  spawnEmojis();
+
+  const el = document.getElementById('quote');
+  el.classList.remove('show');
+
+  // 20% 概率走 AI 生成
+  if (Math.random() < 0.2) {
+    try {
+      const res = await fetch('/api/aiquote');
+      const data = await res.json();
+      if (data.quote) {
+        setTimeout(() => {
+          el.textContent = data.quote;
+          el.classList.add('show');
+        }, 150);
+        return;
+      }
+    } catch {}
+  }
+
+  // 固定文案兜底
   let index;
   do { index = Math.floor(Math.random() * quotePool.length); }
   while (index === lastIndex);
   lastIndex = index;
-
-  const el = document.getElementById('quote');
-  el.classList.remove('show');
   setTimeout(() => {
     el.textContent = quotePool[index];
     el.classList.add('show');
   }, 150);
-
-  incrementCount();
-  document.getElementById('shareBtn').classList.add('ready');
-
-  launchConfetti();
-  spawnEmojis();
 }
 
 function roundRect(ctx, x, y, w, h, r) {
