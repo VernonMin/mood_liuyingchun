@@ -1793,9 +1793,10 @@ function saveNote() {
   const status = document.getElementById('reflectStatus');
   if (!text) { closeReflect(); return; }
   const beijing = new Date(Date.now() + 8 * 60 * 60 * 1000);
-  localStorage.setItem(`lyc_note_${getBeijingDate()}`, JSON.stringify({
-    text, mood: _reflectMood, time: beijing.toISOString().slice(11, 16)
-  }));
+  const data = { text, mood: _reflectMood, time: beijing.toISOString().slice(11, 16) };
+  localStorage.setItem(`lyc_note_${getBeijingDate()}`, JSON.stringify(data));
+  // 静默备份到 KV，失败不影响本地
+  fetch('/api/note', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).catch(() => {});
   status.textContent = '已保存 🐾';
   setTimeout(closeReflect, 800);
 }
@@ -1841,6 +1842,8 @@ function saveJar() {
   const entries = JSON.parse(localStorage.getItem('lyc_jar') || '[]');
   entries.unshift(entry);
   localStorage.setItem('lyc_jar', JSON.stringify(entries));
+  // 静默备份到 KV，失败不影响本地
+  fetch('/api/jar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) }).catch(() => {});
   status.textContent = '🫙 存好了，留着阴天用';
   setTimeout(closeJar, 1000);
 }
