@@ -479,7 +479,7 @@
     z-index: 300;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s;
+    transition: opacity 0.28s ease;
     padding: 24px;
   }
   .bottom-modal-mask.show { opacity: 1; pointer-events: all; }
@@ -494,11 +494,19 @@
     flex-direction: column;
     box-shadow: 0 12px 48px rgba(160,80,180,0.15);
     border: 1.5px solid rgba(220,160,240,0.5);
-    transform: translateY(16px);
-    transition: transform 0.3s;
+    transform: scale(0.92);
+    opacity: 0;
+    transition: transform 0.28s ease, opacity 0.28s ease;
     overflow-y: auto;
   }
-  .bottom-modal-mask.show .bottom-modal-card { transform: translateY(0); }
+  .bottom-modal-mask.show .bottom-modal-card {
+    transform: scale(1);
+    opacity: 1;
+  }
+  .bottom-modal-mask.closing .bottom-modal-card {
+    transform: scale(0.92);
+    opacity: 0;
+  }
   .bottom-modal-header {
     display: flex;
     align-items: center;
@@ -1496,7 +1504,10 @@ function openHistoryModal() {
 
 function closeBottomModal(id, e) {
   if (e && e.target !== document.getElementById(id)) return;
-  document.getElementById(id).classList.remove('show');
+  const el = document.getElementById(id);
+  el.classList.add('closing');
+  el.classList.remove('show');
+  el.addEventListener('transitionend', () => el.classList.remove('closing'), { once: true });
 }
 
 async function praise() {
