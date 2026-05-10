@@ -2018,6 +2018,7 @@ const picked = splashGreetings[Math.floor(Math.random() * splashGreetings.length
 const greetingText = picked.main;
 
 window.addEventListener('DOMContentLoaded', () => {
+  fetch('/api/visit', { method: 'POST', keepalive: true });
   document.getElementById('splashGreeting').textContent = picked.main;
   document.getElementById('splashSub').textContent = picked.sub;
   setTimeout(() => {
