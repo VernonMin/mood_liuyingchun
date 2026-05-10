@@ -1879,6 +1879,39 @@ const WHACK_ANIMALS = ['🐹','🐶','🐱','🐰','🐻'];
 let whackTimers = [], whackTimerInt = null, whackScoreVal = 0, whackTimeLeft = 30;
 let whackActive = new Set();
 
+function getWhackSpeed() {
+  const elapsed = 30 - whackTimeLeft;
+  if (elapsed < 5)  return { spawn: 850, visible: 1300 };
+  if (elapsed < 10) return { spawn: 700, visible: 1100 };
+  if (elapsed < 15) return { spawn: 550, visible: 900 };
+  if (elapsed < 20) return { spawn: 400, visible: 750 };
+  if (elapsed < 25) return { spawn: 280, visible: 600 };
+  return              { spawn: 180, visible: 480 };
+}
+
+function scheduleWhackMole() {
+  const { spawn, visible } = getWhackSpeed();
+  const id = setTimeout(() => {
+    if (whackTimeLeft <= 0) return;
+    const holes = [...document.getElementById('whackGrid').children];
+    const avail = holes.filter(h => !whackActive.has(+h.dataset.idx));
+    if (avail.length) {
+      const hole = avail[Math.floor(Math.random() * avail.length)];
+      const idx = +hole.dataset.idx;
+      hole.querySelector('.whack-mole').textContent = WHACK_ANIMALS[Math.floor(Math.random() * WHACK_ANIMALS.length)];
+      whackActive.add(idx);
+      hole.classList.add('active');
+      const hideId = setTimeout(() => {
+        hole.classList.remove('active');
+        whackActive.delete(idx);
+      }, visible);
+      whackTimers.push(hideId);
+    }
+    scheduleWhackMole();
+  }, spawn);
+  whackTimers.push(id);
+}
+
 function startWhack() {
   whackScoreVal = 0; whackTimeLeft = 30; whackActive.clear();
   stopWhack();
@@ -1898,23 +1931,7 @@ function startWhack() {
     hole.onclick = () => whackHit(hole, i);
     grid.appendChild(hole);
   }
-  const spawnId = setInterval(() => {
-    if (whackTimeLeft <= 0) return;
-    const holes = [...document.getElementById('whackGrid').children];
-    const avail = holes.filter(h => !whackActive.has(+h.dataset.idx));
-    if (!avail.length) return;
-    const hole = avail[Math.floor(Math.random() * avail.length)];
-    const idx = +hole.dataset.idx;
-    hole.querySelector('.whack-mole').textContent = WHACK_ANIMALS[Math.floor(Math.random() * WHACK_ANIMALS.length)];
-    whackActive.add(idx);
-    hole.classList.add('active');
-    const hideId = setTimeout(() => {
-      hole.classList.remove('active');
-      whackActive.delete(idx);
-    }, 1000 + Math.random() * 500);
-    whackTimers.push(hideId);
-  }, 750);
-  whackTimers.push(spawnId);
+  scheduleWhackMole();
   whackTimerInt = setInterval(() => {
     whackTimeLeft--;
     document.getElementById('whackTimer').textContent = whackTimeLeft;
