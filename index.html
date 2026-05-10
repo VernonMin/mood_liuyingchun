@@ -1325,6 +1325,95 @@
     color: #c9a0d8;
     padding-bottom: 4px;
   }
+  .game-menu-grid {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0 12px;
+    justify-content: center;
+  }
+  .game-menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #f5e0ff, #ffe0f5);
+    border: 1.5px solid rgba(200,140,230,0.4);
+    border-radius: 16px;
+    padding: 16px 12px;
+    cursor: pointer;
+    font-size: 30px;
+    flex: 1;
+    transition: transform 0.15s;
+  }
+  .game-menu-item span { font-size: 11px; color: #9a5cba; font-weight: 600; }
+  .game-menu-item:active { transform: scale(0.93); }
+  .game-back {
+    background: none;
+    border: none;
+    color: #c9a0d8;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 0 0 8px;
+    display: block;
+  }
+  .whack-header, .balloon-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0 10px;
+    font-size: 14px;
+    color: #9a5cba;
+    font-weight: 600;
+  }
+  .whack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 0 4px;
+  }
+  .whack-hole {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #e8d5ff, #d4b0f0);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 3px 8px rgba(150,80,200,0.2), inset 0 -4px 8px rgba(100,50,150,0.15);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .whack-hole:active { transform: scale(0.93); }
+  .whack-mole {
+    position: absolute;
+    bottom: -110%;
+    font-size: 34px;
+    line-height: 1;
+    transition: bottom 0.15s ease;
+    user-select: none;
+  }
+  .whack-hole.active .whack-mole { bottom: 8%; }
+  .balloon-area {
+    position: relative;
+    height: 210px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #e8f4ff 0%, #f5e8ff 100%);
+  }
+  .balloon {
+    position: absolute;
+    font-size: 36px;
+    cursor: pointer;
+    user-select: none;
+    animation: floatUp linear forwards;
+    line-height: 1;
+  }
+  .balloon.popped { animation: none; transform: scale(1.6); opacity: 0; transition: all 0.15s; pointer-events: none; }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(-4deg); }
+    50%  { transform: translateY(-170px) rotate(4deg); }
+    100% { transform: translateY(-340px) rotate(-4deg); }
+  }
 </style>
 </head>
 <body>
@@ -1472,15 +1561,54 @@
 <div class="bottom-modal-mask" id="gameModal" onclick="closeBottomModal('gameModal', event)">
   <div class="bottom-modal-card">
     <div class="bottom-modal-header">
-      <span class="bottom-modal-title">🎮 刘迎春的夜班小游戏</span>
-      <button class="bottom-modal-close" onclick="closeBottomModal('gameModal')">×</button>
+      <span class="bottom-modal-title" id="gameTitle">🎮 刘迎春的夜班小游戏</span>
+      <button class="bottom-modal-close" onclick="stopAllGames();closeBottomModal('gameModal')">×</button>
     </div>
-    <div class="game-moves" id="gameMoves">翻开两张相同的牌消除它</div>
-    <div class="card-grid" id="cardGrid"></div>
-    <div class="game-done" id="gameDone">
-      全配完了！刘迎春真棒 👍
-      <button class="game-reset" onclick="initCards()">再来一局</button>
+
+    <div id="gameMenu">
+      <div class="game-menu-grid">
+        <button class="game-menu-item" onclick="startGame('cards')">🃏<span>翻牌配对</span></button>
+        <button class="game-menu-item" onclick="startGame('whack')">🔨<span>打地鼠</span></button>
+        <button class="game-menu-item" onclick="startGame('balloon')">🎈<span>戳气球</span></button>
+      </div>
     </div>
+
+    <div id="gameCards" style="display:none">
+      <button class="game-back" onclick="showGameMenu()">← 返回</button>
+      <div class="game-moves" id="gameMoves">翻开两张相同的牌消除它</div>
+      <div class="card-grid" id="cardGrid"></div>
+      <div class="game-done" id="gameDone">
+        全配完了！刘迎春真棒 👍
+        <button class="game-reset" onclick="initCards()">再来一局</button>
+      </div>
+    </div>
+
+    <div id="gameWhack" style="display:none">
+      <button class="game-back" onclick="showGameMenu()">← 返回</button>
+      <div class="whack-header">
+        <span>得分 <strong id="whackScore">0</strong></span>
+        <span>⏱ <strong id="whackTimer">30</strong>s</span>
+      </div>
+      <div class="whack-grid" id="whackGrid"></div>
+      <div class="game-done" id="whackDone" style="display:none">
+        得了 <strong id="whackFinal">0</strong> 分！刘迎春眼疾手快 👍
+        <button class="game-reset" onclick="startWhack()">再来一局</button>
+      </div>
+    </div>
+
+    <div id="gameBalloon" style="display:none">
+      <button class="game-back" onclick="showGameMenu()">← 返回</button>
+      <div class="balloon-header">
+        <span>戳了 <strong id="balloonScore">0</strong> 个</span>
+        <span>⏱ <strong id="balloonTimer">30</strong>s</span>
+      </div>
+      <div class="balloon-area" id="balloonArea"></div>
+      <div class="game-done" id="balloonDone" style="display:none">
+        戳了 <strong id="balloonFinal">0</strong> 个！刘迎春真准 👍
+        <button class="game-reset" onclick="startBalloon()">再来一局</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1665,9 +1793,38 @@ function openHistoryModal() {
 
 function openGameModal() {
   document.getElementById('gameModal').classList.add('show');
-  initCards();
+  showGameMenu();
 }
 
+function showGameMenu() {
+  stopAllGames();
+  document.getElementById('gameMenu').style.display = '';
+  document.getElementById('gameCards').style.display = 'none';
+  document.getElementById('gameWhack').style.display = 'none';
+  document.getElementById('gameBalloon').style.display = 'none';
+  document.getElementById('gameTitle').textContent = '🎮 刘迎春的夜班小游戏';
+}
+
+function startGame(type) {
+  document.getElementById('gameMenu').style.display = 'none';
+  if (type === 'cards') {
+    document.getElementById('gameCards').style.display = '';
+    document.getElementById('gameTitle').textContent = '🃏 翻牌配对';
+    initCards();
+  } else if (type === 'whack') {
+    document.getElementById('gameWhack').style.display = '';
+    document.getElementById('gameTitle').textContent = '🔨 打地鼠';
+    startWhack();
+  } else if (type === 'balloon') {
+    document.getElementById('gameBalloon').style.display = '';
+    document.getElementById('gameTitle').textContent = '🎈 戳气球';
+    startBalloon();
+  }
+}
+
+function stopAllGames() { stopWhack(); stopBalloon(); }
+
+// ── 翻牌配对 ──
 const CARD_EMOJIS = ['🐶','🐱','🐰','🐻','🌸','🍀','⭐','🎀'];
 let cardFlipped = [], cardLocked = false, cardMoves = 0;
 
@@ -1715,6 +1872,120 @@ function flipCard(card) {
       cardLocked = false;
     }, 900);
   }
+}
+
+// ── 打地鼠 ──
+const WHACK_ANIMALS = ['🐹','🐶','🐱','🐰','🐻'];
+let whackTimers = [], whackTimerInt = null, whackScoreVal = 0, whackTimeLeft = 30;
+let whackActive = new Set();
+
+function startWhack() {
+  whackScoreVal = 0; whackTimeLeft = 30; whackActive.clear();
+  stopWhack();
+  document.getElementById('whackScore').textContent = '0';
+  document.getElementById('whackTimer').textContent = '30';
+  document.getElementById('whackDone').style.display = 'none';
+  const grid = document.getElementById('whackGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const hole = document.createElement('div');
+    hole.className = 'whack-hole';
+    hole.dataset.idx = i;
+    const mole = document.createElement('span');
+    mole.className = 'whack-mole';
+    mole.textContent = WHACK_ANIMALS[Math.floor(Math.random() * WHACK_ANIMALS.length)];
+    hole.appendChild(mole);
+    hole.onclick = () => whackHit(hole, i);
+    grid.appendChild(hole);
+  }
+  const spawnId = setInterval(() => {
+    if (whackTimeLeft <= 0) return;
+    const holes = [...document.getElementById('whackGrid').children];
+    const avail = holes.filter(h => !whackActive.has(+h.dataset.idx));
+    if (!avail.length) return;
+    const hole = avail[Math.floor(Math.random() * avail.length)];
+    const idx = +hole.dataset.idx;
+    hole.querySelector('.whack-mole').textContent = WHACK_ANIMALS[Math.floor(Math.random() * WHACK_ANIMALS.length)];
+    whackActive.add(idx);
+    hole.classList.add('active');
+    const hideId = setTimeout(() => {
+      hole.classList.remove('active');
+      whackActive.delete(idx);
+    }, 1000 + Math.random() * 500);
+    whackTimers.push(hideId);
+  }, 750);
+  whackTimers.push(spawnId);
+  whackTimerInt = setInterval(() => {
+    whackTimeLeft--;
+    document.getElementById('whackTimer').textContent = whackTimeLeft;
+    if (whackTimeLeft <= 0) {
+      stopWhack();
+      document.getElementById('whackFinal').textContent = whackScoreVal;
+      document.getElementById('whackDone').style.display = 'block';
+    }
+  }, 1000);
+}
+
+function whackHit(hole, idx) {
+  if (!whackActive.has(idx)) return;
+  whackScoreVal += 10;
+  document.getElementById('whackScore').textContent = whackScoreVal;
+  hole.classList.remove('active');
+  whackActive.delete(idx);
+}
+
+function stopWhack() {
+  whackTimers.forEach(t => { clearInterval(t); clearTimeout(t); });
+  whackTimers = [];
+  if (whackTimerInt) { clearInterval(whackTimerInt); whackTimerInt = null; }
+  whackActive.clear();
+}
+
+// ── 戳气球 ──
+const BALLOON_EMOJIS = ['🎈','🫧','🎀','🌸','⭐'];
+let balloonSpawnId = null, balloonTimerInt = null, balloonScoreVal = 0, balloonTimeLeft = 30;
+
+function startBalloon() {
+  balloonScoreVal = 0; balloonTimeLeft = 30;
+  stopBalloon();
+  document.getElementById('balloonScore').textContent = '0';
+  document.getElementById('balloonTimer').textContent = '30';
+  document.getElementById('balloonDone').style.display = 'none';
+  document.getElementById('balloonArea').innerHTML = '';
+  balloonSpawnId = setInterval(spawnBalloon, 900);
+  balloonTimerInt = setInterval(() => {
+    balloonTimeLeft--;
+    document.getElementById('balloonTimer').textContent = balloonTimeLeft;
+    if (balloonTimeLeft <= 0) {
+      stopBalloon();
+      document.getElementById('balloonFinal').textContent = balloonScoreVal;
+      document.getElementById('balloonDone').style.display = 'block';
+    }
+  }, 1000);
+}
+
+function spawnBalloon() {
+  const area = document.getElementById('balloonArea');
+  if (!area) return;
+  const b = document.createElement('span');
+  b.className = 'balloon';
+  b.textContent = BALLOON_EMOJIS[Math.floor(Math.random() * BALLOON_EMOJIS.length)];
+  b.style.animationDuration = (5 + Math.random() * 3) + 's';
+  b.style.left = (5 + Math.random() * 82) + '%';
+  b.style.bottom = '-50px';
+  b.onclick = () => {
+    b.classList.add('popped');
+    balloonScoreVal++;
+    document.getElementById('balloonScore').textContent = balloonScoreVal;
+    setTimeout(() => b.remove(), 200);
+  };
+  b.addEventListener('animationend', () => b.remove());
+  area.appendChild(b);
+}
+
+function stopBalloon() {
+  if (balloonSpawnId) { clearInterval(balloonSpawnId); balloonSpawnId = null; }
+  if (balloonTimerInt) { clearInterval(balloonTimerInt); balloonTimerInt = null; }
 }
 
 function closeBottomModal(id, e) {
