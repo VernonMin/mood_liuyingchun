@@ -1255,39 +1255,60 @@
     color: #d4a0c8;
     letter-spacing: 1px;
   }
-  .bubble-grid {
+  .card-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
     padding: 12px 16px;
+    perspective: 600px;
   }
-  .bubble {
-    width: 100%;
+  .card {
     aspect-ratio: 1;
-    background: radial-gradient(circle at 35% 35%, #f0e0ff, #c9a0e0);
-    border-radius: 50%;
-    border: none;
     cursor: pointer;
-    box-shadow: 0 3px 8px rgba(150,80,200,0.25), inset 0 1px 3px rgba(255,255,255,0.7);
-    transition: all 0.12s ease;
+    position: relative;
   }
-  .bubble:active { transform: scale(0.9); }
-  .bubble.popped {
-    background: radial-gradient(circle at 50% 50%, #e2d4ec, #d0bedd);
-    box-shadow: inset 0 1px 4px rgba(100,60,140,0.2);
-    transform: scale(0.82);
-    opacity: 0.45;
-    cursor: default;
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.35s ease;
+    border-radius: 10px;
   }
-  .bubble-done {
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .card.matched .card-inner { transform: rotateY(180deg); }
+  .card-front, .card-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-front {
+    background: linear-gradient(135deg, #e8d5ff, #c9a0e0);
+    box-shadow: 0 2px 6px rgba(150,80,200,0.2);
+    font-size: 18px;
+  }
+  .card-back {
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(150,80,200,0.15);
+    transform: rotateY(180deg);
+    font-size: 26px;
+  }
+  .card.matched .card-back {
+    background: linear-gradient(135deg, #fff0f8, #ffe4f0);
+  }
+  .game-done {
     display: none;
     text-align: center;
-    padding: 12px 16px 4px;
+    padding: 10px 16px 4px;
     font-size: 14px;
     color: #9a5cba;
     font-weight: 600;
   }
-  .bubble-reset {
+  .game-reset {
     display: block;
     margin: 8px auto 4px;
     background: none;
@@ -1297,6 +1318,12 @@
     font-size: 12px;
     color: #9a5cba;
     cursor: pointer;
+  }
+  .game-moves {
+    text-align: center;
+    font-size: 12px;
+    color: #c9a0d8;
+    padding-bottom: 4px;
   }
 </style>
 </head>
@@ -1448,11 +1475,11 @@
       <span class="bottom-modal-title">🎮 刘迎春的夜班小游戏</span>
       <button class="bottom-modal-close" onclick="closeBottomModal('gameModal')">×</button>
     </div>
-    <div style="text-align:center;font-size:12px;color:#b090c8;padding:4px 0 8px;">把泡泡全部戳完～</div>
-    <div class="bubble-grid" id="bubbleGrid"></div>
-    <div class="bubble-done" id="bubbleDone">
-      戳完了！夜班也快结束了 💕
-      <button class="bubble-reset" onclick="initBubbles()">再来一张</button>
+    <div class="game-moves" id="gameMoves">翻开两张相同的牌消除它</div>
+    <div class="card-grid" id="cardGrid"></div>
+    <div class="game-done" id="gameDone">
+      全配完了！刘迎春真的很厉害 💕
+      <button class="game-reset" onclick="initCards()">再来一局</button>
     </div>
   </div>
 </div>
@@ -1638,45 +1665,56 @@ function openHistoryModal() {
 
 function openGameModal() {
   document.getElementById('gameModal').classList.add('show');
-  initBubbles();
+  initCards();
 }
 
-function initBubbles() {
-  const grid = document.getElementById('bubbleGrid');
+const CARD_EMOJIS = ['🐶','🐱','🐰','🐻','🌸','🍀','⭐','🎀'];
+let cardFlipped = [], cardLocked = false, cardMoves = 0;
+
+function initCards() {
+  const grid = document.getElementById('cardGrid');
   grid.innerHTML = '';
-  document.getElementById('bubbleDone').style.display = 'none';
-  for (let i = 0; i < 48; i++) {
-    const b = document.createElement('button');
-    b.className = 'bubble';
-    b.onclick = () => popBubble(b);
-    grid.appendChild(b);
-  }
+  document.getElementById('gameDone').style.display = 'none';
+  cardFlipped = [];
+  cardLocked = false;
+  cardMoves = 0;
+  document.getElementById('gameMoves').textContent = '翻开两张相同的牌消除它';
+  const pairs = [...CARD_EMOJIS, ...CARD_EMOJIS].sort(() => Math.random() - 0.5);
+  pairs.forEach(emoji => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.emoji = emoji;
+    card.innerHTML = `<div class="card-inner"><div class="card-front">✿</div><div class="card-back">${emoji}</div></div>`;
+    card.onclick = () => flipCard(card);
+    grid.appendChild(card);
+  });
 }
 
-function popBubble(el) {
-  if (el.classList.contains('popped')) return;
-  el.classList.add('popped');
-  playPopSound();
-  const remaining = document.getElementById('bubbleGrid').querySelectorAll('.bubble:not(.popped)').length;
-  if (remaining === 0) document.getElementById('bubbleDone').style.display = 'block';
-}
-
-function playPopSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.008));
+function flipCard(card) {
+  if (cardLocked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+  card.classList.add('flipped');
+  cardFlipped.push(card);
+  if (cardFlipped.length < 2) return;
+  cardLocked = true;
+  cardMoves++;
+  document.getElementById('gameMoves').textContent = `已翻 ${cardMoves} 次`;
+  const [a, b] = cardFlipped;
+  if (a.dataset.emoji === b.dataset.emoji) {
+    a.classList.add('matched');
+    b.classList.add('matched');
+    cardFlipped = [];
+    cardLocked = false;
+    if (document.getElementById('cardGrid').querySelectorAll('.card:not(.matched)').length === 0) {
+      setTimeout(() => { document.getElementById('gameDone').style.display = 'block'; }, 400);
     }
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    src.connect(gain);
-    gain.connect(ctx.destination);
-    src.start();
-  } catch {}
+  } else {
+    setTimeout(() => {
+      a.classList.remove('flipped');
+      b.classList.remove('flipped');
+      cardFlipped = [];
+      cardLocked = false;
+    }, 900);
+  }
 }
 
 function closeBottomModal(id, e) {
