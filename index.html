@@ -1591,7 +1591,7 @@ initCount();
 
 function initFestivals() {
   const festivals = [
-    { icon: '🏥', name: '护士节', month: 5, day: 12, todayText: '今天是护士节，辛苦了' },
+    { icon: '🏥', name: '护士节', month: 5, day: 12, todayText: '今天就是护士节啦！', preview: isNursesDay() },
     { icon: '🎂', name: '生日', month: 12, day: 20, todayText: '生日快乐，迎春' },
   ];
 
@@ -1624,7 +1624,7 @@ function initFestivals() {
     const todayD = b.getUTCDate();
 
     const withMs = festivals.map(f => {
-      const isToday = todayM === f.month && todayD === f.day;
+      const isToday = (todayM === f.month && todayD === f.day) || !!f.preview;
       const ms = isToday ? 0 : getNextOccurrence(f.month, f.day) - new Date(nowMs);
       return { ...f, isToday, ms };
     });
