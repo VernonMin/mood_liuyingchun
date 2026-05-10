@@ -1346,6 +1346,8 @@
   }
   .game-menu-item span { display: none; }
   .game-menu-item:active { transform: scale(0.97); }
+  .game-menu-item.game-coming { opacity: 0.45; cursor: default; display: flex; justify-content: space-between; align-items: center; }
+  .game-soon { font-size: 11px; color: #b090c8; font-weight: 400; }
   .game-back {
     background: none;
     border: none;
@@ -1566,9 +1568,9 @@
 
     <div id="gameMenu">
       <div class="game-menu-grid">
-        <button class="game-menu-item" onclick="startGame('cards')">翻牌配对</button>
         <button class="game-menu-item" onclick="startGame('whack')">打地鼠</button>
-        <button class="game-menu-item" onclick="startGame('balloon')">戳气球</button>
+        <button class="game-menu-item game-coming" disabled>翻牌配对 <span class="game-soon">敬请期待</span></button>
+        <button class="game-menu-item game-coming" disabled>戳气球 <span class="game-soon">敬请期待</span></button>
       </div>
     </div>
 
