@@ -1749,7 +1749,7 @@ function initFestivals() {
       const isToday = (todayM === f.month && todayD === f.day) || !!f.preview;
       const ms = isToday ? 0 : getNextOccurrence(f.month, f.day) - new Date(nowMs);
       return { ...f, isToday, ms };
-    });
+    }).sort((a, b) => a.ms - b.ms);
     const nearestMs = Math.min(...withMs.map(f => f.ms));
 
     const list = document.getElementById('festivalList');
