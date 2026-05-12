@@ -1414,6 +1414,93 @@
     50%  { transform: translateY(-170px) rotate(4deg); }
     100% { transform: translateY(-340px) rotate(-4deg); }
   }
+
+  /* 雪纳瑞狗狗 */
+  #dogWidget {
+    position: fixed;
+    bottom: 20px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 200;
+    user-select: none;
+  }
+  #dogBubble {
+    position: absolute;
+    bottom: 82px;
+    right: 0;
+    background: #fff;
+    border-radius: 14px 14px 4px 14px;
+    padding: 5px 11px;
+    font-size: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    opacity: 0;
+    transform: scale(0.6) translateY(8px);
+    transform-origin: bottom right;
+    transition: opacity 0.18s, transform 0.18s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  #dogBubble.show { opacity: 1; transform: scale(1) translateY(0); }
+  #dogAvatar {
+    cursor: pointer;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #dogFace {
+    font-size: 46px;
+    display: block;
+    line-height: 1;
+    transition: transform 0.15s;
+  }
+  #dogFeedBtn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: 2px;
+    opacity: 0.55;
+    transition: transform 0.15s, opacity 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #dogFeedBtn:active { transform: scale(0.88); opacity: 1; }
+
+  /* idle 动画 */
+  .dog-happy  #dogFace { animation: dogBounce 0.9s ease-in-out infinite alternate; }
+  .dog-okay   #dogFace { animation: dogWag 2.2s ease-in-out infinite; }
+  .dog-tired  #dogFace { animation: dogDroop 3s ease-in-out infinite; }
+  .dog-sad    #dogFace { animation: dogNuzzle 2s ease-in-out infinite; }
+
+  @keyframes dogBounce {
+    0%   { transform: translateY(0) rotate(-6deg); }
+    100% { transform: translateY(-9px) rotate(6deg); }
+  }
+  @keyframes dogWag {
+    0%,100% { transform: rotate(-4deg); }
+    50%     { transform: rotate(4deg); }
+  }
+  @keyframes dogDroop {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(4px); }
+  }
+  @keyframes dogNuzzle {
+    0%,100% { transform: translateX(0) rotate(-6deg); }
+    50%     { transform: translateX(-5px) rotate(-10deg); }
+  }
+  @keyframes dogTapPop {
+    0%   { transform: scale(1) rotate(0); }
+    40%  { transform: scale(1.35) rotate(18deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  @keyframes dogFeedLunge {
+    0%   { transform: translateX(0); }
+    35%  { transform: translateX(-12px) scale(1.12); }
+    70%  { transform: translateX(0) scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  .dog-tapping #dogFace { animation: dogTapPop 0.38s ease !important; }
+  .dog-feeding #dogFace { animation: dogFeedLunge 0.55s ease !important; }
 </style>
 </head>
 <body>
@@ -1422,6 +1509,14 @@
 <div id="eyeCareOverlay"></div>
 <button id="eyeCareBtn" onclick="toggleEyeCare()" title="护眼模式">🌙 护眼</button>
 <button id="bgmBtn" onclick="toggleBgm()" title="背景音乐">🎵</button>
+
+<div id="dogWidget" class="dog-sad">
+  <div id="dogBubble"></div>
+  <div id="dogAvatar" onclick="dogTap()">
+    <span id="dogFace">🐶</span>
+  </div>
+  <button id="dogFeedBtn" onclick="dogFeed()" title="喂食">🦴</button>
+</div>
 
 <div id="nursesDay" onclick="dismissNursesDay()">
   <p class="nurses-day-title">今天是护士节</p>
@@ -2481,6 +2576,7 @@ async function setMood(btn) {
   document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   updateSideMood(emoji, mood);
+  setDogState(mood);
 
   const status = document.getElementById('moodStatus');
   status.textContent = '记录中……';
@@ -2517,6 +2613,7 @@ async function loadTodayMood() {
       if (btn) btn.classList.add('active');
       document.getElementById('moodStatus').textContent = `今天已记录：${todayMood.emoji} ${todayMood.mood} 🐾`;
       updateSideMood(todayMood.emoji, todayMood.mood);
+      setDogState(todayMood.mood);
     }
     renderHistory(moods);
   } catch {
@@ -2676,6 +2773,46 @@ function toggleBgm() {
 }
 
 document.getElementById('bgm').addEventListener('ended', playNextBgm);
+
+// 雪纳瑞狗狗
+const _dogMoodMap = { '很好': 'happy', '还行': 'okay', '有点累': 'tired', '不太好': 'sad' };
+let _dogBubbleTimer = null;
+
+function setDogState(moodText) {
+  const state = _dogMoodMap[moodText] || 'sad';
+  const w = document.getElementById('dogWidget');
+  w.className = 'dog-' + state;
+}
+
+function showDogBubble(text) {
+  const b = document.getElementById('dogBubble');
+  b.textContent = text;
+  b.classList.add('show');
+  clearTimeout(_dogBubbleTimer);
+  _dogBubbleTimer = setTimeout(() => b.classList.remove('show'), 2200);
+}
+
+function dogTap() {
+  const w = document.getElementById('dogWidget');
+  const state = (w.className || '').replace('dog-', '');
+  const msgs = {
+    happy: ['汪汪！🎉', '好开心！❤️', '摇尾巴～ 🐾'],
+    okay:  ['汪～', '嗯嗯～ 🐾', '我在呢'],
+    tired: ['呼...', '陪着你 🐾', '乖 🤍'],
+    sad:   ['汪呜...', '我在这里 ❤️', '蹭蹭你 🐾'],
+  };
+  const pool = msgs[state] || msgs.sad;
+  showDogBubble(pool[Math.floor(Math.random() * pool.length)]);
+  w.classList.add('dog-tapping');
+  setTimeout(() => w.classList.remove('dog-tapping'), 380);
+}
+
+function dogFeed() {
+  const w = document.getElementById('dogWidget');
+  showDogBubble('啊呜！🦴 好吃～');
+  w.classList.add('dog-feeding');
+  setTimeout(() => w.classList.remove('dog-feeding'), 560);
+}
 
 // 护眼模式
 function toggleEyeCare() {
