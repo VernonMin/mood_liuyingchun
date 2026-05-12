@@ -1418,8 +1418,8 @@
   /* 雪纳瑞狗狗 */
   #dogWidget {
     position: fixed;
-    bottom: 20px;
-    right: 16px;
+    bottom: 16px;
+    left: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1428,53 +1428,62 @@
   }
   #dogBubble {
     position: absolute;
-    bottom: 82px;
-    right: 0;
+    bottom: 86px;
+    left: 50%;
     background: #fff;
-    border-radius: 14px 14px 4px 14px;
+    border-radius: 12px;
     padding: 5px 11px;
-    font-size: 15px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.13);
     opacity: 0;
-    transform: scale(0.6) translateY(8px);
-    transform-origin: bottom right;
+    transform: translateX(-50%) scale(0.65);
+    transform-origin: bottom center;
     transition: opacity 0.18s, transform 0.18s;
     pointer-events: none;
     white-space: nowrap;
   }
-  #dogBubble.show { opacity: 1; transform: scale(1) translateY(0); }
+  #dogBubble.show { opacity: 1; transform: translateX(-50%) scale(1); }
   #dogAvatar {
     cursor: pointer;
-    position: relative;
     -webkit-tap-highlight-color: transparent;
-  }
-  #dogFace {
-    font-size: 46px;
     display: block;
-    line-height: 1;
-    transition: transform 0.15s;
   }
+  #schnauzerSvg { display: block; }
   #dogFeedBtn {
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 18px;
     cursor: pointer;
-    margin-top: 2px;
-    opacity: 0.55;
+    margin-top: 1px;
+    opacity: 0.5;
     transition: transform 0.15s, opacity 0.15s;
     -webkit-tap-highlight-color: transparent;
   }
   #dogFeedBtn:active { transform: scale(0.88); opacity: 1; }
 
-  /* idle 动画 */
-  .dog-happy  #dogFace { animation: dogBounce 0.9s ease-in-out infinite alternate; }
-  .dog-okay   #dogFace { animation: dogWag 2.2s ease-in-out infinite; }
-  .dog-tired  #dogFace { animation: dogDroop 3s ease-in-out infinite; }
-  .dog-sad    #dogFace { animation: dogNuzzle 2s ease-in-out infinite; }
+  /* 眼睛状态切换 */
+  #eyesHappy, #eyesTired { display: none; }
+  .dog-happy #eyesNormal  { display: none; }
+  .dog-happy #eyesHappy   { display: block; }
+  .dog-tired #eyesNormal  { display: none; }
+  .dog-tired #eyesTired   { display: block; }
+
+  /* 走路 bob（走动中） */
+  .dog-walking #dogAvatar { animation: walkBob 0.3s ease-in-out infinite alternate; }
+  @keyframes walkBob {
+    0%   { transform: translateY(0) rotate(-2deg); }
+    100% { transform: translateY(-5px) rotate(2deg); }
+  }
+
+  /* 停下时心情 idle 动画 */
+  .dog-happy:not(.dog-walking)  #dogAvatar { animation: dogBounce 0.9s ease-in-out infinite alternate; }
+  .dog-okay:not(.dog-walking)   #dogAvatar { animation: dogWag 2.2s ease-in-out infinite; }
+  .dog-tired:not(.dog-walking)  #dogAvatar { animation: dogDroop 3s ease-in-out infinite; }
+  .dog-sad:not(.dog-walking)    #dogAvatar { animation: dogNuzzle 2s ease-in-out infinite; }
 
   @keyframes dogBounce {
-    0%   { transform: translateY(0) rotate(-6deg); }
-    100% { transform: translateY(-9px) rotate(6deg); }
+    0%   { transform: translateY(0) rotate(-5deg); }
+    100% { transform: translateY(-8px) rotate(5deg); }
   }
   @keyframes dogWag {
     0%,100% { transform: rotate(-4deg); }
@@ -1485,22 +1494,22 @@
     50%     { transform: translateY(4px); }
   }
   @keyframes dogNuzzle {
-    0%,100% { transform: translateX(0) rotate(-6deg); }
-    50%     { transform: translateX(-5px) rotate(-10deg); }
+    0%,100% { transform: translateX(0) rotate(-5deg); }
+    50%     { transform: translateX(-5px) rotate(-9deg); }
   }
   @keyframes dogTapPop {
     0%   { transform: scale(1) rotate(0); }
-    40%  { transform: scale(1.35) rotate(18deg); }
+    40%  { transform: scale(1.3) rotate(15deg); }
     100% { transform: scale(1) rotate(0); }
   }
   @keyframes dogFeedLunge {
     0%   { transform: translateX(0); }
-    35%  { transform: translateX(-12px) scale(1.12); }
-    70%  { transform: translateX(0) scale(1.05); }
+    35%  { transform: translateX(-11px) scale(1.1); }
+    70%  { transform: translateX(0) scale(1.04); }
     100% { transform: scale(1); }
   }
-  .dog-tapping #dogFace { animation: dogTapPop 0.38s ease !important; }
-  .dog-feeding #dogFace { animation: dogFeedLunge 0.55s ease !important; }
+  .dog-tapping #dogAvatar { animation: dogTapPop 0.38s ease !important; }
+  .dog-feeding #dogAvatar { animation: dogFeedLunge 0.55s ease !important; }
 </style>
 </head>
 <body>
@@ -1513,7 +1522,79 @@
 <div id="dogWidget" class="dog-sad">
   <div id="dogBubble"></div>
   <div id="dogAvatar" onclick="dogTap()">
-    <span id="dogFace">🐶</span>
+    <svg id="schnauzerSvg" viewBox="0 0 72 88" width="62" height="75" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="dHeadG" cx="42%" cy="28%" r="58%">
+          <stop offset="0%"   stop-color="#c0c0c0"/>
+          <stop offset="100%" stop-color="#5a5a5a"/>
+        </radialGradient>
+        <radialGradient id="dBodyG" cx="44%" cy="25%" r="62%">
+          <stop offset="0%"   stop-color="#b8b8b8"/>
+          <stop offset="100%" stop-color="#565656"/>
+        </radialGradient>
+        <radialGradient id="dBeardG" cx="48%" cy="22%" r="65%">
+          <stop offset="0%"   stop-color="#f4f4f4"/>
+          <stop offset="100%" stop-color="#c2c2c2"/>
+        </radialGradient>
+        <radialGradient id="dEarG" cx="38%" cy="22%" r="65%">
+          <stop offset="0%"   stop-color="#7a7a7a"/>
+          <stop offset="100%" stop-color="#3e3e3e"/>
+        </radialGradient>
+        <filter id="dShadow" x="-25%" y="-25%" width="150%" height="150%">
+          <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="rgba(0,0,0,0.22)"/>
+        </filter>
+      </defs>
+      <g filter="url(#dShadow)">
+        <!-- 耳朵 -->
+        <ellipse cx="14" cy="37" rx="12" ry="17" fill="url(#dEarG)" transform="rotate(-20 14 37)"/>
+        <ellipse cx="58" cy="37" rx="12" ry="17" fill="url(#dEarG)" transform="rotate(20 58 37)"/>
+        <!-- 身体 -->
+        <ellipse cx="36" cy="76" rx="20" ry="13" fill="url(#dBodyG)"/>
+        <!-- 脖子 -->
+        <ellipse cx="36" cy="65" rx="13" ry="9" fill="#888"/>
+        <!-- 头 -->
+        <ellipse cx="36" cy="43" rx="25" ry="23" fill="url(#dHeadG)"/>
+        <!-- 浓眉（雪纳瑞标志） -->
+        <ellipse cx="25" cy="31" rx="11" ry="6.5" fill="#363636" transform="rotate(-14 25 31)"/>
+        <ellipse cx="47" cy="31" rx="11" ry="6.5" fill="#363636" transform="rotate(14 47 31)"/>
+        <ellipse cx="23" cy="28.5" rx="6" ry="2.6" fill="#5c5c5c" opacity="0.55" transform="rotate(-14 23 28.5)"/>
+        <ellipse cx="49" cy="28.5" rx="6" ry="2.6" fill="#5c5c5c" opacity="0.55" transform="rotate(14 49 28.5)"/>
+        <!-- 眼睛：普通 -->
+        <g id="eyesNormal">
+          <circle cx="25" cy="38" r="5.5" fill="#100608"/>
+          <circle cx="47" cy="38" r="5.5" fill="#100608"/>
+          <circle cx="26.8" cy="36.2" r="2" fill="rgba(255,255,255,0.88)"/>
+          <circle cx="48.8" cy="36.2" r="2" fill="rgba(255,255,255,0.88)"/>
+        </g>
+        <!-- 眼睛：开心弧线 -->
+        <g id="eyesHappy" style="display:none">
+          <path d="M19.5 40 Q25 33 30.5 40" stroke="#100608" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M41.5 40 Q47 33 52.5 40" stroke="#100608" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        </g>
+        <!-- 眼睛：困倦下垂 -->
+        <g id="eyesTired" style="display:none">
+          <circle cx="25" cy="39" r="5.5" fill="#100608"/>
+          <circle cx="47" cy="39" r="5.5" fill="#100608"/>
+          <circle cx="26.8" cy="37.5" r="2" fill="rgba(255,255,255,0.88)"/>
+          <circle cx="48.8" cy="37.5" r="2" fill="rgba(255,255,255,0.88)"/>
+          <path d="M19.5 36 Q25 33.5 30.5 36" stroke="#8a8a8a" stroke-width="5.5" fill="none"/>
+          <path d="M41.5 36 Q47 33.5 52.5 36" stroke="#8a8a8a" stroke-width="5.5" fill="none"/>
+        </g>
+        <!-- 胡子/口吻区 -->
+        <ellipse cx="36" cy="54" rx="18" ry="14" fill="url(#dBeardG)"/>
+        <!-- 鼻子 -->
+        <ellipse cx="36" cy="48" rx="6" ry="4.2" fill="#100608"/>
+        <ellipse cx="34.5" cy="47" rx="1.8" ry="1.1" fill="#2e2e2e" opacity="0.5"/>
+        <!-- 胡子纹理 -->
+        <path d="M23 55 Q36 63 49 55" stroke="#b2b2b2" stroke-width="2"   fill="none" stroke-linecap="round"/>
+        <path d="M26 61 Q36 68 46 61" stroke="#b2b2b2" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <!-- 前爪 -->
+        <ellipse cx="27" cy="86" rx="7.5" ry="4.5" fill="#6a6a6a"/>
+        <ellipse cx="45" cy="86" rx="7.5" ry="4.5" fill="#6a6a6a"/>
+        <!-- 尾巴 -->
+        <path d="M54 72 Q68 62 62 50" stroke="#7a7a7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
   </div>
   <button id="dogFeedBtn" onclick="dogFeed()" title="喂食">🦴</button>
 </div>
@@ -2777,11 +2858,26 @@ document.getElementById('bgm').addEventListener('ended', playNextBgm);
 // 雪纳瑞狗狗
 const _dogMoodMap = { '很好': 'happy', '还行': 'okay', '有点累': 'tired', '不太好': 'sad' };
 let _dogBubbleTimer = null;
+let _dogX = window.innerWidth - 85;
+let _dogVx = -0.9;
+let _dogIsWalking = true;
+let _dogPauseTimer = null;
+let _dogInterval = null;
 
 function setDogState(moodText) {
   const state = _dogMoodMap[moodText] || 'sad';
   const w = document.getElementById('dogWidget');
-  w.className = 'dog-' + state;
+  const keep = ['dog-walking', 'dog-tapping', 'dog-feeding'];
+  const kept = keep.filter(c => w.classList.contains(c));
+  w.className = 'dog-' + state + (kept.length ? ' ' + kept.join(' ') : '');
+}
+
+function _dogGetState() {
+  const w = document.getElementById('dogWidget');
+  for (const s of ['happy','okay','tired','sad']) {
+    if (w.classList.contains('dog-' + s)) return s;
+  }
+  return 'sad';
 }
 
 function showDogBubble(text) {
@@ -2793,26 +2889,61 @@ function showDogBubble(text) {
 }
 
 function dogTap() {
-  const w = document.getElementById('dogWidget');
-  const state = (w.className || '').replace('dog-', '');
   const msgs = {
     happy: ['汪汪！🎉', '好开心！❤️', '摇尾巴～ 🐾'],
     okay:  ['汪～', '嗯嗯～ 🐾', '我在呢'],
     tired: ['呼...', '陪着你 🐾', '乖 🤍'],
     sad:   ['汪呜...', '我在这里 ❤️', '蹭蹭你 🐾'],
   };
-  const pool = msgs[state] || msgs.sad;
+  const pool = msgs[_dogGetState()] || msgs.sad;
   showDogBubble(pool[Math.floor(Math.random() * pool.length)]);
+  const w = document.getElementById('dogWidget');
   w.classList.add('dog-tapping');
   setTimeout(() => w.classList.remove('dog-tapping'), 380);
 }
 
 function dogFeed() {
-  const w = document.getElementById('dogWidget');
   showDogBubble('啊呜！🦴 好吃～');
+  const w = document.getElementById('dogWidget');
   w.classList.add('dog-feeding');
   setTimeout(() => w.classList.remove('dog-feeding'), 560);
 }
+
+function _dogFlipDir() {
+  const svg = document.getElementById('schnauzerSvg');
+  if (svg) svg.style.transform = _dogVx > 0 ? 'scaleX(-1)' : 'scaleX(1)';
+}
+
+function _dogResume() {
+  _dogIsWalking = true;
+  document.getElementById('dogWidget').classList.add('dog-walking');
+}
+
+function _dogPause() {
+  _dogIsWalking = false;
+  document.getElementById('dogWidget').classList.remove('dog-walking');
+  clearTimeout(_dogPauseTimer);
+  _dogPauseTimer = setTimeout(_dogResume, 1800 + Math.random() * 3200);
+}
+
+function _dogStep() {
+  if (!_dogIsWalking) return;
+  const maxX = window.innerWidth - 78;
+  _dogX += _dogVx;
+  if (_dogX <= 8)    { _dogX = 8;    _dogVx =  Math.abs(_dogVx); _dogFlipDir(); }
+  if (_dogX >= maxX) { _dogX = maxX; _dogVx = -Math.abs(_dogVx); _dogFlipDir(); }
+  document.getElementById('dogWidget').style.left = _dogX + 'px';
+  if (Math.random() < 0.0025) _dogPause();
+}
+
+(function initDog() {
+  const w = document.getElementById('dogWidget');
+  w.style.right = 'auto';
+  w.style.left = _dogX + 'px';
+  _dogFlipDir();
+  _dogResume();
+  _dogInterval = setInterval(_dogStep, 35);
+})();
 
 // 护眼模式
 function toggleEyeCare() {
