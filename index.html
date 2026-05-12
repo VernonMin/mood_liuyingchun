@@ -1508,8 +1508,28 @@
     70%  { transform: translateX(0) scale(1.04); }
     100% { transform: scale(1); }
   }
-  .dog-tapping #dogAvatar { animation: dogTapPop 0.38s ease !important; }
-  .dog-feeding #dogAvatar { animation: dogFeedLunge 0.55s ease !important; }
+  .dog-tapping  #dogAvatar { animation: dogTapPop 0.38s ease !important; }
+  .dog-feeding  #dogAvatar { animation: dogFeedLunge 0.55s ease !important; }
+  .dog-petting  #eyesNormal  { display: none; }
+  .dog-petting  #eyesPetting { display: block; }
+  .dog-petting  #dogAvatar   { animation: dogPetSway 2.5s ease-in-out infinite !important; }
+  .dog-nuzzling #dogAvatar   { animation: dogNuzzleJump 0.42s ease-in-out infinite !important; }
+  .avatar-wobble             { animation: avatarWobble 0.55s ease !important; }
+  @keyframes dogPetSway {
+    0%,100% { transform: rotate(-3deg) translateY(0); }
+    50%     { transform: rotate(3deg) translateY(-3px); }
+  }
+  @keyframes dogNuzzleJump {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-14px); }
+  }
+  @keyframes avatarWobble {
+    0%   { transform: rotate(0) scale(1); }
+    25%  { transform: rotate(-10deg) scale(1.09); }
+    60%  { transform: rotate(8deg) scale(1.09); }
+    85%  { transform: rotate(-4deg) scale(1.02); }
+    100% { transform: rotate(0) scale(1); }
+  }
 </style>
 </head>
 <body>
@@ -1579,6 +1599,11 @@
           <circle cx="48.8" cy="37.5" r="2" fill="rgba(255,255,255,0.88)"/>
           <path d="M19.5 36 Q25 33.5 30.5 36" stroke="#8a8a8a" stroke-width="5.5" fill="none"/>
           <path d="M41.5 36 Q47 33.5 52.5 36" stroke="#8a8a8a" stroke-width="5.5" fill="none"/>
+        </g>
+        <!-- 眼睛：被摸时闭眼 -->
+        <g id="eyesPetting" style="display:none">
+          <path d="M19.5 40 Q25 42.5 30.5 40" stroke="#100608" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M41.5 40 Q47 42.5 52.5 40" stroke="#100608" stroke-width="3" fill="none" stroke-linecap="round"/>
         </g>
         <!-- 胡子/口吻区 -->
         <ellipse cx="36" cy="54" rx="18" ry="14" fill="url(#dBeardG)"/>
@@ -2658,6 +2683,7 @@ async function setMood(btn) {
   btn.classList.add('active');
   updateSideMood(emoji, mood);
   setDogState(mood);
+  setTimeout(nuzzleAvatar, 400);
 
   const status = document.getElementById('moodStatus');
   status.textContent = '记录中……';
@@ -2863,11 +2889,23 @@ let _dogVx = -0.9;
 let _dogIsWalking = true;
 let _dogPauseTimer = null;
 let _dogInterval = null;
+let _dogTargetX = null;
+let _dogOnArrival = null;
+let _petTimer = null;
+let _petMsgInterval = null;
+let _petActivated = false;
+
+const _petMsgs = [
+  '迎春最棒了 🐾', '今天辛苦啦', '你真的很厉害',
+  '有我陪着你', '世界上最好的迎春', '好喜欢你呀',
+  '迎春加油！', '你让我好开心', '不许不开心哦',
+  '迎春是小太阳 ☀️', '摸摸头，乖 🐾',
+];
 
 function setDogState(moodText) {
   const state = _dogMoodMap[moodText] || 'sad';
   const w = document.getElementById('dogWidget');
-  const keep = ['dog-walking', 'dog-tapping', 'dog-feeding'];
+  const keep = ['dog-walking', 'dog-tapping', 'dog-feeding', 'dog-petting', 'dog-nuzzling'];
   const kept = keep.filter(c => w.classList.contains(c));
   w.className = 'dog-' + state + (kept.length ? ' ' + kept.join(' ') : '');
 }
@@ -2885,15 +2923,16 @@ function showDogBubble(text) {
   b.textContent = text;
   b.classList.add('show');
   clearTimeout(_dogBubbleTimer);
-  _dogBubbleTimer = setTimeout(() => b.classList.remove('show'), 2200);
+  _dogBubbleTimer = setTimeout(() => b.classList.remove('show'), 2400);
 }
 
 function dogTap() {
+  if (_petActivated) return;
   const msgs = {
-    happy: ['汪汪！🎉', '好开心！❤️', '摇尾巴～ 🐾'],
+    happy: ['汪汪！🎉', '好开心！', '摇尾巴～ 🐾'],
     okay:  ['汪～', '嗯嗯～ 🐾', '我在呢'],
     tired: ['呼...', '陪着你 🐾', '乖 🤍'],
-    sad:   ['汪呜...', '我在这里 ❤️', '蹭蹭你 🐾'],
+    sad:   ['汪呜...', '我在这里', '蹭蹭你 🐾'],
   };
   const pool = msgs[_dogGetState()] || msgs.sad;
   showDogBubble(pool[Math.floor(Math.random() * pool.length)]);
@@ -2915,8 +2954,13 @@ function _dogFlipDir() {
 }
 
 function _dogResume() {
+  if (_petActivated) return;
   _dogIsWalking = true;
-  document.getElementById('dogWidget').classList.add('dog-walking');
+  _dogTargetX = null;
+  _dogOnArrival = null;
+  const w = document.getElementById('dogWidget');
+  w.classList.add('dog-walking');
+  w.classList.remove('dog-nuzzling');
 }
 
 function _dogPause() {
@@ -2929,11 +2973,81 @@ function _dogPause() {
 function _dogStep() {
   if (!_dogIsWalking) return;
   const maxX = window.innerWidth - 78;
-  _dogX += _dogVx;
-  if (_dogX <= 8)    { _dogX = 8;    _dogVx =  Math.abs(_dogVx); _dogFlipDir(); }
-  if (_dogX >= maxX) { _dogX = maxX; _dogVx = -Math.abs(_dogVx); _dogFlipDir(); }
+
+  if (_dogTargetX !== null) {
+    const diff = _dogTargetX - _dogX;
+    if (Math.abs(diff) < 2) {
+      _dogX = _dogTargetX;
+      document.getElementById('dogWidget').style.left = _dogX + 'px';
+      _dogIsWalking = false;
+      document.getElementById('dogWidget').classList.remove('dog-walking');
+      _dogTargetX = null;
+      if (_dogOnArrival) { const fn = _dogOnArrival; _dogOnArrival = null; fn(); }
+      return;
+    }
+    const speed = Math.min(Math.abs(diff) * 0.12 + 0.5, 2.5);
+    _dogVx = diff > 0 ? speed : -speed;
+    _dogFlipDir();
+  } else {
+    _dogX += _dogVx;
+    if (_dogX <= 8)    { _dogX = 8;    _dogVx =  Math.abs(_dogVx); _dogFlipDir(); }
+    if (_dogX >= maxX) { _dogX = maxX; _dogVx = -Math.abs(_dogVx); _dogFlipDir(); }
+    if (Math.random() < 0.0025) _dogPause();
+  }
+
+  _dogX += _dogTargetX !== null ? 0 : 0;
   document.getElementById('dogWidget').style.left = _dogX + 'px';
-  if (Math.random() < 0.0025) _dogPause();
+}
+
+function nuzzleAvatar() {
+  const avatarEl = document.querySelector('img.dog');
+  if (!avatarEl) return;
+  const rect = avatarEl.getBoundingClientRect();
+  const targetX = Math.max(8, Math.min(window.innerWidth - 78, rect.left + rect.width / 2 - 31));
+
+  clearTimeout(_dogPauseTimer);
+  const w = document.getElementById('dogWidget');
+  _dogIsWalking = true;
+  _dogTargetX = targetX;
+  w.classList.add('dog-walking');
+  w.classList.remove('dog-nuzzling');
+
+  _dogOnArrival = () => {
+    w.classList.add('dog-nuzzling');
+    showDogBubble('蹭蹭迎春～ 🐾');
+    avatarEl.classList.add('avatar-wobble');
+    avatarEl.addEventListener('animationend', () => avatarEl.classList.remove('avatar-wobble'), { once: true });
+    setTimeout(_dogResume, 2200);
+  };
+}
+
+// 长按抚摸
+function _startPet() {
+  _petActivated = false;
+  clearTimeout(_petTimer);
+  _petTimer = setTimeout(() => {
+    _petActivated = true;
+    const w = document.getElementById('dogWidget');
+    _dogIsWalking = false;
+    _dogTargetX = null;
+    w.classList.remove('dog-walking', 'dog-nuzzling');
+    w.classList.add('dog-petting');
+    showDogBubble(_petMsgs[Math.floor(Math.random() * _petMsgs.length)]);
+    clearInterval(_petMsgInterval);
+    _petMsgInterval = setInterval(() => {
+      showDogBubble(_petMsgs[Math.floor(Math.random() * _petMsgs.length)]);
+    }, 2200);
+  }, 500);
+}
+
+function _endPet() {
+  clearTimeout(_petTimer);
+  if (!_petActivated) return;
+  clearInterval(_petMsgInterval);
+  _petMsgInterval = null;
+  _petActivated = false;
+  document.getElementById('dogWidget').classList.remove('dog-petting');
+  _dogResume();
 }
 
 (function initDog() {
@@ -2943,6 +3057,14 @@ function _dogStep() {
   _dogFlipDir();
   _dogResume();
   _dogInterval = setInterval(_dogStep, 35);
+
+  const avatar = document.getElementById('dogAvatar');
+  avatar.addEventListener('touchstart',  _startPet, { passive: true });
+  avatar.addEventListener('touchend',    _endPet);
+  avatar.addEventListener('touchcancel', _endPet);
+  avatar.addEventListener('mousedown',   _startPet);
+  avatar.addEventListener('mouseup',     _endPet);
+  avatar.addEventListener('mouseleave',  _endPet);
 })();
 
 // 护眼模式
