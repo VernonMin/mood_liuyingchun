@@ -2920,6 +2920,10 @@ let _dogOnArrival = null;
 let _petTimer = null;
 let _petMsgInterval = null;
 let _petActivated = false;
+let _dragActive = false;
+let _dragStartX = 0;
+let _dragStartDogX = 0;
+let _dragJustEnded = false;
 
 const _petMsgs = [
   '迎春最棒了，迎春天天开心',
@@ -2955,7 +2959,7 @@ function showDogBubble(text) {
 }
 
 function dogTap() {
-  if (_petActivated) return;
+  if (_petActivated || _dragJustEnded) return;
   const msgs = {
     happy: ['汪汪！🎉', '好开心！', '摇尾巴～ 🐾'],
     okay:  ['汪～', '嗯嗯～ 🐾', '我在呢'],
@@ -3149,13 +3153,60 @@ function renameDog() {
   _dogResume();
   _dogInterval = setInterval(_dogStep, 35);
 
+  function _pointerDown(e) {
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    _dragStartX = clientX;
+    _dragStartDogX = _dogX;
+    _dragActive = false;
+    _startPet();
+    document.addEventListener('touchmove', _pointerMove, { passive: false });
+    document.addEventListener('mousemove',  _pointerMove);
+  }
+
+  function _pointerMove(e) {
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const dx = clientX - _dragStartX;
+    if (!_dragActive && Math.abs(dx) > 8) {
+      _dragActive = true;
+      _petActivated = false;
+      clearTimeout(_petTimer);
+      clearInterval(_petMsgInterval);
+      _dogIsWalking = false;
+      _dogTargetX = null;
+      clearTimeout(_dogPauseTimer);
+      const w = document.getElementById('dogWidget');
+      w.style.transition = '';
+      w.classList.remove('dog-walking', 'dog-petting', 'dog-nuzzling');
+    }
+    if (_dragActive) {
+      const newX = Math.max(8, Math.min(window.innerWidth - 78, _dragStartDogX + dx));
+      _dogX = newX;
+      _dogVx = dx > 0 ? Math.abs(_dogVx) : -Math.abs(_dogVx);
+      _dogFlipDir();
+      document.getElementById('dogWidget').style.left = _dogX + 'px';
+      if (e.cancelable) e.preventDefault();
+    }
+  }
+
+  function _pointerUp() {
+    document.removeEventListener('touchmove', _pointerMove);
+    document.removeEventListener('mousemove',  _pointerMove);
+    if (_dragActive) {
+      _dragActive = false;
+      _dragJustEnded = true;
+      setTimeout(() => { _dragJustEnded = false; }, 120);
+      _dogResume();
+    } else {
+      _endPet();
+    }
+  }
+
   const avatar = document.getElementById('dogAvatar');
-  avatar.addEventListener('touchstart',  _startPet, { passive: true });
-  avatar.addEventListener('touchend',    _endPet);
-  avatar.addEventListener('touchcancel', _endPet);
-  avatar.addEventListener('mousedown',   _startPet);
-  avatar.addEventListener('mouseup',     _endPet);
-  avatar.addEventListener('mouseleave',  _endPet);
+  avatar.addEventListener('touchstart',  _pointerDown, { passive: true });
+  avatar.addEventListener('mousedown',   _pointerDown);
+  document.addEventListener('touchend',    _pointerUp);
+  document.addEventListener('touchcancel', _pointerUp);
+  document.addEventListener('mouseup',     _pointerUp);
 })();
 
 // 护眼模式
