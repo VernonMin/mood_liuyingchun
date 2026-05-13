@@ -2990,6 +2990,7 @@ function _dogStep() {
     const speed = Math.min(Math.abs(diff) * 0.12 + 0.5, 2.5);
     _dogVx = diff > 0 ? speed : -speed;
     _dogFlipDir();
+    _dogX += _dogVx;
   } else {
     _dogX += _dogVx;
     if (_dogX <= 8)    { _dogX = 8;    _dogVx =  Math.abs(_dogVx); _dogFlipDir(); }
@@ -2997,7 +2998,6 @@ function _dogStep() {
     if (Math.random() < 0.0025) _dogPause();
   }
 
-  _dogX += _dogTargetX !== null ? 0 : 0;
   document.getElementById('dogWidget').style.left = _dogX + 'px';
 }
 
