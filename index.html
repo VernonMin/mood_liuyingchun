@@ -2709,7 +2709,7 @@ async function setMood(btn) {
   btn.classList.add('active');
   updateSideMood(emoji, mood);
   setDogState(mood);
-  setTimeout(nuzzleAvatar, 400);
+  setTimeout(() => nuzzleAvatar(mood), 400);
 
   const status = document.getElementById('moodStatus');
   status.textContent = '记录中……';
@@ -3027,26 +3027,53 @@ function _dogStep() {
   document.getElementById('dogWidget').style.left = _dogX + 'px';
 }
 
-function nuzzleAvatar() {
+function nuzzleAvatar(moodText) {
   const avatarEl = document.querySelector('img.dog');
   if (!avatarEl) return;
   const rect = avatarEl.getBoundingClientRect();
   const targetX = Math.max(8, Math.min(window.innerWidth - 78, rect.left + rect.width / 2 - 31));
 
-  clearTimeout(_dogPauseTimer);
-  const w = document.getElementById('dogWidget');
-  _dogIsWalking = true;
-  _dogTargetX = targetX;
-  w.classList.add('dog-walking');
-  w.classList.remove('dog-nuzzling');
+  const nuzzleMsgs = {
+    '很好':   '迎春今天心情好，汪！',
+    '还行':   '蹭蹭迎春 🐾',
+    '有点累': '迎春辛苦了 🐾',
+    '不太好': '抱抱迎春 🤍',
+  };
+  const msg = nuzzleMsgs[moodText] || '蹭蹭迎春 🐾';
 
-  _dogOnArrival = () => {
+  clearTimeout(_dogPauseTimer);
+  _dogIsWalking = false;
+  _dogTargetX = null;
+  const w = document.getElementById('dogWidget');
+  w.classList.remove('dog-nuzzling');
+  w.classList.add('dog-walking');
+
+  // 朝头像方向翻转
+  const diff = targetX - _dogX;
+  if (Math.abs(diff) > 4) {
+    _dogVx = diff > 0 ? Math.abs(_dogVx) : -Math.abs(_dogVx);
+    _dogFlipDir();
+  }
+
+  // CSS transition 滑过去
+  const dist = Math.abs(diff);
+  const duration = Math.max(300, Math.min(dist / 90 * 1000, 1400));
+  w.style.transition = `left ${duration}ms ease-in-out`;
+  w.style.left = targetX + 'px';
+  _dogX = targetX;
+
+  setTimeout(() => {
+    w.style.transition = '';
+    w.classList.remove('dog-walking');
     w.classList.add('dog-nuzzling');
-    showDogBubble('蹭蹭迎春～ 🐾');
+    showDogBubble(msg);
     avatarEl.classList.add('avatar-wobble');
     avatarEl.addEventListener('animationend', () => avatarEl.classList.remove('avatar-wobble'), { once: true });
-    setTimeout(_dogResume, 2200);
-  };
+    setTimeout(() => {
+      w.classList.remove('dog-nuzzling');
+      _dogResume();
+    }, 2200);
+  }, duration + 50);
 }
 
 // 长按抚摸
