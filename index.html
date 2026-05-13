@@ -1460,6 +1460,30 @@
     -webkit-tap-highlight-color: transparent;
   }
   #dogFeedBtn:active { transform: scale(0.88); opacity: 1; }
+  #dogNameLabel {
+    font-size: 12px;
+    color: #b05ca0;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 1px;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #dogNameInput {
+    display: none;
+    width: 58px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #b05ca0;
+    text-align: center;
+    border: 1.5px solid #d966a0;
+    border-radius: 8px;
+    padding: 2px 4px;
+    background: #fff;
+    outline: none;
+    margin-top: 1px;
+  }
 
   /* 眼睛状态切换 */
   #eyesHappy, #eyesTired { display: none; }
@@ -1622,6 +1646,8 @@
     </svg>
   </div>
   <button id="dogFeedBtn" onclick="dogFeed()" title="喂食">🦴</button>
+  <div id="dogNameLabel" onclick="renameDog()">豆豆</div>
+  <input id="dogNameInput" type="text" maxlength="6" placeholder="起个名字"/>
 </div>
 
 <div id="nursesDay" onclick="dismissNursesDay()">
@@ -3052,10 +3078,46 @@ function _endPet() {
   _dogResume();
 }
 
+function _getDogName() {
+  return localStorage.getItem('lyc_dog_name') || '豆豆';
+}
+
+function renameDog() {
+  const label = document.getElementById('dogNameLabel');
+  const input = document.getElementById('dogNameInput');
+  input.value = _getDogName();
+  label.style.display = 'none';
+  input.style.display = 'block';
+  input.focus();
+  input.select();
+
+  function confirm() {
+    const name = input.value.trim() || '豆豆';
+    localStorage.setItem('lyc_dog_name', name);
+    label.textContent = name;
+    label.style.display = '';
+    input.style.display = 'none';
+    input.removeEventListener('blur', confirm);
+    input.removeEventListener('keydown', onKey);
+  }
+  function onKey(e) {
+    if (e.key === 'Enter') { input.blur(); }
+    if (e.key === 'Escape') {
+      label.style.display = '';
+      input.style.display = 'none';
+      input.removeEventListener('blur', confirm);
+      input.removeEventListener('keydown', onKey);
+    }
+  }
+  input.addEventListener('blur', confirm);
+  input.addEventListener('keydown', onKey);
+}
+
 (function initDog() {
   const w = document.getElementById('dogWidget');
   w.style.right = 'auto';
   w.style.left = _dogX + 'px';
+  document.getElementById('dogNameLabel').textContent = _getDogName();
   _dogFlipDir();
   _dogResume();
   _dogInterval = setInterval(_dogStep, 35);
