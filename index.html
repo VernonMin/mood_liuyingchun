@@ -1418,7 +1418,7 @@
   /* 雪纳瑞狗狗 */
   #dogWidget {
     position: fixed;
-    bottom: 16px;
+    top: 0;
     left: 0;
     display: flex;
     flex-direction: column;
@@ -2922,7 +2922,10 @@ let _petMsgInterval = null;
 let _petActivated = false;
 let _dragActive = false;
 let _dragStartX = 0;
+let _dragStartY = 0;
 let _dragStartDogX = 0;
+let _dragStartDogY = 0;
+let _dogY = 0;
 let _dragJustEnded = false;
 
 const _petMsgs = [
@@ -3146,17 +3149,21 @@ function renameDog() {
 
 (function initDog() {
   const w = document.getElementById('dogWidget');
+  _dogY = window.innerHeight - 136;
   w.style.right = 'auto';
   w.style.left = _dogX + 'px';
+  w.style.top  = _dogY + 'px';
   document.getElementById('dogNameLabel').textContent = _getDogName();
   _dogFlipDir();
   _dogResume();
   _dogInterval = setInterval(_dogStep, 35);
 
   function _pointerDown(e) {
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    _dragStartX = clientX;
+    const t = e.touches ? e.touches[0] : e;
+    _dragStartX = t.clientX;
+    _dragStartY = t.clientY;
     _dragStartDogX = _dogX;
+    _dragStartDogY = _dogY;
     _dragActive = false;
     _startPet();
     document.addEventListener('touchmove', _pointerMove, { passive: false });
@@ -3164,9 +3171,10 @@ function renameDog() {
   }
 
   function _pointerMove(e) {
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const dx = clientX - _dragStartX;
-    if (!_dragActive && Math.abs(dx) > 8) {
+    const t = e.touches ? e.touches[0] : e;
+    const dx = t.clientX - _dragStartX;
+    const dy = t.clientY - _dragStartY;
+    if (!_dragActive && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
       _dragActive = true;
       _petActivated = false;
       clearTimeout(_petTimer);
@@ -3179,11 +3187,15 @@ function renameDog() {
       w.classList.remove('dog-walking', 'dog-petting', 'dog-nuzzling');
     }
     if (_dragActive) {
-      const newX = Math.max(8, Math.min(window.innerWidth - 78, _dragStartDogX + dx));
-      _dogX = newX;
+      const maxX = window.innerWidth  - 78;
+      const maxY = window.innerHeight - 130;
+      _dogX = Math.max(8, Math.min(maxX, _dragStartDogX + dx));
+      _dogY = Math.max(8, Math.min(maxY, _dragStartDogY + dy));
       _dogVx = dx > 0 ? Math.abs(_dogVx) : -Math.abs(_dogVx);
       _dogFlipDir();
-      document.getElementById('dogWidget').style.left = _dogX + 'px';
+      const w = document.getElementById('dogWidget');
+      w.style.left = _dogX + 'px';
+      w.style.top  = _dogY + 'px';
       if (e.cancelable) e.preventDefault();
     }
   }
