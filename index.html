@@ -120,6 +120,27 @@
     z-index: 999;
   }
 
+  /* 蜡笔小新背景图 */
+  .shinchan-bg {
+    position: fixed;
+    bottom: -20px;
+    right: -30px;
+    width: 340px;
+    opacity: 0.13;
+    pointer-events: none;
+    z-index: 1;
+    filter: saturate(0.8);
+    transform: scaleX(-1);
+  }
+
+  @media (max-width: 780px) {
+    .shinchan-bg {
+      width: 220px;
+      bottom: -10px;
+      right: -20px;
+    }
+  }
+
   /* 背景浮动爪印 */
   .paws {
     position: fixed;
@@ -1558,6 +1579,7 @@
 </head>
 <body>
 
+<img class="shinchan-bg" src="shinchan.png" alt="">
 <audio id="bgm" preload="auto"></audio>
 <div id="eyeCareOverlay"></div>
 <button id="eyeCareBtn" onclick="toggleEyeCare()" title="护眼模式">🌙 护眼</button>
