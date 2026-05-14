@@ -1554,6 +1554,89 @@
     85%  { transform: rotate(-4deg) scale(1.02); }
     100% { transform: rotate(0) scale(1); }
   }
+
+  /* ===== 蜡笔小新横幅 ===== */
+  .shin-banner {
+    max-width: 580px;
+    width: 90%;
+    background: linear-gradient(135deg, #FFF176 0%, #FFE53B 55%, #FFC200 100%);
+    border-radius: 28px;
+    border: 3.5px solid #1a0f00;
+    box-shadow: 5px 5px 0 #1a0f00, 0 12px 36px rgba(255,180,0,0.28);
+    padding: 22px 28px 22px 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+    animation: shinBob 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes shinBob {
+    0%   { transform: translateY(0px) rotate(-0.5deg); }
+    100% { transform: translateY(-5px) rotate(0.5deg); }
+  }
+
+  .shin-face-wrap {
+    flex-shrink: 0;
+    width: 88px;
+    height: 88px;
+    filter: drop-shadow(3px 3px 0 #1a0f00);
+  }
+
+  .shin-text {
+    flex: 1;
+    text-align: left;
+  }
+
+  .shin-tag {
+    display: inline-block;
+    font-size: 11px;
+    color: #fff;
+    background: #1a0f00;
+    border-radius: 6px;
+    padding: 2px 8px;
+    letter-spacing: 2px;
+    font-weight: 800;
+    margin-bottom: 7px;
+  }
+
+  .shin-quote-main {
+    font-size: 17px;
+    color: #1a0f00;
+    font-weight: 900;
+    line-height: 1.55;
+    letter-spacing: 0.5px;
+  }
+
+  .shin-banner-stars {
+    position: absolute;
+    right: 14px;
+    top: 10px;
+    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    opacity: 0.45;
+    animation: starSpin 4s linear infinite;
+  }
+
+  @keyframes starSpin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .shin-banner::before {
+    content: '🌻';
+    position: absolute;
+    font-size: 80px;
+    right: -10px;
+    bottom: -20px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
@@ -1688,6 +1771,42 @@
 <canvas id="confetti"></canvas>
 
 <div id="main">
+
+<!-- 蜡笔小新横幅 -->
+<div class="shin-banner">
+  <svg class="shin-face-wrap" viewBox="0 0 100 108" xmlns="http://www.w3.org/2000/svg">
+    <!-- 头部 -->
+    <circle cx="50" cy="54" r="42" fill="#FFD5A0" stroke="#1a0f00" stroke-width="2.5"/>
+    <!-- 头发 -->
+    <path d="M12 46 Q14 10 50 10 Q86 10 88 46 Q80 18 50 16 Q20 18 12 46Z" fill="#1a0f00"/>
+    <!-- 耳朵 -->
+    <ellipse cx="10" cy="57" rx="9" ry="10" fill="#FFD5A0" stroke="#1a0f00" stroke-width="2"/>
+    <ellipse cx="90" cy="57" rx="9" ry="10" fill="#FFD5A0" stroke="#1a0f00" stroke-width="2"/>
+    <!-- 眉毛 -->
+    <path d="M28 46 Q38 40 48 46" stroke="#1a0f00" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M52 46 Q62 40 72 46" stroke="#1a0f00" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <!-- 眼睛（小新招牌细长眼） -->
+    <ellipse cx="38" cy="55" rx="7" ry="4.5" fill="#1a0f00"/>
+    <ellipse cx="62" cy="55" rx="7" ry="4.5" fill="#1a0f00"/>
+    <circle cx="40" cy="53" r="2" fill="white"/>
+    <circle cx="64" cy="53" r="2" fill="white"/>
+    <!-- 鼻子 -->
+    <ellipse cx="50" cy="65" rx="4.5" ry="3.5" fill="#E89070"/>
+    <!-- 嘴巴（大笑） -->
+    <path d="M30 75 Q50 92 70 75" stroke="#1a0f00" stroke-width="2.5" fill="#FF9090" stroke-linecap="round"/>
+    <!-- 腮红 -->
+    <ellipse cx="23" cy="70" rx="9" ry="5.5" fill="#FFB0A0" opacity="0.55"/>
+    <ellipse cx="77" cy="70" rx="9" ry="5.5" fill="#FFB0A0" opacity="0.55"/>
+    <!-- 身体红T恤 -->
+    <rect x="24" y="94" width="52" height="14" rx="7" fill="#E53030" stroke="#1a0f00" stroke-width="2"/>
+  </svg>
+  <div class="shin-text">
+    <span class="shin-tag">野原新之助 · 5岁</span>
+    <div class="shin-quote-main">大人的世界真麻烦，<br>但开心最重要！</div>
+  </div>
+  <div class="shin-banner-stars">⭐<br>⭐</div>
+</div>
+
 <div class="machine">
   <img class="dog" src="avatar.png" alt="">
   <h1>刘迎春的开心小天地</h1>
@@ -2553,7 +2672,7 @@ function animateConfetti() {
 
 // 背景爪印
 const pawsEl = document.getElementById('paws');
-const pawList = ['🐾','🌸','✦','·'];
+const pawList = ['🐾','🌸','✦','·','🌻','🌻','⭐'];
 for (let i = 0; i < 18; i++) {
   const p = document.createElement('div');
   p.className = 'paw';
