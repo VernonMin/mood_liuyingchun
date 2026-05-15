@@ -1311,18 +1311,18 @@
     justify-content: center;
   }
   .card-front {
-    background: linear-gradient(135deg, #ece0d0, #c9a0e0);
-    box-shadow: 0 2px 6px rgba(150,80,200,0.2);
+    background: linear-gradient(135deg, #ece0d0, #d4c0a8);
+    box-shadow: 0 2px 6px rgba(160,110,80,0.2);
     font-size: 18px;
   }
   .card-back {
     background: #fff;
-    box-shadow: 0 2px 6px rgba(150,80,200,0.15);
+    box-shadow: 0 2px 6px rgba(160,110,80,0.15);
     transform: rotateY(180deg);
     font-size: 26px;
   }
   .card.matched .card-back {
-    background: linear-gradient(135deg, #fdf6ec, #ffe4f0);
+    background: linear-gradient(135deg, #fdf6ec, #f0e4d8);
   }
   .game-done {
     display: none;
@@ -1356,8 +1356,8 @@
     padding: 4px 0 12px;
   }
   .game-menu-item {
-    background: linear-gradient(135deg, #f5e0ff, #ffe0f5);
-    border: 1.5px solid rgba(200,140,230,0.4);
+    background: linear-gradient(135deg, #f5ece0, #f0e4d8);
+    border: 1.5px solid rgba(180,140,100,0.4);
     border-radius: 14px;
     padding: 14px 20px;
     cursor: pointer;
@@ -1403,7 +1403,7 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 3px 8px rgba(150,80,200,0.2), inset 0 -4px 8px rgba(100,50,150,0.15);
+    box-shadow: 0 3px 8px rgba(160,110,80,0.2), inset 0 -4px 8px rgba(100,50,150,0.15);
     cursor: pointer;
     transition: transform 0.1s;
   }
@@ -1698,7 +1698,7 @@
   </div>
   <div class="side-divider"></div>
   <div class="side-item">
-    <span class="side-mood-emoji" id="sideMoodEmoji">🌷</span>
+    <span class="side-mood-emoji" id="sideMoodEmoji">🐾</span>
     <div class="side-label" id="sideMoodLabel">今日心情</div>
   </div>
 </div>
@@ -1920,7 +1920,7 @@ const quotes = [
 // 按权重展开成抽奖池
 const quotePool = quotes.flatMap(q => Array(q.w).fill(q.t));
 
-const emojis = ['🐶','🐾','✨','🍡','🌷','💫','🎀','🍓'];
+const emojis = ['🐶','🐾','✨','🍡','💫','🎀','🍓'];
 let lastIndex = -1;
 
 function getBeijingDate() {
@@ -2073,7 +2073,7 @@ function startGame(type) {
 function stopAllGames() { stopWhack(); stopBalloon(); }
 
 // ── 翻牌配对 ──
-const CARD_EMOJIS = ['🐶','🐱','🐰','🐻','🌷','🍀','⭐','🎀'];
+const CARD_EMOJIS = ['🐶','🐱','🐰','🐻','🍀','⭐','🎀','🍓'];
 let cardFlipped = [], cardLocked = false, cardMoves = 0;
 
 function initCards() {
@@ -2207,7 +2207,7 @@ function stopWhack() {
 }
 
 // ── 戳气球 ──
-const BALLOON_EMOJIS = ['🎈','🫧','🎀','🌷','⭐'];
+const BALLOON_EMOJIS = ['🎈','🫧','🎀','⭐','✨'];
 let balloonSpawnId = null, balloonTimerInt = null, balloonScoreVal = 0, balloonTimeLeft = 30;
 
 function startBalloon() {
@@ -2579,7 +2579,7 @@ function animateConfetti() {
 
 // 背景爪印
 const pawsEl = document.getElementById('paws');
-const pawList = ['🐾','🌷','✦','·'];
+const pawList = ['🐾','✦','·','✧'];
 for (let i = 0; i < 18; i++) {
   const p = document.createElement('div');
   p.className = 'paw';
@@ -2628,7 +2628,7 @@ if (isNursesDay()) {
 
 
 function launchNurseRain() {
-  const petals = ['🌼', '🌷', '🎉'];
+  const petals = ['🌼', '🎉', '✨'];
   const hearts = ['😊', '☀️'];
   const count = 70;
   for (let i = 0; i < count; i++) {
