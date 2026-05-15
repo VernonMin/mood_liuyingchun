@@ -1203,49 +1203,50 @@
   /* 蜡笔小新跳出特效 */
   .shinchan-pop {
     position: fixed;
-    bottom: -140px;
-    right: 24px;
-    width: 110px;
+    left: 50%;
+    bottom: -200px;
+    transform: translateX(-50%);
+    width: 160px;
     pointer-events: none;
     z-index: 200;
-    animation: shinchanJump 2s ease forwards;
+    animation: shinchanJump 4s ease forwards;
   }
 
   .shinchan-bubble {
     position: fixed;
-    bottom: 120px;
-    right: 140px;
+    left: 50%;
+    top: calc(50% - 130px);
+    transform: translateX(-50%);
     background: #fff;
     border: 2px solid #e0c8c4;
-    border-radius: 18px 18px 4px 18px;
-    padding: 8px 14px;
-    font-size: 13px;
+    border-radius: 18px 18px 18px 4px;
+    padding: 10px 18px;
+    font-size: 15px;
     font-weight: 600;
     color: #c4756a;
     pointer-events: none;
     z-index: 201;
     white-space: nowrap;
     opacity: 0;
-    animation: bubblePop 2s ease forwards;
+    animation: bubblePop 4s ease forwards;
     box-shadow: 0 2px 10px rgba(180,120,80,0.15);
   }
 
   @keyframes shinchanJump {
-    0%   { bottom: -140px; opacity: 1; }
-    30%  { bottom: 20px; }
-    60%  { bottom: 10px; }
-    75%  { bottom: 20px; }
-    88%  { bottom: -140px; opacity: 1; }
-    100% { bottom: -140px; opacity: 0; }
+    0%   { bottom: -200px; opacity: 0; }
+    15%  { bottom: calc(50vh - 100px); opacity: 1; }
+    20%  { bottom: calc(50vh - 80px); }
+    25%  { bottom: calc(50vh - 100px); }
+    80%  { bottom: calc(50vh - 100px); opacity: 1; }
+    100% { bottom: -200px; opacity: 0; }
   }
 
   @keyframes bubblePop {
-    0%   { opacity: 0; transform: scale(0.7); }
-    25%  { opacity: 1; transform: scale(1.05); }
-    40%  { transform: scale(1); }
-    70%  { opacity: 1; }
-    88%  { opacity: 0; }
-    100% { opacity: 0; }
+    0%   { opacity: 0; transform: translateX(-50%) scale(0.7); }
+    20%  { opacity: 1; transform: translateX(-50%) scale(1.05); }
+    25%  { transform: translateX(-50%) scale(1); }
+    78%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) scale(0.8); }
   }
 
   /* 浮动 emoji */
@@ -2322,7 +2323,7 @@ function launchShinchan() {
   bubble.textContent = line;
   document.body.appendChild(bubble);
 
-  setTimeout(() => { img.remove(); bubble.remove(); }, 2100);
+  setTimeout(() => { img.remove(); bubble.remove(); }, 4100);
 }
 
 async function praise() {
