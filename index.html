@@ -2028,6 +2028,7 @@ initFestivals();
 function openFestivalsModal() {
   initFestivals();
   document.getElementById('festivalModal').classList.add('show');
+  fetch('/api/festival_visit', { method: 'POST' }).catch(() => {});
 }
 
 function openHistoryModal() {
