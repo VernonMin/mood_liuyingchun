@@ -30,7 +30,7 @@
   #splash {
     position: fixed;
     inset: 0;
-    background: linear-gradient(160deg, #ffe4f0 0%, #f5e6ff 50%, #dff2ff 100%);
+    background: linear-gradient(160deg, #f5e8cc 0%, #f0e2c0 50%, #ede0bc 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -46,8 +46,10 @@
   }
 
   .splash-dog {
-    font-size: 80px;
+    width: 200px;
+    height: auto;
     display: block;
+    mix-blend-mode: multiply;
     animation: splashDog 0.8s ease-out both;
   }
 
@@ -1680,7 +1682,7 @@
 
 <!-- 欢迎屏 -->
 <div id="splash" onclick="dismissSplash()">
-  <span class="splash-dog">🐶</span>
+  <img class="splash-dog" src="/shinchan_splash.jpg" alt="" />
   <p class="splash-line splash-greeting" id="splashGreeting"></p>
   <p class="splash-line splash-sub" id="splashSub"></p>
   <span class="splash-hint">轻触任意处进入 🐾</span>
@@ -2262,7 +2264,6 @@ async function praise() {
   incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
   launchConfetti();
-  spawnEmojis();
 
   const el = document.getElementById('quote');
   el.classList.remove('show');
