@@ -2338,9 +2338,9 @@ async function drawCard() {
 
   // 背景
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#ffe0ee');
-  bg.addColorStop(0.55, '#efe0ff');
-  bg.addColorStop(1, '#d8eeff');
+  bg.addColorStop(0, '#fdf6ee');
+  bg.addColorStop(0.55, '#f7f0e6');
+  bg.addColorStop(1, '#f2ebe0');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
@@ -2353,7 +2353,7 @@ async function drawCard() {
   ctx.globalAlpha = 1;
 
   // 卡片阴影（模拟）
-  ctx.shadowColor = 'rgba(180,100,180,0.18)';
+  ctx.shadowColor = 'rgba(160,120,80,0.18)';
   ctx.shadowBlur = 60;
   ctx.shadowOffsetY = 16;
 
@@ -2370,8 +2370,8 @@ async function drawCard() {
   // 卡片顶部粉色装饰条
   roundRect(ctx, cx, cy, cw, 170, 40);
   const headerGrad = ctx.createLinearGradient(cx, cy, cx + cw, cy + 170);
-  headerGrad.addColorStop(0, '#ffd6eb');
-  headerGrad.addColorStop(1, '#ecdeff');
+  headerGrad.addColorStop(0, '#f5ece0');
+  headerGrad.addColorStop(1, '#ede4d4');
   ctx.fillStyle = headerGrad;
   ctx.fill();
 
@@ -2388,7 +2388,7 @@ async function drawCard() {
   ctx.drawImage(avatarImg, W / 2 - aSize / 2, cy + 22, aSize, aSize);
 
   // 标题
-  ctx.fillStyle = '#d45c96';
+  ctx.fillStyle = '#c4756a';
   ctx.font = `700 22px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
   ctx.fillText('刘迎春的专属夸夸机', W / 2, cy + 162);
 
@@ -2396,8 +2396,8 @@ async function drawCard() {
   const divY = cy + 178;
   const divGrad = ctx.createLinearGradient(cx + 80, 0, cx + cw - 80, 0);
   divGrad.addColorStop(0, 'transparent');
-  divGrad.addColorStop(0.4, '#f0b8d8');
-  divGrad.addColorStop(0.6, '#d8b0f0');
+  divGrad.addColorStop(0.4, '#e0c8b8');
+  divGrad.addColorStop(0.6, '#d4c0a8');
   divGrad.addColorStop(1, 'transparent');
   ctx.strokeStyle = divGrad;
   ctx.lineWidth = 1.5;
@@ -2409,7 +2409,7 @@ async function drawCard() {
   // 文案正文（自动换行，居中）
   const font = `500 30px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
   ctx.font = font;
-  ctx.fillStyle = '#4a3060';
+  ctx.fillStyle = '#5a3838';
   const textMaxW = cw - 120;
   const lines = wrapText(ctx, quote, W / 2, textMaxW, 44);
   const lineH = 50;
@@ -2421,7 +2421,7 @@ async function drawCard() {
   lines.forEach((l, i) => ctx.fillText(l, W / 2, textY + i * lineH));
 
   // 大引号装饰（跟随文字区域）
-  ctx.fillStyle = '#f0c0e0';
+  ctx.fillStyle = '#e8d0b8';
   ctx.globalAlpha = 0.30;
   ctx.font = `120px Georgia,serif`;
   ctx.fillText('”', cx + 44, textY + 10);
@@ -2435,17 +2435,17 @@ async function drawCard() {
     ctx.font = `400 13px "PingFang SC","Microsoft YaHei",sans-serif`;
     ctx.fillText('刘迎春今日心情', W / 2, badgeY - 44);
     roundRect(ctx, W/2 - 100, badgeY - 32, 200, 48, 24);
-    ctx.fillStyle = 'rgba(245,198,232,0.35)';
+    ctx.fillStyle = 'rgba(235,210,185,0.35)';
     ctx.fill();
     ctx.font = '26px serif';
     ctx.fillText(activeBtn.dataset.emoji, W / 2 - 36, badgeY + 4);
-    ctx.fillStyle = '#b060b0';
+    ctx.fillStyle = '#a06870';
     ctx.font = `500 18px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
     ctx.fillText(activeBtn.dataset.mood, W / 2 + 26, badgeY + 4);
   }
 
   // 底部日期
-  ctx.fillStyle = '#cca8dc';
+  ctx.fillStyle = '#b09888';
   ctx.font = `400 15px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
   ctx.fillText(dateStr, W / 2, cy + ch - 54);
 
