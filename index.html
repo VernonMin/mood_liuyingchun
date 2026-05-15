@@ -2007,14 +2007,14 @@ function initFestivals() {
     list.innerHTML = withMs.map(f => {
       if (f.isToday) {
         return `<div class="festival-item today">
-          <span class="festival-left">${f.icon} ${f.name}</span>
+          <span class="festival-left">${f.name}</span>
           <span class="festival-countdown">${f.todayText}</span>
         </div>`;
       }
       const isNearest = f.ms === nearestMs;
       const countdown = formatCountdown(f.ms);
       return `<div class="festival-item${isNearest ? ' nearest' : ''}">
-        <span class="festival-left">${f.icon} ${f.name}</span>
+        <span class="festival-left">${f.name}</span>
         <span class="festival-countdown">还有 ${countdown}</span>
       </div>`;
     }).join('');
