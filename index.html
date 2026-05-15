@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>刘迎春的专属夸夸机</title>
+<link rel="preload" as="image" href="/shinchan_splash.png">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1233,7 +1234,7 @@
     position: absolute;
     bottom: -10px;
     right: 10px;
-    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
     border-top: 10px solid #e0c8c4;
   }
 
@@ -1242,7 +1243,7 @@
     position: absolute;
     bottom: -7px;
     right: 12px;
-    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
     border-top: 8px solid #fff;
     z-index: 1;
   }
@@ -1971,6 +1972,7 @@ const quotes = [
   { t: "前路温柔坦荡，万般美好自会眷顾刘迎春。", w: 1 },
   { t: "烟雨漫过江南，温柔光景皆温柔以待刘迎春。", w: 1 },
   { t: "生活藏着无数温柔，有幸见识刘迎春平和踏实的模样。", w: 1 },
+  { t: "普通的日常，也藏着令人开心的小美好。", w: 1 },
 ];
 
 // 按权重展开成抽奖池
@@ -2317,35 +2319,45 @@ function closeBottomModal(id, e) {
   el.addEventListener('transitionend', () => el.classList.remove('closing'), { once: true });
 }
 
-new Image().src = '/shinchan_splash.png';
+const shinchanImgReady = new Promise(resolve => {
+  const pre = new Image();
+  pre.onload = resolve;
+  pre.onerror = resolve;
+  pre.src = '/shinchan_splash.png';
+});
 
 const shinchanLines = [
   '迎春真棒!',
-  '嘿嘿！迎春被夸啦！',
-  '嘿嘿，迎春好可爱哦～',
-  '迎春加油！你最行！',
+  '嘿嘿！迎春被夸了！',
 ];
 
 function launchShinchan() {
   const line = shinchanLines[Math.floor(Math.random() * shinchanLines.length)];
   const btn = document.querySelector('.btn');
   const rect = btn.getBoundingClientRect();
+  const imgW = 70;
+  const vw = window.innerWidth;
 
-  const img = document.createElement('img');
-  img.src = '/shinchan_splash.png';
-  img.className = 'shinchan-pop';
-  img.style.left = (rect.right - 10) + 'px';
-  img.style.top = (rect.bottom - 10) + 'px';
-  document.body.appendChild(img);
+  const imgLeft = Math.min(rect.right - 20, vw - imgW - 8);
+  const imgTop = rect.bottom - 10;
 
-  const bubble = document.createElement('div');
-  bubble.className = 'shinchan-bubble';
-  bubble.textContent = line;
-  bubble.style.left = (rect.right - 10) + 'px';
-  bubble.style.top = (rect.bottom - 56) + 'px';
-  document.body.appendChild(bubble);
+  shinchanImgReady.then(() => {
+    const img = document.createElement('img');
+    img.src = '/shinchan_splash.png';
+    img.className = 'shinchan-pop';
+    img.style.left = imgLeft + 'px';
+    img.style.top = imgTop + 'px';
+    document.body.appendChild(img);
 
-  setTimeout(() => { img.remove(); bubble.remove(); }, 4100);
+    const bubble = document.createElement('div');
+    bubble.className = 'shinchan-bubble';
+    bubble.textContent = line;
+    bubble.style.right = (vw - imgLeft - imgW + 4) + 'px';
+    bubble.style.top = (imgTop - 40) + 'px';
+    document.body.appendChild(bubble);
+
+    setTimeout(() => { img.remove(); bubble.remove(); }, 4100);
+  });
 }
 
 async function praise() {
