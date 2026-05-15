@@ -1203,10 +1203,10 @@
   /* 蜡笔小新跳出特效 */
   .shinchan-pop {
     position: fixed;
-    left: 50%;
-    bottom: -200px;
+    left: 58%;
+    bottom: -160px;
     transform: translateX(-50%);
-    width: 160px;
+    width: 110px;
     pointer-events: none;
     z-index: 200;
     animation: shinchanJump 4s ease forwards;
@@ -1214,14 +1214,14 @@
 
   .shinchan-bubble {
     position: fixed;
-    left: 50%;
-    top: calc(50% - 130px);
-    transform: translateX(-50%);
+    left: 58%;
+    top: calc(50% - 110px);
+    transform: translateX(-80%);
     background: #fff;
     border: 2px solid #e0c8c4;
-    border-radius: 18px 18px 18px 4px;
-    padding: 10px 18px;
-    font-size: 15px;
+    border-radius: 18px 18px 4px 18px;
+    padding: 8px 14px;
+    font-size: 13px;
     font-weight: 600;
     color: #c4756a;
     pointer-events: none;
@@ -1233,12 +1233,12 @@
   }
 
   @keyframes shinchanJump {
-    0%   { bottom: -200px; opacity: 0; }
-    15%  { bottom: calc(50vh - 100px); opacity: 1; }
-    20%  { bottom: calc(50vh - 80px); }
-    25%  { bottom: calc(50vh - 100px); }
-    80%  { bottom: calc(50vh - 100px); opacity: 1; }
-    100% { bottom: -200px; opacity: 0; }
+    0%   { bottom: -160px; opacity: 0; }
+    15%  { bottom: calc(50vh - 80px); opacity: 1; }
+    20%  { bottom: calc(50vh - 60px); }
+    25%  { bottom: calc(50vh - 80px); }
+    80%  { bottom: calc(50vh - 80px); opacity: 1; }
+    100% { bottom: -160px; opacity: 0; }
   }
 
   @keyframes bubblePop {
