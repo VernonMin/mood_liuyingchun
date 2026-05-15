@@ -2606,7 +2606,6 @@ function dismissNursesDay() {
   document.getElementById('splashSub').classList.remove('show');
   setTimeout(() => document.getElementById('splashGreeting').classList.add('show'), 400);
   setTimeout(() => document.getElementById('splashSub').classList.add('show'), 900);
-  setTimeout(dismissSplash, 3000);
 }
 
 if (isNursesDay()) {
@@ -2694,7 +2693,6 @@ window.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     document.getElementById('splashSub').classList.add('show');
   }, 900);
-  if (!isNursesDay()) setTimeout(dismissSplash, 3000);
 });
 
 // 左侧面板更新
