@@ -1200,6 +1200,54 @@
     min-height: 18px;
   }
 
+  /* 蜡笔小新跳出特效 */
+  .shinchan-pop {
+    position: fixed;
+    bottom: -140px;
+    right: 24px;
+    width: 110px;
+    pointer-events: none;
+    z-index: 200;
+    animation: shinchanJump 2s ease forwards;
+  }
+
+  .shinchan-bubble {
+    position: fixed;
+    bottom: 120px;
+    right: 140px;
+    background: #fff;
+    border: 2px solid #e0c8c4;
+    border-radius: 18px 18px 4px 18px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #c4756a;
+    pointer-events: none;
+    z-index: 201;
+    white-space: nowrap;
+    opacity: 0;
+    animation: bubblePop 2s ease forwards;
+    box-shadow: 0 2px 10px rgba(180,120,80,0.15);
+  }
+
+  @keyframes shinchanJump {
+    0%   { bottom: -140px; opacity: 1; }
+    30%  { bottom: 20px; }
+    60%  { bottom: 10px; }
+    75%  { bottom: 20px; }
+    88%  { bottom: -140px; opacity: 1; }
+    100% { bottom: -140px; opacity: 0; }
+  }
+
+  @keyframes bubblePop {
+    0%   { opacity: 0; transform: scale(0.7); }
+    25%  { opacity: 1; transform: scale(1.05); }
+    40%  { transform: scale(1); }
+    70%  { opacity: 1; }
+    88%  { opacity: 0; }
+    100% { opacity: 0; }
+  }
+
   /* 浮动 emoji */
   .floating-emoji {
     position: fixed;
@@ -1900,7 +1948,7 @@ const quotes = [
   { t: "平凡的日常，因为刘迎春认真对待而格外治愈。", w: 1 },
   { t: "简简单单生活，便是刘迎春最好的生活状态。", w: 1 },
   { t: "认真热爱生活的刘迎春，从来都闪闪发光。", w: 1 },
-  { t: "人间烟火温柔相伴，平淡顺遂便是刘迎春的小满足。", w: 1 },
+  { t: "人间烟火温柔相伴，开开心心便是刘迎春的小满足。", w: 1 },
   { t: "浮生一路前行，从容姿态皆是万般静好。", w: 1 },
   { t: "时光轻染朝夕，刘迎春一身清宁自带温柔。", w: 1 },
   { t: "岁月温柔前行，刘迎春每一天都晴空无恙。", w: 1 },
@@ -2254,10 +2302,34 @@ function closeBottomModal(id, e) {
   el.addEventListener('transitionend', () => el.classList.remove('closing'), { once: true });
 }
 
+const shinchanLines = [
+  '迎春真棒!',
+  '嘿嘿！迎春被夸啦！',
+  '嘿嘿，迎春好可爱哦～',
+  '迎春加油！你最行！',
+];
+
+function launchShinchan() {
+  const line = shinchanLines[Math.floor(Math.random() * shinchanLines.length)];
+
+  const img = document.createElement('img');
+  img.src = '/shinchan_splash.png';
+  img.className = 'shinchan-pop';
+  document.body.appendChild(img);
+
+  const bubble = document.createElement('div');
+  bubble.className = 'shinchan-bubble';
+  bubble.textContent = line;
+  document.body.appendChild(bubble);
+
+  setTimeout(() => { img.remove(); bubble.remove(); }, 2100);
+}
+
 async function praise() {
   incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
   launchConfetti();
+  launchShinchan();
 
   const el = document.getElementById('quote');
   el.classList.remove('show');
