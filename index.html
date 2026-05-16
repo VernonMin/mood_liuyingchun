@@ -127,10 +127,11 @@
   /* 蜡笔小新背景图 */
   .shinchan-bg {
     position: fixed;
-    bottom: -20px;
-    right: -30px;
-    width: 360px;
-    opacity: 0.2;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    opacity: 0.25;
     pointer-events: none;
     z-index: 1;
     mix-blend-mode: multiply;
@@ -138,9 +139,8 @@
 
   @media (max-width: 780px) {
     .shinchan-bg {
-      width: 240px;
-      bottom: -10px;
-      right: -20px;
+      width: 260px;
+      bottom: -5px;
     }
   }
 
