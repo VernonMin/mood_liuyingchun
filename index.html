@@ -1673,13 +1673,42 @@
     text-decoration: underline;
     cursor: pointer;
   }
-  .ca-rules {
-    background: rgba(200,130,60,0.07);
-    border-radius: 10px;
-    padding: 8px 10px;
-    margin-bottom: 10px;
+  #caRulesModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(30,15,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9400;
   }
-  .ca-rule { font-size: 11px; color: #9a6840; line-height: 1.9; }
+  .ca-rules-box {
+    background: linear-gradient(160deg, #fff8ee, #fff0e0);
+    border-radius: 20px;
+    padding: 24px 22px 20px;
+    max-width: 280px;
+    width: 88%;
+    box-shadow: 0 10px 36px rgba(100,50,0,0.18);
+    position: relative;
+  }
+  .ca-rules-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #c86a20;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .ca-rule {
+    font-size: 12px;
+    color: #9a6840;
+    line-height: 2;
+  }
+  .ca-rules-close {
+    position: absolute;
+    top: 12px; right: 16px;
+    background: none; border: none;
+    font-size: 20px; color: #c4a882; cursor: pointer;
+  }
   .ca-dogs {
     display: flex;
     gap: 8px;
@@ -1974,12 +2003,7 @@
     </div>
     <div class="ca-desc">
       打地鼠，领儿童节小礼品
-      <span class="ca-rules-toggle" onclick="toggleCaRules()">活动规则</span>
-    </div>
-    <div class="ca-rules" id="caRules" style="display:none">
-      <div class="ca-rule">① 每天自动获得 3 次游戏机会，夸我可额外获得</div>
-      <div class="ca-rule">② 打地鼠得分达到 350 分，可以翻牌抽奖</div>
-      <div class="ca-rule">③ 翻到小狗即可收入囊中，集齐 5 只可领儿童节小礼品</div>
+      <span class="ca-rules-toggle" onclick="document.getElementById('caRulesModal').style.display='flex'">活动规则</span>
     </div>
     <div class="ca-dogs" id="caDogs"></div>
     <div class="ca-dogs-label" id="caDogsLabel">已集齐 0/5 只小狗</div>
@@ -2953,11 +2977,6 @@ function cdGetTokens() {
   return Math.max(0, cdState.tokens_earned - cdState.tokens_used);
 }
 
-function toggleCaRules() {
-  const el = document.getElementById('caRules');
-  el.style.display = el.style.display === 'none' ? '' : 'none';
-}
-
 function cdPraiseHook() {
   cdState.tokens_earned += 1;
   cdSaveState();
@@ -3749,6 +3768,17 @@ function toggleEyeCare() {
 
 <!-- 儿童节进度 toast -->
 <div id="cdToast"></div>
+
+<!-- 儿童节活动规则弹窗 -->
+<div id="caRulesModal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="ca-rules-box">
+    <button class="ca-rules-close" onclick="document.getElementById('caRulesModal').style.display='none'">×</button>
+    <div class="ca-rules-title">活动规则</div>
+    <div class="ca-rule">① 每天自动获得 3 次游戏机会，夸我可额外获得</div>
+    <div class="ca-rule">② 打地鼠得分达到 350 分，可以翻牌抽奖</div>
+    <div class="ca-rule">③ 翻到小狗即可收入囊中，集齐 5 只可领儿童节小礼品</div>
+  </div>
+</div>
 
 <!-- 儿童节翻牌抽奖 -->
 <div id="cdFlipOverlay" style="display:none">
