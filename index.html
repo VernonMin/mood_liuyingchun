@@ -2873,7 +2873,6 @@ for (let i = 0; i < 18; i++) {
 
 // 欢迎屏
 // ── 儿童节活动 ──
-const CD_KEY = { dogs: 'lyc_cd_dogs', tokens: 'lyc_cd_tokens', used: 'lyc_cd_used' };
 const CD_GIFT_TARGET = 5;
 const CD_WIN_MSGS = [
   '你是这个世界上最可爱的人，没有之一 🐾',
@@ -2898,24 +2897,41 @@ function cdDaysLeft() {
   return Math.max(0, Math.ceil((end - b) / 86400000));
 }
 
-function cdCheckDailyTokens() {
+let cdState = { dogs: 0, tokens_earned: 0, tokens_used: 0, daily_date: '' };
+
+async function cdInit() {
+  try {
+    const res = await fetch('/api/cd_state');
+    if (res.ok) cdState = await res.json();
+  } catch {}
+  cdApplyDailyTokens();
+  cdUpdateUI();
+}
+
+function cdSaveState() {
+  fetch('/api/cd_state', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cdState),
+  }).catch(() => {});
+}
+
+function cdApplyDailyTokens() {
   const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
-  if (localStorage.getItem('lyc_cd_daily_date') !== today) {
-    localStorage.setItem('lyc_cd_daily_date', today);
-    const earned = parseInt(localStorage.getItem(CD_KEY.tokens) || '0');
-    localStorage.setItem(CD_KEY.tokens, earned + 3);
+  if (cdState.daily_date !== today) {
+    cdState.daily_date = today;
+    cdState.tokens_earned += 3;
+    cdSaveState();
   }
 }
+
 function cdGetTokens() {
-  cdCheckDailyTokens();
-  const earned = parseInt(localStorage.getItem(CD_KEY.tokens) || '0');
-  const used   = parseInt(localStorage.getItem(CD_KEY.used)   || '0');
-  return Math.max(0, earned - used);
+  return Math.max(0, cdState.tokens_earned - cdState.tokens_used);
 }
 
 function cdPraiseHook() {
-  const earned = parseInt(localStorage.getItem(CD_KEY.tokens) || '0');
-  localStorage.setItem(CD_KEY.tokens, earned + 1);
+  cdState.tokens_earned += 1;
+  cdSaveState();
   cdUpdateUI();
   const toast = document.getElementById('cdToast');
   toast.textContent = '🎈 游戏机会 +1！去打地鼠吧';
@@ -2927,7 +2943,7 @@ let cdToastTimer = null;
 
 function cdUpdateUI() {
   if (!isChildrensDayActivity()) return;
-  const dogs   = parseInt(localStorage.getItem(CD_KEY.dogs) || '0');
+  const dogs   = cdState.dogs;
   const tokens = cdGetTokens();
   const days   = cdDaysLeft();
 
@@ -2962,9 +2978,8 @@ function cdUpdateUI() {
 }
 
 function openChallengeGame() {
-  // 消耗1次机会，打开打地鼠
-  const used = parseInt(localStorage.getItem(CD_KEY.used) || '0');
-  localStorage.setItem(CD_KEY.used, used + 1);
+  cdState.tokens_used += 1;
+  cdSaveState();
   localStorage.setItem('lyc_cd_from_challenge', '1');
   cdUpdateUI();
   openGameModal();
@@ -3003,10 +3018,10 @@ function cdFlipPick(card) {
     document.getElementById('cdFlipOverlay').style.display = 'none';
     cdFlipDone = false;
     if (isWin) {
-      const dogs = parseInt(localStorage.getItem(CD_KEY.dogs) || '0') + 1;
-      localStorage.setItem(CD_KEY.dogs, dogs);
+      cdState.dogs += 1;
+      cdSaveState();
       const msg = CD_WIN_MSGS[Math.floor(Math.random() * CD_WIN_MSGS.length)];
-      showCdWin(dogs, msg);
+      showCdWin(cdState.dogs, msg);
     } else {
       const toast = document.getElementById('cdToast');
       toast.textContent = '💪 差一点点，再来一次！';
@@ -3026,8 +3041,7 @@ function showCdWin(dogs, msg) {
 function closeCdWin() {
   document.getElementById('cdWinScreen').style.display = 'none';
   cdUpdateUI();
-  const dogs = parseInt(localStorage.getItem(CD_KEY.dogs) || '0');
-  if (dogs >= CD_GIFT_TARGET) setTimeout(showCdGift, 500);
+  if (cdState.dogs >= CD_GIFT_TARGET) setTimeout(showCdGift, 500);
 }
 function showCdGift() {
   document.getElementById('cdGiftScreen').style.display = 'flex';
@@ -3171,7 +3185,7 @@ function updateSideMood(emoji, label) {
 updateSideCount(count);
 
 // 儿童节活动初始化
-if (isChildrensDayActivity()) cdUpdateUI();
+if (isChildrensDayActivity()) cdInit();
 
 // 心情
 async function setMood(btn) {
