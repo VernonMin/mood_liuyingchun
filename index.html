@@ -1666,6 +1666,13 @@
   .ca-title { font-size: 13px; font-weight: 700; color: #c86a20; letter-spacing: 1px; }
   .ca-days  { font-size: 11px; color: #d08040; font-weight: 600; }
   .ca-desc  { font-size: 11px; color: #b07848; margin-bottom: 10px; }
+  .ca-rules-toggle {
+    float: right;
+    font-size: 11px;
+    color: #c07030;
+    text-decoration: underline;
+    cursor: pointer;
+  }
   .ca-rules {
     background: rgba(200,130,60,0.07);
     border-radius: 10px;
@@ -1965,8 +1972,11 @@
       <span class="ca-title">刘迎春的儿童节活动</span>
       <span class="ca-days" id="caDays"></span>
     </div>
-    <div class="ca-desc">打地鼠，领儿童节礼品</div>
-    <div class="ca-rules">
+    <div class="ca-desc">
+      打地鼠，领儿童节小礼品
+      <span class="ca-rules-toggle" onclick="toggleCaRules()">活动规则</span>
+    </div>
+    <div class="ca-rules" id="caRules" style="display:none">
       <div class="ca-rule">① 每天自动获得 3 次游戏机会，夸我可额外获得</div>
       <div class="ca-rule">② 打地鼠得分达到 350 分，可以翻牌抽奖</div>
       <div class="ca-rule">③ 翻到小狗即可收入囊中，集齐 5 只可领儿童节小礼品</div>
@@ -2941,6 +2951,11 @@ function cdApplyDailyTokens() {
 
 function cdGetTokens() {
   return Math.max(0, cdState.tokens_earned - cdState.tokens_used);
+}
+
+function toggleCaRules() {
+  const el = document.getElementById('caRules');
+  el.style.display = el.style.display === 'none' ? '' : 'none';
 }
 
 function cdPraiseHook() {
