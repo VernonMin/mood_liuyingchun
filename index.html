@@ -2933,11 +2933,6 @@ function cdPraiseHook() {
   cdState.tokens_earned += 1;
   cdSaveState();
   cdUpdateUI();
-  const toast = document.getElementById('cdToast');
-  toast.textContent = '🎈 游戏机会 +1！去打地鼠吧';
-  toast.classList.add('show');
-  clearTimeout(cdToastTimer);
-  cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
 }
 let cdToastTimer = null;
 
