@@ -3005,7 +3005,7 @@ function cdUpdateUI() {
 
   const dogsLabel = document.getElementById('caDogsLabel');
   dogsLabel.textContent = dogs >= CD_GIFT_TARGET
-    ? '集齐啦！快联系我领奖！'
+    ? `已集齐 ${CD_GIFT_TARGET}/${CD_GIFT_TARGET} 只小狗`
     : `已集齐 ${dogs}/${CD_GIFT_TARGET} 只小狗`;
 
   document.getElementById('caTokens').textContent = `游戏机会：${tokens}次`;
@@ -3014,7 +3014,7 @@ function cdUpdateUI() {
   daysEl.textContent = days === 0 ? '🎈 今天就是儿童节！' : `距截止还有 ${days} 天`;
 
   const hint = document.getElementById('caHint');
-  if (dogs >= CD_GIFT_TARGET) hint.textContent = '集齐啦！去找我领你的专属礼物 🎁';
+  if (dogs >= CD_GIFT_TARGET) hint.textContent = '集齐啦！找我领你的儿童节小礼品';
   else hint.textContent = '每次夸我得一次机会，打到 350 分可抽奖';
 
   const btn = document.getElementById('caPlayBtn');
