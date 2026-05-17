@@ -2040,7 +2040,7 @@
     </div>
     <div class="ca-dogs" id="caDogs"></div>
     <div class="ca-dogs-label" id="caDogsLabel">已集齐 0/5 只小狗</div>
-    <div class="ca-hint" id="caHint">每次夸我得一次机会，打到 350 分可抽奖</div>
+    <div class="ca-hint" id="caHint">每夸我一次得一次机会，打到 350 分可抽奖</div>
 
     <div class="ca-footer">
       <span class="ca-tokens" id="caTokens">游戏机会：0次</span>
@@ -3053,7 +3053,7 @@ function cdUpdateUI() {
 
   const hint = document.getElementById('caHint');
   if (dogs >= CD_GIFT_TARGET) hint.textContent = '集齐啦！找我领你的儿童节小礼品';
-  else hint.textContent = '每次夸我得一次机会，打到 350 分可抽奖';
+  else hint.textContent = '每夸我一次得一次机会，打到 350 分可抽奖';
 
   const btn = document.getElementById('caPlayBtn');
   btn.disabled = tokens <= 0;
