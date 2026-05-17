@@ -3072,7 +3072,7 @@ function showCdFlipCard(score) {
   document.getElementById('cdFlipScore').textContent = score;
   const grid = document.getElementById('cdFlipGrid');
   grid.innerHTML = '';
-  const winIdx = Math.floor(Math.random() * 9);
+  const winIdx = Math.floor(Math.random() * 1);
   for (let i = 0; i < 9; i++) {
     const item = document.createElement('div');
     item.className = 'cd-flip-item';
