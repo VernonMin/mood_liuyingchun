@@ -10,7 +10,7 @@
 
   body {
     min-height: 100vh;
-    background: linear-gradient(160deg, #fdf6ee 0%, #f7f0e6 50%, #f2ebe0 100%);
+    background: linear-gradient(160deg, #fef5ff 0%, #f5eeff 50%, #eef5ff 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,7 +31,7 @@
   #splash {
     position: fixed;
     inset: 0;
-    background: linear-gradient(160deg, #fdf6ee 0%, #f7f0e6 50%, #f2ebe0 100%);
+    background: linear-gradient(160deg, #fef5ff 0%, #f5eeff 50%, #eef5ff 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -50,6 +50,7 @@
     width: 200px;
     height: auto;
     display: block;
+    mix-blend-mode: multiply;
     animation: splashDog 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 
@@ -75,7 +76,7 @@
 
   .splash-greeting {
     font-size: 22px;
-    color: #c4756a;
+    color: #c4789a;
     font-weight: 700;
     letter-spacing: 3px;
     margin: 24px 0 12px;
@@ -83,7 +84,7 @@
 
   .splash-sub {
     font-size: 14px;
-    color: #a06870;
+    color: #9878b0;
     letter-spacing: 2px;
   }
 
@@ -91,7 +92,7 @@
     position: absolute;
     bottom: 48px;
     font-size: 12px;
-    color: #d4b8b0;
+    color: #c8b0d8;
     letter-spacing: 1px;
     opacity: 0;
     animation: fadeHint 1s ease 1.8s forwards;
@@ -195,14 +196,14 @@
 
   h1 {
     font-size: 24px;
-    color: #c4756a;
+    color: #c4789a;
     margin: 14px 0 6px;
     font-weight: 800;
     letter-spacing: 3px;
   }
 
   .subtitle {
-    color: #b09088;
+    color: #a890b8;
     font-size: 12px;
     margin-bottom: 28px;
     letter-spacing: 1px;
@@ -210,7 +211,7 @@
 
   /* 语录框 */
   .quote-box {
-    background: linear-gradient(135deg, #fdf6ec, #fdf0ea);
+    background: linear-gradient(135deg, #fdf0ff, #f5eeff);
     border-radius: 24px;
     padding: 28px 24px;
     min-height: 108px;
@@ -218,7 +219,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 26px;
-    border: 2px solid #e0c8c4;
+    border: 2px solid #d0b8e8;
     position: relative;
   }
 
@@ -232,7 +233,7 @@
 
   .quote-text {
     font-size: 17px;
-    color: #9a6860;
+    color: #9878a0;
     line-height: 1.9;
     font-weight: 500;
     opacity: 0;
@@ -247,7 +248,7 @@
 
   /* 按钮 */
   .btn {
-    background: linear-gradient(135deg, #d4857a, #c4756a);
+    background: linear-gradient(135deg, #d08aaa, #c4789a);
     color: white;
     border: none;
     padding: 16px 52px;
@@ -289,13 +290,13 @@
   /* 计数 */
   .counter {
     margin-top: 18px;
-    color: #c4a882;
+    color: #b8a0d0;
     font-size: 12px;
     letter-spacing: 1px;
   }
 
   .counter span {
-    color: #c4756a;
+    color: #c4789a;
     font-weight: bold;
     font-size: 16px;
   }
@@ -336,7 +337,7 @@
   .side-val {
     font-size: 28px;
     font-weight: 800;
-    color: #c4756a;
+    color: #c4789a;
     line-height: 1;
     transition: transform 0.15s ease;
   }
@@ -347,7 +348,7 @@
 
   .side-label {
     font-size: 10px;
-    color: #c4a882;
+    color: #b8a0d0;
     letter-spacing: 0.5px;
     white-space: nowrap;
   }
@@ -355,7 +356,7 @@
   .side-divider {
     width: 32px;
     height: 1.5px;
-    background: linear-gradient(90deg, transparent, #e0c8c4, transparent);
+    background: linear-gradient(90deg, transparent, #d0b8e8, transparent);
     border-radius: 2px;
   }
 
@@ -392,7 +393,7 @@
 
   .history-title {
     font-size: 10px;
-    color: #c4a882;
+    color: #b8a0d0;
     letter-spacing: 1px;
     text-align: center;
     margin-bottom: 12px;
@@ -413,24 +414,24 @@
 
   .history-mood {
     font-size: 11px;
-    color: #6a4848;
+    color: #684870;
     font-weight: 600;
   }
 
   .history-date {
     font-size: 10px;
-    color: #c4a882;
+    color: #b8a0d0;
     white-space: nowrap;
   }
 
   .history-count {
     font-size: 10px;
-    color: #c4756a;
+    color: #c4789a;
   }
 
   .history-empty {
     font-size: 11px;
-    color: #c4a882;
+    color: #b8a0d0;
     text-align: center;
     line-height: 1.8;
     padding: 8px 0;
@@ -446,7 +447,7 @@
 
   .mobile-history-title {
     font-size: 12px;
-    color: #c4a882;
+    color: #b8a0d0;
     letter-spacing: 1px;
     margin-bottom: 12px;
     text-align: center;
@@ -463,15 +464,15 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    background: #fdf6ec;
+    background: #fdf0ff;
     border-radius: 12px;
     padding: 8px 4px;
-    border: 1.5px solid #e0c8c4;
+    border: 1.5px solid #d0b8e8;
   }
 
   .mobile-history-emoji { font-size: 20px; }
-  .mobile-history-mood { font-size: 10px; color: #6a4848; font-weight: 600; }
-  .mobile-history-date { font-size: 9px; color: #c4a882; }
+  .mobile-history-mood { font-size: 10px; color: #684870; font-weight: 600; }
+  .mobile-history-date { font-size: 9px; color: #b8a0d0; }
 
   .bottom-links {
     display: flex;
@@ -484,13 +485,13 @@
     background: none;
     border: none;
     font-size: 12px;
-    color: #b09088;
+    color: #a890b8;
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 8px;
     transition: color 0.2s;
   }
-  .bottom-link-btn:hover { color: #8b5858; }
+  .bottom-link-btn:hover { color: #8850a0; }
 
 
   .bottom-modal-mask {
@@ -509,7 +510,7 @@
   }
   .bottom-modal-mask.show { opacity: 1; pointer-events: all; }
   .bottom-modal-card {
-    background: linear-gradient(160deg, #fdfaf4, #fdf0e8);
+    background: linear-gradient(160deg, #fdf5ff, #f5eeff);
     border-radius: 28px;
     padding: 24px 20px;
     max-width: 380px;
@@ -538,10 +539,10 @@
     justify-content: space-between;
     margin-bottom: 16px;
   }
-  .bottom-modal-title { font-size: 16px; font-weight: 700; color: #8b5858; }
+  .bottom-modal-title { font-size: 16px; font-weight: 700; color: #8850a0; }
   .bottom-modal-close {
     background: none; border: none; font-size: 22px;
-    color: #a06868; cursor: pointer; line-height: 1;
+    color: #9868b0; cursor: pointer; line-height: 1;
   }
 
   .festivals {
@@ -551,7 +552,7 @@
   }
   .festivals-title {
     font-size: 12px;
-    color: #c4a882;
+    color: #b8a0d0;
     letter-spacing: 1px;
     margin-bottom: 12px;
     text-align: center;
@@ -569,8 +570,8 @@
   }
   .festival-item.nearest {
     padding: 10px 14px;
-    background: #fdf6ec;
-    border: 1.5px solid #e0c8c4;
+    background: #fdf0ff;
+    border: 1.5px solid #d0b8e8;
     opacity: 1;
   }
   .festival-item.today {
@@ -584,7 +585,7 @@
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    color: #6a4848;
+    color: #684870;
     font-weight: 600;
   }
   .festival-item:not(.nearest):not(.today) .festival-left {
@@ -593,10 +594,10 @@
   }
   .festival-countdown {
     font-size: 12px;
-    color: #a07870;
+    color: #9878b0;
   }
   .festival-item.today .festival-countdown {
-    color: #b06870;
+    color: #a878c0;
     font-weight: 600;
   }
 
@@ -608,7 +609,7 @@
 
   .greeting {
     font-size: 14px;
-    color: #a06870;
+    color: #9878b0;
     margin-bottom: 16px;
     letter-spacing: 1px;
     min-height: 20px;
@@ -631,7 +632,7 @@
 
   .mood-label {
     font-size: 13px;
-    color: #a06870;
+    color: #9878b0;
     letter-spacing: 1px;
     margin-bottom: 12px;
   }
@@ -648,8 +649,8 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    background: #fdf6ec;
-    border: 2px solid #e0c8c4;
+    background: #fdf0ff;
+    border: 2px solid #d0b8e8;
     border-radius: 16px;
     padding: 10px 14px;
     cursor: pointer;
@@ -657,11 +658,11 @@
     min-width: 62px;
   }
 
-  .mood-btn:hover { transform: translateY(-2px); border-color: #c4756a; }
+  .mood-btn:hover { transform: translateY(-2px); border-color: #c4789a; }
 
   .mood-btn.active {
-    background: linear-gradient(135deg, #fdf0e4, #f5ece0);
-    border-color: #c4756a;
+    background: linear-gradient(135deg, #faf0ff, #f0eeff);
+    border-color: #c4789a;
     box-shadow: 0 4px 14px rgba(217,102,160,0.25);
     transform: translateY(-2px);
   }
@@ -670,13 +671,13 @@
 
   .mood-text {
     font-size: 11px;
-    color: #a06868;
+    color: #9868b0;
     letter-spacing: 0.5px;
   }
 
   .mood-status {
     font-size: 12px;
-    color: #c4a882;
+    color: #b8a0d0;
     margin-top: 10px;
     min-height: 18px;
     transition: opacity 0.3s;
@@ -694,11 +695,11 @@
     align-items: center;
     gap: 6px;
     background: rgba(255,255,255,0.7);
-    border: 1.5px solid #e0c8c4;
+    border: 1.5px solid #d0b8e8;
     border-radius: 50px;
     padding: 8px 22px;
     font-size: 13px;
-    color: #a06870;
+    color: #9878b0;
     cursor: pointer;
     letter-spacing: 1px;
     transition: all 0.2s ease;
@@ -712,9 +713,9 @@
   }
 
   .share-btn:hover {
-    background: linear-gradient(135deg, #fdf0e4, #f5ece0);
-    border-color: #c4756a;
-    color: #c4756a;
+    background: linear-gradient(135deg, #faf0ff, #f0eeff);
+    border-color: #c4789a;
+    color: #c4789a;
     transform: translateY(-2px);
     box-shadow: 0 4px 14px rgba(217,102,160,0.2);
   }
@@ -771,7 +772,7 @@
   }
 
   .preview-dl-btn {
-    background: linear-gradient(135deg, #d4857a, #c4756a);
+    background: linear-gradient(135deg, #d08aaa, #c4789a);
     color: white;
     border: none;
     padding: 12px 32px;
@@ -835,7 +836,7 @@
   .reflect-greeting {
     text-align: center;
     font-size: 15px;
-    color: #9a6860;
+    color: #9878a0;
     line-height: 1.9;
     margin-bottom: 18px;
   }
@@ -868,7 +869,7 @@
     line-height: 1.7;
     transition: border-color 0.2s;
   }
-  .reflect-input:focus { border-color: #c4756a; }
+  .reflect-input:focus { border-color: #c4789a; }
   .reflect-input::placeholder { color: #d0b0e0; }
 
   .reflect-actions {
@@ -878,7 +879,7 @@
   }
   .reflect-save-btn {
     flex: 1;
-    background: linear-gradient(135deg, #d4857a, #c4756a);
+    background: linear-gradient(135deg, #d08aaa, #c4789a);
     color: white;
     border: none;
     padding: 12px;
@@ -905,7 +906,7 @@
   .reflect-status {
     text-align: center;
     font-size: 12px;
-    color: #c4756a;
+    color: #c4789a;
     margin-top: 10px;
     min-height: 18px;
   }
@@ -1212,12 +1213,12 @@
   .shinchan-bubble {
     position: fixed;
     background: #fff;
-    border: 1.5px solid #e0c8c4;
+    border: 1.5px solid #d0b8e8;
     border-radius: 12px;
     padding: 5px 10px;
     font-size: 11px;
     font-weight: 600;
-    color: #c4756a;
+    color: #c4789a;
     pointer-events: none;
     z-index: 201;
     white-space: nowrap;
@@ -1233,7 +1234,7 @@
     bottom: -10px;
     right: 10px;
     border-right: 10px solid transparent;
-    border-top: 10px solid #e0c8c4;
+    border-top: 10px solid #d0b8e8;
   }
 
   .shinchan-bubble::before {
@@ -1384,31 +1385,31 @@
     font-size: 26px;
   }
   .card.matched .card-back {
-    background: linear-gradient(135deg, #fdf6ec, #f0e4d8);
+    background: linear-gradient(135deg, #fdf0ff, #e8e0f8);
   }
   .game-done {
     display: none;
     text-align: center;
     padding: 10px 16px 4px;
     font-size: 14px;
-    color: #8b5858;
+    color: #8850a0;
     font-weight: 600;
   }
   .game-reset {
     display: block;
     margin: 8px auto 4px;
     background: none;
-    border: 1px solid #b09088;
+    border: 1px solid #a890b8;
     border-radius: 20px;
     padding: 5px 18px;
     font-size: 12px;
-    color: #8b5858;
+    color: #8850a0;
     cursor: pointer;
   }
   .game-moves {
     text-align: center;
     font-size: 12px;
-    color: #b09088;
+    color: #a890b8;
     padding-bottom: 4px;
   }
   .game-menu-grid {
@@ -1425,18 +1426,18 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
-    color: #8b5858;
+    color: #8850a0;
     text-align: left;
     transition: transform 0.15s;
     width: 100%;
   }
   .game-menu-item:active { transform: scale(0.97); }
   .game-menu-item.game-coming { opacity: 0.45; cursor: default; display: flex; justify-content: space-between; align-items: center; }
-  .game-soon { font-size: 11px; color: #8b5858; font-weight: 600; }
+  .game-soon { font-size: 11px; color: #8850a0; font-weight: 600; }
   .game-back {
     background: none;
     border: none;
-    color: #b09088;
+    color: #a890b8;
     font-size: 12px;
     cursor: pointer;
     padding: 0 0 8px;
@@ -1447,7 +1448,7 @@
     justify-content: space-between;
     padding: 2px 0 10px;
     font-size: 14px;
-    color: #8b5858;
+    color: #8850a0;
     font-weight: 600;
   }
   .whack-grid {
@@ -1563,7 +1564,7 @@
     font-weight: 700;
     color: #904848;
     text-align: center;
-    border: 1.5px solid #c4756a;
+    border: 1.5px solid #c4789a;
     border-radius: 8px;
     padding: 2px 4px;
     background: #fff;
@@ -2442,9 +2443,9 @@ async function drawCard() {
 
   // 背景
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#fdf6ee');
-  bg.addColorStop(0.55, '#f7f0e6');
-  bg.addColorStop(1, '#f2ebe0');
+  bg.addColorStop(0, '#fef5ff');
+  bg.addColorStop(0.55, '#f5eeff');
+  bg.addColorStop(1, '#eef5ff');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
@@ -2492,7 +2493,7 @@ async function drawCard() {
   ctx.drawImage(avatarImg, W / 2 - aSize / 2, cy + 22, aSize, aSize);
 
   // 标题
-  ctx.fillStyle = '#c4756a';
+  ctx.fillStyle = '#c4789a';
   ctx.font = `700 22px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
   ctx.fillText('刘迎春的开心小角落', W / 2, cy + 162);
 
@@ -2535,7 +2536,7 @@ async function drawCard() {
   if (activeBtn) {
     const badgeY = cy + ch - 130;
     // 「今日心情」标签
-    ctx.fillStyle = '#b09088';
+    ctx.fillStyle = '#a890b8';
     ctx.font = `400 13px "PingFang SC","Microsoft YaHei",sans-serif`;
     ctx.fillText('刘迎春今日心情', W / 2, badgeY - 44);
     roundRect(ctx, W/2 - 100, badgeY - 32, 200, 48, 24);
@@ -2543,7 +2544,7 @@ async function drawCard() {
     ctx.fill();
     ctx.font = '26px serif';
     ctx.fillText(activeBtn.dataset.emoji, W / 2 - 36, badgeY + 4);
-    ctx.fillStyle = '#a06870';
+    ctx.fillStyle = '#9878b0';
     ctx.font = `500 18px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
     ctx.fillText(activeBtn.dataset.mood, W / 2 + 26, badgeY + 4);
   }
