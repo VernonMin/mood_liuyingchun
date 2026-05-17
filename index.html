@@ -3076,7 +3076,7 @@ function showCdFlipCard(score) {
   for (let i = 0; i < 9; i++) {
     const item = document.createElement('div');
     item.className = 'cd-flip-item';
-    item.dataset.win = i === winIdx ? '1' : '0';
+    item.dataset.win = '1';
     item.textContent = '🎈';
     item.onclick = () => cdFlipPick(item);
     grid.appendChild(item);
