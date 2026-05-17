@@ -1778,6 +1778,27 @@
   #cdToast.show { opacity: 1; }
 
   /* 翻牌抽奖遮罩 */
+  #cdDogZoom {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9600;
+    cursor: pointer;
+  }
+  #cdDogZoom img {
+    max-width: 85vw;
+    max-height: 85vh;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    animation: dogZoomIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes dogZoomIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
   #cdFlipOverlay {
     position: fixed;
     inset: 0;
@@ -2014,7 +2035,7 @@
       <span class="ca-days" id="caDays"></span>
     </div>
     <div class="ca-desc">
-      打地鼠集小狗，解锁儿童节小礼品
+      打地鼠集小狗，领儿童节小礼品
       <span class="ca-rules-toggle" onclick="document.getElementById('caRulesModal').style.display='flex'">活动规则</span>
     </div>
     <div class="ca-dogs" id="caDogs"></div>
@@ -2478,7 +2499,6 @@ function startWhack() {
       document.getElementById('whackDone').style.display = 'block';
       if (isChildrensDayActivity() && (cdWhackSession || localStorage.getItem('lyc_cd_from_challenge') === '1') && whackScoreVal >= 350) {
         localStorage.removeItem('lyc_cd_from_challenge');
-        cdWhackSession = false;
         setTimeout(() => showCdFlipCard(whackScoreVal), 600);
       } else {
         localStorage.removeItem('lyc_cd_from_challenge');
@@ -3008,6 +3028,11 @@ function cdUpdateUI() {
       const img = document.createElement('img');
       img.src = `dog_cd${i + 1}.png`;
       img.alt = '';
+      img.style.cursor = 'pointer';
+      img.onclick = () => {
+        document.getElementById('cdDogZoomImg').src = img.src;
+        document.getElementById('cdDogZoom').style.display = 'flex';
+      };
       slot.appendChild(img);
     }
     slotsEl.appendChild(slot);
@@ -3794,6 +3819,10 @@ function toggleEyeCare() {
 </div>
 
 <!-- 儿童节翻牌抽奖 -->
+<div id="cdDogZoom" style="display:none" onclick="this.style.display='none'">
+  <img id="cdDogZoomImg" src="" alt="">
+</div>
+
 <div id="cdFlipOverlay" style="display:none">
   <div class="cd-flip-box">
     <div class="cd-flip-title">🎉 打到 <span id="cdFlipScore"></span> 分！</div>
