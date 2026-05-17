@@ -1734,7 +1734,8 @@
     100% { transform: scale(1); opacity: 1; }
   }
   .ca-dogs-label { font-size: 11px; color: #b07848; text-align: center; margin-bottom: 8px; }
-  .ca-hint   { font-size: 11px; color: #c08858; margin-bottom: 10px; min-height: 14px; }
+  .ca-hint   { font-size: 11px; color: #c08858; margin-bottom: 6px; min-height: 14px; }
+  .ca-hook   { font-size: 11px; color: #c09070; margin-bottom: 10px; font-style: italic; }
   .ca-footer { display: flex; justify-content: space-between; align-items: center; }
   .ca-tokens { font-size: 12px; color: #a07040; font-weight: 600; }
   .ca-play-btn {
@@ -2008,6 +2009,7 @@
     <div class="ca-dogs" id="caDogs"></div>
     <div class="ca-dogs-label" id="caDogsLabel">已集齐 0/5 只小狗</div>
     <div class="ca-hint" id="caHint">每次夸我得一次机会，打到 350 分可抽奖</div>
+    <div class="ca-hook">进度太慢？来找我加速～</div>
     <div class="ca-footer">
       <span class="ca-tokens" id="caTokens">游戏机会：0次</span>
       <button class="ca-play-btn" id="caPlayBtn" onclick="openChallengeGame()">去挑战 →</button>
@@ -3034,11 +3036,11 @@ function showCdFlipCard(score) {
   document.getElementById('cdFlipScore').textContent = score;
   const grid = document.getElementById('cdFlipGrid');
   grid.innerHTML = '';
-  const winIdx = Math.floor(Math.random() * 9);
+  const winIdx = Math.random() < (1 / 18) ? Math.floor(Math.random() * 9) : -1;
   for (let i = 0; i < 9; i++) {
     const item = document.createElement('div');
     item.className = 'cd-flip-item';
-    item.dataset.win = i === winIdx ? '1' : '0';
+    item.dataset.win = (winIdx >= 0 && i === winIdx) ? '1' : '0';
     item.textContent = '🎈';
     item.onclick = () => cdFlipPick(item);
     grid.appendChild(item);
