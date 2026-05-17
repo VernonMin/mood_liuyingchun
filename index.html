@@ -2920,7 +2920,9 @@ function cdApplyDailyTokens() {
   const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
   if (cdState.daily_date !== today) {
     cdState.daily_date = today;
-    cdState.tokens_earned += 3;
+    // 每天重置：已用清零，已赚重设为 3
+    cdState.tokens_earned = 3;
+    cdState.tokens_used = 0;
     cdSaveState();
   }
 }
