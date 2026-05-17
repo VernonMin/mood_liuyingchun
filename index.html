@@ -1645,6 +1645,166 @@
     85%  { transform: rotate(-4deg) scale(1.02); }
     100% { transform: rotate(0) scale(1); }
   }
+
+  /* ── 儿童节活动卡片 ── */
+  #childrensActivityCard {
+    background: linear-gradient(135deg, #fff8ee, #fff0e4);
+    border: 1.5px solid rgba(230,160,80,0.4);
+    border-radius: 20px;
+    padding: 16px 18px 14px;
+    margin: 0 0 14px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .ca-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .ca-title { font-size: 13px; font-weight: 700; color: #c86a20; letter-spacing: 1px; }
+  .ca-days  { font-size: 11px; color: #d08040; font-weight: 600; }
+  .ca-desc  { font-size: 11px; color: #b07848; margin-bottom: 10px; }
+  .ca-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .ca-progress-bar {
+    flex: 1;
+    height: 9px;
+    background: rgba(200,130,60,0.12);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .ca-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f0a050, #e06820);
+    border-radius: 5px;
+    transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+  }
+  .ca-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 5px; height: 100%;
+    background: rgba(255,255,255,0.55);
+    border-radius: 3px;
+    animation: caGlow 1.4s ease-in-out infinite;
+  }
+  @keyframes caGlow {
+    0%,100% { opacity: 0.3; }
+    50%      { opacity: 0.9; }
+  }
+  .ca-progress-text { font-size: 12px; font-weight: 700; color: #b06030; width: 34px; text-align: right; }
+  .ca-hint   { font-size: 11px; color: #c08858; margin-bottom: 10px; min-height: 14px; }
+  .ca-footer { display: flex; justify-content: space-between; align-items: center; }
+  .ca-tokens { font-size: 12px; color: #a07040; font-weight: 600; }
+  .ca-play-btn {
+    background: linear-gradient(135deg, #f5a040, #e06820);
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+  .ca-play-btn:active   { transform: scale(0.94); }
+  .ca-play-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+  /* 进度 toast */
+  #cdToast {
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(60,35,10,0.88);
+    color: #fff8ee;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 9800;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  #cdToast.show { opacity: 1; }
+
+  /* 翻牌抽奖遮罩 */
+  #cdFlipOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30,15,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9500;
+  }
+  .cd-flip-box {
+    background: linear-gradient(160deg, #fff8ee, #fff0e0);
+    border-radius: 24px;
+    padding: 28px 22px 24px;
+    max-width: 300px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(100,50,0,0.2);
+  }
+  .cd-flip-title    { font-size: 18px; font-weight: 800; color: #c86820; margin-bottom: 4px; }
+  .cd-flip-subtitle { font-size: 12px; color: #b07848; margin-bottom: 18px; }
+  .cd-flip-grid     { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .cd-flip-item {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #f5ddb0, #f0c878);
+    border-radius: 12px;
+    border: 1.5px solid rgba(190,130,50,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cd-flip-item:hover:not(.flipped) { transform: scale(1.07); }
+  .cd-flip-item.flipped  { cursor: default; }
+  .cd-flip-item.win-card { background: linear-gradient(135deg, #ffe890, #ffc830); box-shadow: 0 0 14px rgba(255,200,0,0.45); }
+
+  /* 奖励解锁全屏 */
+  #cdRewardScreen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(160deg, #fdf6ee 0%, #f7f0e6 50%, #f2ebe0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    text-align: center;
+    padding: 48px 32px;
+    cursor: default;
+  }
+  .cd-reward-emoji { font-size: 64px; margin-bottom: 24px; animation: cdFloat 2.2s ease-in-out infinite; }
+  @keyframes cdFloat {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-14px); }
+  }
+  .cd-reward-title { font-size: 26px; font-weight: 800; color: #c4756a; letter-spacing: 3px; margin-bottom: 28px; }
+  .cd-reward-msg   { font-size: 17px; color: #9a6860; line-height: 1.9; letter-spacing: 1px; max-width: 280px; margin-bottom: 36px; }
+  .cd-reward-hint  { font-size: 12px; color: #c4a882; letter-spacing: 1px; }
+  .cd-reward-close {
+    position: absolute;
+    top: 24px; right: 24px;
+    background: none; border: none;
+    font-size: 24px; color: #c4a882; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -1798,6 +1958,26 @@
     <button class="share-btn" id="shareBtn" onclick="doShare()">
       <span>保存分享</span>
     </button>
+  </div>
+
+  <!-- 儿童节活动卡片 -->
+  <div id="childrensActivityCard" style="display:none">
+    <div class="ca-header">
+      <span class="ca-title">🎈 儿童节限定挑战</span>
+      <span class="ca-days" id="caDays"></span>
+    </div>
+    <div class="ca-desc">打地鼠，解锁专属神秘惊喜</div>
+    <div class="ca-progress-wrap">
+      <div class="ca-progress-bar">
+        <div class="ca-progress-fill" id="caProgressFill" style="width:0%"></div>
+      </div>
+      <span class="ca-progress-text" id="caProgressText">0%</span>
+    </div>
+    <div class="ca-hint" id="caHint">夸我一次，进度就会动一动…</div>
+    <div class="ca-footer">
+      <span class="ca-tokens" id="caTokens">游戏机会：0次</span>
+      <button class="ca-play-btn" id="caPlayBtn" onclick="openChallengeGame()">去挑战 →</button>
+    </div>
   </div>
 
   <div class="counter">
@@ -2248,6 +2428,12 @@ function startWhack() {
       stopWhack();
       document.getElementById('whackFinal').textContent = whackScoreVal;
       document.getElementById('whackDone').style.display = 'block';
+      if (isChildrensDayActivity() && localStorage.getItem('lyc_cd_from_challenge') === '1' && whackScoreVal >= 100) {
+        localStorage.removeItem('lyc_cd_from_challenge');
+        setTimeout(() => showCdFlipCard(whackScoreVal), 600);
+      } else {
+        localStorage.removeItem('lyc_cd_from_challenge');
+      }
     }
   }, 1000);
 }
@@ -2367,6 +2553,7 @@ async function praise() {
   incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
   launchShinchan();
+  if (isChildrensDayActivity()) cdPraiseHook();
 
   const el = document.getElementById('quote');
   el.classList.remove('show');
@@ -2697,6 +2884,146 @@ for (let i = 0; i < 18; i++) {
 }
 
 // 欢迎屏
+// ── 儿童节活动 ──
+const CD_KEY = { progress: 'lyc_cd_progress', tokens: 'lyc_cd_tokens', used: 'lyc_cd_used', unlocked: 'lyc_cd_unlocked' };
+
+function isChildrensDayActivity() {
+  if (new URLSearchParams(location.search).get('preview') === 'childrensday') return true;
+  const b = new Date(Date.now() + 8 * 3600 * 1000);
+  const m = b.getUTCMonth() + 1, d = b.getUTCDate(), y = b.getUTCFullYear();
+  if (y !== 2026) return false;
+  return (m === 5 && d >= 18) || (m === 6 && d === 1);
+}
+
+function cdDaysLeft() {
+  const b = new Date(Date.now() + 8 * 3600 * 1000);
+  const end = new Date(Date.UTC(2026, 5, 1)); // June 1 UTC
+  return Math.max(0, Math.ceil((end - b) / 86400000));
+}
+
+function cdGetProgress() { return parseFloat(localStorage.getItem(CD_KEY.progress) || '0'); }
+function cdGetTokens() {
+  const earned = parseInt(localStorage.getItem(CD_KEY.tokens) || '0');
+  const used   = parseInt(localStorage.getItem(CD_KEY.used)   || '0');
+  return Math.max(0, earned - used);
+}
+
+function cdAddProgress(amount) {
+  let p = Math.min(100, cdGetProgress() + amount);
+  localStorage.setItem(CD_KEY.progress, p.toFixed(2));
+  cdUpdateUI();
+  if (p >= 100 && !localStorage.getItem(CD_KEY.unlocked)) {
+    localStorage.setItem(CD_KEY.unlocked, '1');
+    setTimeout(showCdReward, 700);
+  }
+}
+
+function cdPraiseHook() {
+  // 每次夸我：+1 游戏机会 + 拼多多式随机进度
+  const earned = parseInt(localStorage.getItem(CD_KEY.tokens) || '0');
+  localStorage.setItem(CD_KEY.tokens, earned + 1);
+
+  const p = cdGetProgress();
+  let inc;
+  if      (p < 60) inc = Math.random() * 5  + 3;    // 3-8%
+  else if (p < 80) inc = Math.random() * 3  + 1;    // 1-4%
+  else if (p < 95) inc = Math.random() * 1.5 + 0.4; // 0.4-2%
+  else             inc = Math.random() * 0.5 + 0.1;  // 0.1-0.6%
+
+  cdAddProgress(inc);
+
+  const toast = document.getElementById('cdToast');
+  toast.textContent = `🎈 活动进度 +${inc.toFixed(1)}%，还差一点点…`;
+  toast.classList.add('show');
+  clearTimeout(cdToastTimer);
+  cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+let cdToastTimer = null;
+
+function cdUpdateUI() {
+  if (!isChildrensDayActivity()) return;
+  const p       = cdGetProgress();
+  const tokens  = cdGetTokens();
+  const days    = cdDaysLeft();
+  const unlocked = localStorage.getItem(CD_KEY.unlocked);
+
+  document.getElementById('childrensActivityCard').style.display = '';
+  document.getElementById('caProgressFill').style.width = p + '%';
+  document.getElementById('caProgressText').textContent = Math.floor(p) + '%';
+  document.getElementById('caTokens').textContent = `游戏机会：${tokens}次`;
+
+  const daysEl = document.getElementById('caDays');
+  daysEl.textContent = days === 0 ? '🎈 今天就是儿童节！' : `还有 ${days} 天`;
+
+  const hint = document.getElementById('caHint');
+  if (unlocked)   hint.textContent = '🎉 神秘惊喜已解锁！';
+  else if (p >= 95) hint.textContent = '就差一点点了…！加油！';
+  else if (p >= 70) hint.textContent = '越来越近了，继续！';
+  else             hint.textContent = '夸我一次，进度就会动一动…';
+
+  const btn = document.getElementById('caPlayBtn');
+  btn.disabled = tokens <= 0;
+  btn.textContent = tokens > 0 ? '去挑战 →' : '暂无机会';
+}
+
+function openChallengeGame() {
+  // 消耗1次机会，打开打地鼠
+  const used = parseInt(localStorage.getItem(CD_KEY.used) || '0');
+  localStorage.setItem(CD_KEY.used, used + 1);
+  localStorage.setItem('lyc_cd_from_challenge', '1');
+  cdUpdateUI();
+  openGameModal();
+  setTimeout(() => startGame('whack'), 80);
+}
+
+// 翻牌抽奖（打地鼠结束后触发）
+function showCdFlipCard(score) {
+  document.getElementById('cdFlipScore').textContent = score;
+  const grid = document.getElementById('cdFlipGrid');
+  grid.innerHTML = '';
+  const winIdx = Math.floor(Math.random() * 9);
+  for (let i = 0; i < 9; i++) {
+    const item = document.createElement('div');
+    item.className = 'cd-flip-item';
+    item.dataset.win = i === winIdx ? '1' : '0';
+    item.textContent = '🎈';
+    item.onclick = () => cdFlipPick(item);
+    grid.appendChild(item);
+  }
+  document.getElementById('cdFlipOverlay').style.display = 'flex';
+}
+
+let cdFlipDone = false;
+function cdFlipPick(card) {
+  if (cdFlipDone) return;
+  cdFlipDone = true;
+  const allItems = document.querySelectorAll('.cd-flip-item');
+  const isWin = card.dataset.win === '1';
+  allItems.forEach(c => {
+    c.classList.add('flipped');
+    c.textContent = c.dataset.win === '1' ? '🎁' : '💪';
+    if (c.dataset.win === '1') c.classList.add('win-card');
+  });
+  setTimeout(() => {
+    document.getElementById('cdFlipOverlay').style.display = 'none';
+    cdFlipDone = false;
+    cdAddProgress(isWin ? 30 : (Math.random() * 3 + 2));
+    const toast = document.getElementById('cdToast');
+    toast.textContent = isWin ? '🎁 大进步！+30%！' : `💪 +${(Math.random()*3+2).toFixed(1)}%，再接再厉！`;
+    toast.classList.add('show');
+    clearTimeout(cdToastTimer);
+    cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }, 1600);
+}
+
+function showCdReward() {
+  document.getElementById('cdRewardMsg').textContent = '（这里放你写的祝福文案）';
+  document.getElementById('cdRewardScreen').style.display = 'flex';
+}
+function closeCdReward() {
+  document.getElementById('cdRewardScreen').style.display = 'none';
+}
+
 function isNursesDay() {
   const params = new URLSearchParams(location.search);
   if (params.get('preview') === 'nursesday') return true;
@@ -2830,6 +3157,9 @@ function updateSideMood(emoji, label) {
 
 // 初始化左侧面板计数
 updateSideCount(count);
+
+// 儿童节活动初始化
+if (isChildrensDayActivity()) cdUpdateUI();
 
 // 心情
 async function setMood(btn) {
@@ -3366,5 +3696,26 @@ function toggleEyeCare() {
   }
 })();
 </script>
+
+<!-- 儿童节进度 toast -->
+<div id="cdToast"></div>
+
+<!-- 儿童节翻牌抽奖 -->
+<div id="cdFlipOverlay" style="display:none">
+  <div class="cd-flip-box">
+    <div class="cd-flip-title">🎉 打到 <span id="cdFlipScore"></span> 分！</div>
+    <div class="cd-flip-subtitle">翻一张牌，看看有什么惊喜～</div>
+    <div class="cd-flip-grid" id="cdFlipGrid"></div>
+  </div>
+</div>
+
+<!-- 儿童节奖励解锁 -->
+<div id="cdRewardScreen" style="display:none">
+  <button class="cd-reward-close" onclick="closeCdReward()">×</button>
+  <div class="cd-reward-emoji">🎈</div>
+  <div class="cd-reward-title">解锁了！</div>
+  <div class="cd-reward-msg" id="cdRewardMsg">（奖励文案）</div>
+  <div class="cd-reward-hint">长按截图留念 📸</div>
+</div>
 </body>
 </html>
