@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>刘迎春的开心小角落</title>
 <link rel="preload" as="image" href="/shinchan_splash.png">
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     min-height: 100vh;
-    background: linear-gradient(160deg, #fef5ff 0%, #f5eeff 50%, #eef5ff 100%);
+    background: linear-gradient(160deg, #fdf6ee 0%, #f7f0e6 50%, #f2ebe0 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,7 +31,7 @@
   #splash {
     position: fixed;
     inset: 0;
-    background: linear-gradient(160deg, #fef5ff 0%, #f5eeff 50%, #eef5ff 100%);
+    background: linear-gradient(160deg, #fdf6ee 0%, #f7f0e6 50%, #f2ebe0 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -52,6 +51,9 @@
     height: auto;
     display: block;
     mix-blend-mode: multiply;
+    opacity: 0;
+  }
+  .splash-dog.ready {
     animation: splashDog 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 
@@ -77,7 +79,7 @@
 
   .splash-greeting {
     font-size: 22px;
-    color: #c4789a;
+    color: #c4756a;
     font-weight: 700;
     letter-spacing: 3px;
     margin: 24px 0 12px;
@@ -85,7 +87,7 @@
 
   .splash-sub {
     font-size: 14px;
-    color: #9878b0;
+    color: #a06870;
     letter-spacing: 2px;
   }
 
@@ -93,7 +95,7 @@
     position: absolute;
     bottom: 48px;
     font-size: 12px;
-    color: #c8b0d8;
+    color: #d4b8b0;
     letter-spacing: 1px;
     opacity: 0;
     animation: fadeHint 1s ease 1.8s forwards;
@@ -196,20 +198,15 @@
   }
 
   h1 {
-    font-family: 'ZCOOL KuaiLe', 'PingFang SC', sans-serif;
-    font-size: 26px;
-    font-weight: 400;
-    letter-spacing: 5px;
+    font-size: 24px;
+    color: #c4756a;
     margin: 14px 0 6px;
-    background: linear-gradient(135deg, #e07aaa 0%, #b878d8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 2px 6px rgba(196, 120, 200, 0.35));
+    font-weight: 800;
+    letter-spacing: 3px;
   }
 
   .subtitle {
-    color: #a890b8;
+    color: #b09088;
     font-size: 12px;
     margin-bottom: 28px;
     letter-spacing: 1px;
@@ -217,7 +214,7 @@
 
   /* 语录框 */
   .quote-box {
-    background: linear-gradient(135deg, #fdf0ff, #f5eeff);
+    background: linear-gradient(135deg, #fdf6ec, #fdf0ea);
     border-radius: 24px;
     padding: 28px 24px;
     min-height: 108px;
@@ -225,7 +222,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 26px;
-    border: 2px solid #d0b8e8;
+    border: 2px solid #e0c8c4;
     position: relative;
   }
 
@@ -239,7 +236,7 @@
 
   .quote-text {
     font-size: 17px;
-    color: #9878a0;
+    color: #9a6860;
     line-height: 1.9;
     font-weight: 500;
     opacity: 0;
@@ -254,7 +251,7 @@
 
   /* 按钮 */
   .btn {
-    background: linear-gradient(135deg, #d08aaa, #c4789a);
+    background: linear-gradient(135deg, #d4857a, #c4756a);
     color: white;
     border: none;
     padding: 16px 52px;
@@ -296,13 +293,13 @@
   /* 计数 */
   .counter {
     margin-top: 18px;
-    color: #b8a0d0;
+    color: #c4a882;
     font-size: 12px;
     letter-spacing: 1px;
   }
 
   .counter span {
-    color: #c4789a;
+    color: #c4756a;
     font-weight: bold;
     font-size: 16px;
   }
@@ -343,7 +340,7 @@
   .side-val {
     font-size: 28px;
     font-weight: 800;
-    color: #c4789a;
+    color: #c4756a;
     line-height: 1;
     transition: transform 0.15s ease;
   }
@@ -354,7 +351,7 @@
 
   .side-label {
     font-size: 10px;
-    color: #b8a0d0;
+    color: #c4a882;
     letter-spacing: 0.5px;
     white-space: nowrap;
   }
@@ -362,7 +359,7 @@
   .side-divider {
     width: 32px;
     height: 1.5px;
-    background: linear-gradient(90deg, transparent, #d0b8e8, transparent);
+    background: linear-gradient(90deg, transparent, #e0c8c4, transparent);
     border-radius: 2px;
   }
 
@@ -399,7 +396,7 @@
 
   .history-title {
     font-size: 10px;
-    color: #b8a0d0;
+    color: #c4a882;
     letter-spacing: 1px;
     text-align: center;
     margin-bottom: 12px;
@@ -420,24 +417,24 @@
 
   .history-mood {
     font-size: 11px;
-    color: #684870;
+    color: #6a4848;
     font-weight: 600;
   }
 
   .history-date {
     font-size: 10px;
-    color: #b8a0d0;
+    color: #c4a882;
     white-space: nowrap;
   }
 
   .history-count {
     font-size: 10px;
-    color: #c4789a;
+    color: #c4756a;
   }
 
   .history-empty {
     font-size: 11px;
-    color: #b8a0d0;
+    color: #c4a882;
     text-align: center;
     line-height: 1.8;
     padding: 8px 0;
@@ -453,7 +450,7 @@
 
   .mobile-history-title {
     font-size: 12px;
-    color: #b8a0d0;
+    color: #c4a882;
     letter-spacing: 1px;
     margin-bottom: 12px;
     text-align: center;
@@ -470,15 +467,15 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    background: #fdf0ff;
+    background: #fdf6ec;
     border-radius: 12px;
     padding: 8px 4px;
-    border: 1.5px solid #d0b8e8;
+    border: 1.5px solid #e0c8c4;
   }
 
   .mobile-history-emoji { font-size: 20px; }
-  .mobile-history-mood { font-size: 10px; color: #684870; font-weight: 600; }
-  .mobile-history-date { font-size: 9px; color: #b8a0d0; }
+  .mobile-history-mood { font-size: 10px; color: #6a4848; font-weight: 600; }
+  .mobile-history-date { font-size: 9px; color: #c4a882; }
 
   .bottom-links {
     display: flex;
@@ -491,13 +488,13 @@
     background: none;
     border: none;
     font-size: 12px;
-    color: #a890b8;
+    color: #b09088;
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 8px;
     transition: color 0.2s;
   }
-  .bottom-link-btn:hover { color: #8850a0; }
+  .bottom-link-btn:hover { color: #8b5858; }
 
 
   .bottom-modal-mask {
@@ -516,7 +513,7 @@
   }
   .bottom-modal-mask.show { opacity: 1; pointer-events: all; }
   .bottom-modal-card {
-    background: linear-gradient(160deg, #fdf5ff, #f5eeff);
+    background: linear-gradient(160deg, #fdfaf4, #fdf0e8);
     border-radius: 28px;
     padding: 24px 20px;
     max-width: 380px;
@@ -545,10 +542,10 @@
     justify-content: space-between;
     margin-bottom: 16px;
   }
-  .bottom-modal-title { font-size: 16px; font-weight: 700; color: #8850a0; }
+  .bottom-modal-title { font-size: 16px; font-weight: 700; color: #8b5858; }
   .bottom-modal-close {
     background: none; border: none; font-size: 22px;
-    color: #9868b0; cursor: pointer; line-height: 1;
+    color: #a06868; cursor: pointer; line-height: 1;
   }
 
   .festivals {
@@ -558,7 +555,7 @@
   }
   .festivals-title {
     font-size: 12px;
-    color: #b8a0d0;
+    color: #c4a882;
     letter-spacing: 1px;
     margin-bottom: 12px;
     text-align: center;
@@ -576,8 +573,8 @@
   }
   .festival-item.nearest {
     padding: 10px 14px;
-    background: #fdf0ff;
-    border: 1.5px solid #d0b8e8;
+    background: #fdf6ec;
+    border: 1.5px solid #e0c8c4;
     opacity: 1;
   }
   .festival-item.today {
@@ -591,7 +588,7 @@
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    color: #684870;
+    color: #6a4848;
     font-weight: 600;
   }
   .festival-item:not(.nearest):not(.today) .festival-left {
@@ -600,10 +597,10 @@
   }
   .festival-countdown {
     font-size: 12px;
-    color: #9878b0;
+    color: #a06870;
   }
   .festival-item.today .festival-countdown {
-    color: #a878c0;
+    color: #b06870;
     font-weight: 600;
   }
 
@@ -615,7 +612,7 @@
 
   .greeting {
     font-size: 14px;
-    color: #9878b0;
+    color: #a06870;
     margin-bottom: 16px;
     letter-spacing: 1px;
     min-height: 20px;
@@ -638,7 +635,7 @@
 
   .mood-label {
     font-size: 13px;
-    color: #9878b0;
+    color: #a06870;
     letter-spacing: 1px;
     margin-bottom: 12px;
   }
@@ -655,8 +652,8 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    background: #fdf0ff;
-    border: 2px solid #d0b8e8;
+    background: #fdf6ec;
+    border: 2px solid #e0c8c4;
     border-radius: 16px;
     padding: 10px 14px;
     cursor: pointer;
@@ -664,11 +661,11 @@
     min-width: 62px;
   }
 
-  .mood-btn:hover { transform: translateY(-2px); border-color: #c4789a; }
+  .mood-btn:hover { transform: translateY(-2px); border-color: #c4756a; }
 
   .mood-btn.active {
-    background: linear-gradient(135deg, #faf0ff, #f0eeff);
-    border-color: #c4789a;
+    background: linear-gradient(135deg, #fdf0e4, #f5ece0);
+    border-color: #c4756a;
     box-shadow: 0 4px 14px rgba(217,102,160,0.25);
     transform: translateY(-2px);
   }
@@ -677,13 +674,13 @@
 
   .mood-text {
     font-size: 11px;
-    color: #9868b0;
+    color: #a06868;
     letter-spacing: 0.5px;
   }
 
   .mood-status {
     font-size: 12px;
-    color: #b8a0d0;
+    color: #c4a882;
     margin-top: 10px;
     min-height: 18px;
     transition: opacity 0.3s;
@@ -701,11 +698,11 @@
     align-items: center;
     gap: 6px;
     background: rgba(255,255,255,0.7);
-    border: 1.5px solid #d0b8e8;
+    border: 1.5px solid #e0c8c4;
     border-radius: 50px;
     padding: 8px 22px;
     font-size: 13px;
-    color: #9878b0;
+    color: #a06870;
     cursor: pointer;
     letter-spacing: 1px;
     transition: all 0.2s ease;
@@ -719,9 +716,9 @@
   }
 
   .share-btn:hover {
-    background: linear-gradient(135deg, #faf0ff, #f0eeff);
-    border-color: #c4789a;
-    color: #c4789a;
+    background: linear-gradient(135deg, #fdf0e4, #f5ece0);
+    border-color: #c4756a;
+    color: #c4756a;
     transform: translateY(-2px);
     box-shadow: 0 4px 14px rgba(217,102,160,0.2);
   }
@@ -778,7 +775,7 @@
   }
 
   .preview-dl-btn {
-    background: linear-gradient(135deg, #d08aaa, #c4789a);
+    background: linear-gradient(135deg, #d4857a, #c4756a);
     color: white;
     border: none;
     padding: 12px 32px;
@@ -842,7 +839,7 @@
   .reflect-greeting {
     text-align: center;
     font-size: 15px;
-    color: #9878a0;
+    color: #9a6860;
     line-height: 1.9;
     margin-bottom: 18px;
   }
@@ -875,7 +872,7 @@
     line-height: 1.7;
     transition: border-color 0.2s;
   }
-  .reflect-input:focus { border-color: #c4789a; }
+  .reflect-input:focus { border-color: #c4756a; }
   .reflect-input::placeholder { color: #d0b0e0; }
 
   .reflect-actions {
@@ -885,7 +882,7 @@
   }
   .reflect-save-btn {
     flex: 1;
-    background: linear-gradient(135deg, #d08aaa, #c4789a);
+    background: linear-gradient(135deg, #d4857a, #c4756a);
     color: white;
     border: none;
     padding: 12px;
@@ -912,7 +909,7 @@
   .reflect-status {
     text-align: center;
     font-size: 12px;
-    color: #c4789a;
+    color: #c4756a;
     margin-top: 10px;
     min-height: 18px;
   }
@@ -1220,12 +1217,12 @@
   .shinchan-bubble {
     position: fixed;
     background: #fff;
-    border: 1.5px solid #d0b8e8;
+    border: 1.5px solid #e0c8c4;
     border-radius: 12px;
     padding: 5px 10px;
     font-size: 11px;
     font-weight: 600;
-    color: #c4789a;
+    color: #c4756a;
     pointer-events: none;
     z-index: 201;
     white-space: nowrap;
@@ -1241,7 +1238,7 @@
     bottom: -10px;
     right: 10px;
     border-right: 10px solid transparent;
-    border-top: 10px solid #d0b8e8;
+    border-top: 10px solid #e0c8c4;
   }
 
   .shinchan-bubble::before {
@@ -1392,14 +1389,14 @@
     font-size: 26px;
   }
   .card.matched .card-back {
-    background: linear-gradient(135deg, #fdf0ff, #e8e0f8);
+    background: linear-gradient(135deg, #fdf6ec, #f0e4d8);
   }
   .game-done {
     display: none;
     text-align: center;
     padding: 10px 16px 4px;
     font-size: 14px;
-    color: #8850a0;
+    color: #8b5858;
     font-weight: 600;
   }
   .game-reset {
@@ -1410,13 +1407,13 @@
     border-radius: 20px;
     padding: 5px 18px;
     font-size: 12px;
-    color: #8850a0;
+    color: #8b5858;
     cursor: pointer;
   }
   .game-moves {
     text-align: center;
     font-size: 12px;
-    color: #a890b8;
+    color: #b09088;
     padding-bottom: 4px;
   }
   .game-menu-grid {
@@ -1433,18 +1430,18 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
-    color: #8850a0;
+    color: #8b5858;
     text-align: left;
     transition: transform 0.15s;
     width: 100%;
   }
   .game-menu-item:active { transform: scale(0.97); }
   .game-menu-item.game-coming { opacity: 0.45; cursor: default; display: flex; justify-content: space-between; align-items: center; }
-  .game-soon { font-size: 11px; color: #8850a0; font-weight: 600; }
+  .game-soon { font-size: 11px; color: #8b5858; font-weight: 600; }
   .game-back {
     background: none;
     border: none;
-    color: #a890b8;
+    color: #b09088;
     font-size: 12px;
     cursor: pointer;
     padding: 0 0 8px;
@@ -1455,7 +1452,7 @@
     justify-content: space-between;
     padding: 2px 0 10px;
     font-size: 14px;
-    color: #8850a0;
+    color: #8b5858;
     font-weight: 600;
   }
   .whack-grid {
@@ -1571,7 +1568,7 @@
     font-weight: 700;
     color: #904848;
     text-align: center;
-    border: 1.5px solid #c4789a;
+    border: 1.5px solid #c4756a;
     border-radius: 8px;
     padding: 2px 4px;
     background: #fff;
@@ -2450,9 +2447,9 @@ async function drawCard() {
 
   // 背景
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#fef5ff');
-  bg.addColorStop(0.55, '#f5eeff');
-  bg.addColorStop(1, '#eef5ff');
+  bg.addColorStop(0, '#fdf6ee');
+  bg.addColorStop(0.55, '#f7f0e6');
+  bg.addColorStop(1, '#f2ebe0');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
@@ -2500,7 +2497,7 @@ async function drawCard() {
   ctx.drawImage(avatarImg, W / 2 - aSize / 2, cy + 22, aSize, aSize);
 
   // 标题
-  ctx.fillStyle = '#c4789a';
+  ctx.fillStyle = '#c4756a';
   ctx.font = `700 22px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
   ctx.fillText('刘迎春的开心小角落', W / 2, cy + 162);
 
@@ -2551,7 +2548,7 @@ async function drawCard() {
     ctx.fill();
     ctx.font = '26px serif';
     ctx.fillText(activeBtn.dataset.emoji, W / 2 - 36, badgeY + 4);
-    ctx.fillStyle = '#9878b0';
+    ctx.fillStyle = '#a06870';
     ctx.font = `500 18px “PingFang SC”,”Microsoft YaHei”,sans-serif`;
     ctx.fillText(activeBtn.dataset.mood, W / 2 + 26, badgeY + 4);
   }
@@ -2799,12 +2796,19 @@ window.addEventListener('DOMContentLoaded', () => {
   fetch('/api/visit', { method: 'POST', keepalive: true });
   document.getElementById('splashGreeting').textContent = picked.main;
   document.getElementById('splashSub').textContent = picked.sub;
-  setTimeout(() => {
-    document.getElementById('splashGreeting').classList.add('show');
-  }, 400);
-  setTimeout(() => {
-    document.getElementById('splashSub').classList.add('show');
-  }, 900);
+
+  const dogImg = document.querySelector('.splash-dog');
+  function runSplash() {
+    dogImg.classList.add('ready');
+    setTimeout(() => document.getElementById('splashGreeting').classList.add('show'), 600);
+    setTimeout(() => document.getElementById('splashSub').classList.add('show'), 1100);
+  }
+  if (dogImg.complete && dogImg.naturalWidth > 0) {
+    runSplash();
+  } else {
+    dogImg.addEventListener('load', runSplash, { once: true });
+    dogImg.addEventListener('error', runSplash, { once: true });
+  }
 });
 
 // 左侧面板更新
