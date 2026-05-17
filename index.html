@@ -2902,7 +2902,16 @@ function cdDaysLeft() {
 }
 
 function cdGetProgress() { return parseFloat(localStorage.getItem(CD_KEY.progress) || '0'); }
+function cdCheckDailyTokens() {
+  const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+  if (localStorage.getItem('lyc_cd_daily_date') !== today) {
+    localStorage.setItem('lyc_cd_daily_date', today);
+    const earned = parseInt(localStorage.getItem(CD_KEY.tokens) || '0');
+    localStorage.setItem(CD_KEY.tokens, earned + 3);
+  }
+}
 function cdGetTokens() {
+  cdCheckDailyTokens();
   const earned = parseInt(localStorage.getItem(CD_KEY.tokens) || '0');
   const used   = parseInt(localStorage.getItem(CD_KEY.used)   || '0');
   return Math.max(0, earned - used);
