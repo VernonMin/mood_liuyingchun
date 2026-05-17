@@ -1666,40 +1666,31 @@
   .ca-title { font-size: 13px; font-weight: 700; color: #c86a20; letter-spacing: 1px; }
   .ca-days  { font-size: 11px; color: #d08040; font-weight: 600; }
   .ca-desc  { font-size: 11px; color: #b07848; margin-bottom: 10px; }
-  .ca-progress-wrap {
+  .ca-dogs {
     display: flex;
-    align-items: center;
     gap: 8px;
-    margin-bottom: 4px;
+    justify-content: center;
+    margin: 10px 0 4px;
   }
-  .ca-progress-bar {
-    flex: 1;
-    height: 9px;
-    background: rgba(200,130,60,0.12);
-    border-radius: 5px;
-    overflow: hidden;
+  .ca-dog-slot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(200,130,60,0.10);
+    border: 1.5px dashed rgba(200,130,60,0.35);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s;
   }
-  .ca-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #f0a050, #e06820);
-    border-radius: 5px;
-    transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
-    position: relative;
+  .ca-dog-slot.filled {
+    background: rgba(255,210,100,0.28);
+    border: 1.5px solid rgba(220,160,50,0.55);
+    animation: dogPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
   }
-  .ca-progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 5px; height: 100%;
-    background: rgba(255,255,255,0.55);
-    border-radius: 3px;
-    animation: caGlow 1.4s ease-in-out infinite;
+  @keyframes dogPop {
+    0%   { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
   }
-  @keyframes caGlow {
-    0%,100% { opacity: 0.3; }
-    50%      { opacity: 0.9; }
-  }
-  .ca-progress-text { font-size: 12px; font-weight: 700; color: #b06030; width: 34px; text-align: right; }
+  .ca-dogs-label { font-size: 11px; color: #b07848; text-align: center; margin-bottom: 8px; }
   .ca-hint   { font-size: 11px; color: #c08858; margin-bottom: 10px; min-height: 14px; }
   .ca-footer { display: flex; justify-content: space-between; align-items: center; }
   .ca-tokens { font-size: 12px; color: #a07040; font-weight: 600; }
@@ -1777,8 +1768,8 @@
   .cd-flip-item.flipped  { cursor: default; }
   .cd-flip-item.win-card { background: linear-gradient(135deg, #ffe890, #ffc830); box-shadow: 0 0 14px rgba(255,200,0,0.45); }
 
-  /* 奖励解锁全屏 */
-  #cdRewardScreen {
+  /* 奖励全屏（win / gift） */
+  #cdWinScreen, #cdGiftScreen, #cdRewardScreen {
     position: fixed;
     inset: 0;
     background: linear-gradient(160deg, #fdf6ee 0%, #f7f0e6 50%, #f2ebe0 100%);
@@ -1796,8 +1787,9 @@
     0%,100% { transform: translateY(0); }
     50%      { transform: translateY(-14px); }
   }
-  .cd-reward-title { font-size: 26px; font-weight: 800; color: #c4756a; letter-spacing: 3px; margin-bottom: 28px; }
-  .cd-reward-msg   { font-size: 17px; color: #9a6860; line-height: 1.9; letter-spacing: 1px; max-width: 280px; margin-bottom: 36px; }
+  .cd-reward-title { font-size: 26px; font-weight: 800; color: #c4756a; letter-spacing: 3px; margin-bottom: 16px; }
+  .cd-reward-msg   { font-size: 17px; color: #9a6860; line-height: 1.9; letter-spacing: 1px; max-width: 280px; margin-bottom: 16px; }
+  .cd-reward-count { font-size: 13px; color: #c08858; font-weight: 600; margin-bottom: 24px; }
   .cd-reward-hint  { font-size: 12px; color: #c4a882; letter-spacing: 1px; }
   .cd-reward-close {
     position: absolute;
@@ -1966,14 +1958,10 @@
       <span class="ca-title">刘迎春的儿童节活动</span>
       <span class="ca-days" id="caDays"></span>
     </div>
-    <div class="ca-desc">打地鼠，领儿童节小礼品</div>
-    <div class="ca-progress-wrap">
-      <div class="ca-progress-bar">
-        <div class="ca-progress-fill" id="caProgressFill" style="width:0%"></div>
-      </div>
-      <span class="ca-progress-text" id="caProgressText">0%</span>
-    </div>
-    <div class="ca-hint" id="caHint">夸我一次，进度就会动一动…</div>
+    <div class="ca-desc">打地鼠，集小狗，领儿童节礼品 🐶</div>
+    <div class="ca-dogs" id="caDogs"></div>
+    <div class="ca-dogs-label" id="caDogsLabel">已集齐 0/5 只小狗</div>
+    <div class="ca-hint" id="caHint">每次夸我得一次机会，打到 350 分可抽奖</div>
     <div class="ca-footer">
       <span class="ca-tokens" id="caTokens">游戏机会：0次</span>
       <button class="ca-play-btn" id="caPlayBtn" onclick="openChallengeGame()">去挑战 →</button>
@@ -2885,7 +2873,16 @@ for (let i = 0; i < 18; i++) {
 
 // 欢迎屏
 // ── 儿童节活动 ──
-const CD_KEY = { progress: 'lyc_cd_progress', tokens: 'lyc_cd_tokens', used: 'lyc_cd_used', unlocked: 'lyc_cd_unlocked' };
+const CD_KEY = { dogs: 'lyc_cd_dogs', tokens: 'lyc_cd_tokens', used: 'lyc_cd_used' };
+const CD_GIFT_TARGET = 5;
+const CD_WIN_MSGS = [
+  '你是这个世界上最可爱的人，没有之一 🐾',
+  '每天都在偷偷想你，你知道吗 🌙',
+  '你笑起来的样子，让整个世界都变好看了 ✨',
+  '你出现在我生命里，真的好幸运 🌟',
+  '跟你在一起的每一天，都是我最好的节日 🎈',
+  '刘迎春，你是我最想珍惜的小可爱 🐶',
+];
 
 function isChildrensDayActivity() {
   if (new URLSearchParams(location.search).get('preview') === 'childrensday') return true;
@@ -2901,7 +2898,6 @@ function cdDaysLeft() {
   return Math.max(0, Math.ceil((end - b) / 86400000));
 }
 
-function cdGetProgress() { return parseFloat(localStorage.getItem(CD_KEY.progress) || '0'); }
 function cdCheckDailyTokens() {
   const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
   if (localStorage.getItem('lyc_cd_daily_date') !== today) {
@@ -2917,58 +2913,48 @@ function cdGetTokens() {
   return Math.max(0, earned - used);
 }
 
-function cdAddProgress(amount) {
-  let p = Math.min(100, cdGetProgress() + amount);
-  localStorage.setItem(CD_KEY.progress, p.toFixed(2));
-  cdUpdateUI();
-  if (p >= 100 && !localStorage.getItem(CD_KEY.unlocked)) {
-    localStorage.setItem(CD_KEY.unlocked, '1');
-    setTimeout(showCdReward, 700);
-  }
-}
-
 function cdPraiseHook() {
-  // 每次夸我：+1 游戏机会 + 拼多多式随机进度
   const earned = parseInt(localStorage.getItem(CD_KEY.tokens) || '0');
   localStorage.setItem(CD_KEY.tokens, earned + 1);
-
-  const p = cdGetProgress();
-  let inc;
-  if      (p < 60) inc = Math.random() * 5  + 3;    // 3-8%
-  else if (p < 80) inc = Math.random() * 3  + 1;    // 1-4%
-  else if (p < 95) inc = Math.random() * 1.5 + 0.4; // 0.4-2%
-  else             inc = Math.random() * 0.5 + 0.1;  // 0.1-0.6%
-
-  cdAddProgress(inc);
-
+  cdUpdateUI();
   const toast = document.getElementById('cdToast');
-  toast.textContent = `🎈 活动进度 +${inc.toFixed(1)}%，还差一点点…`;
+  toast.textContent = '🎈 游戏机会 +1！去打地鼠吧';
   toast.classList.add('show');
   clearTimeout(cdToastTimer);
-  cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
 }
 let cdToastTimer = null;
 
 function cdUpdateUI() {
   if (!isChildrensDayActivity()) return;
-  const p       = cdGetProgress();
-  const tokens  = cdGetTokens();
-  const days    = cdDaysLeft();
-  const unlocked = localStorage.getItem(CD_KEY.unlocked);
+  const dogs   = parseInt(localStorage.getItem(CD_KEY.dogs) || '0');
+  const tokens = cdGetTokens();
+  const days   = cdDaysLeft();
 
   document.getElementById('childrensActivityCard').style.display = '';
-  document.getElementById('caProgressFill').style.width = p + '%';
-  document.getElementById('caProgressText').textContent = Math.floor(p) + '%';
+
+  const slotsEl = document.getElementById('caDogs');
+  slotsEl.innerHTML = '';
+  for (let i = 0; i < CD_GIFT_TARGET; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'ca-dog-slot' + (i < dogs ? ' filled' : '');
+    slot.textContent = i < dogs ? '🐶' : '';
+    slotsEl.appendChild(slot);
+  }
+
+  const dogsLabel = document.getElementById('caDogsLabel');
+  dogsLabel.textContent = dogs >= CD_GIFT_TARGET
+    ? '集齐啦！快联系我领奖！'
+    : `已集齐 ${dogs}/${CD_GIFT_TARGET} 只小狗`;
+
   document.getElementById('caTokens').textContent = `游戏机会：${tokens}次`;
 
   const daysEl = document.getElementById('caDays');
   daysEl.textContent = days === 0 ? '🎈 今天就是儿童节！' : `距截止还有 ${days} 天`;
 
   const hint = document.getElementById('caHint');
-  if (unlocked)   hint.textContent = '🎉 神秘惊喜已解锁！';
-  else if (p >= 95) hint.textContent = '就差一点点了…！加油！';
-  else if (p >= 70) hint.textContent = '越来越近了，继续！';
-  else             hint.textContent = '夸我一次，进度就会动一动…';
+  if (dogs >= CD_GIFT_TARGET) hint.textContent = '集齐啦！去找我领你的专属礼物 🎁';
+  else hint.textContent = '每次夸我得一次机会，打到 350 分可抽奖';
 
   const btn = document.getElementById('caPlayBtn');
   btn.disabled = tokens <= 0;
@@ -3010,27 +2996,44 @@ function cdFlipPick(card) {
   const isWin = card.dataset.win === '1';
   allItems.forEach(c => {
     c.classList.add('flipped');
-    c.textContent = c.dataset.win === '1' ? '🎁' : '💪';
+    c.textContent = c.dataset.win === '1' ? '🐶' : '💪';
     if (c.dataset.win === '1') c.classList.add('win-card');
   });
   setTimeout(() => {
     document.getElementById('cdFlipOverlay').style.display = 'none';
     cdFlipDone = false;
-    cdAddProgress(isWin ? 30 : (Math.random() * 3 + 2));
-    const toast = document.getElementById('cdToast');
-    toast.textContent = isWin ? '🎁 大进步！+30%！' : `💪 +${(Math.random()*3+2).toFixed(1)}%，再接再厉！`;
-    toast.classList.add('show');
-    clearTimeout(cdToastTimer);
-    cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    if (isWin) {
+      const dogs = parseInt(localStorage.getItem(CD_KEY.dogs) || '0') + 1;
+      localStorage.setItem(CD_KEY.dogs, dogs);
+      const msg = CD_WIN_MSGS[Math.floor(Math.random() * CD_WIN_MSGS.length)];
+      showCdWin(dogs, msg);
+    } else {
+      const toast = document.getElementById('cdToast');
+      toast.textContent = '💪 差一点点，再来一次！';
+      toast.classList.add('show');
+      clearTimeout(cdToastTimer);
+      cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+      cdUpdateUI();
+    }
   }, 1600);
 }
 
-function showCdReward() {
-  document.getElementById('cdRewardMsg').textContent = '（这里放你写的祝福文案）';
-  document.getElementById('cdRewardScreen').style.display = 'flex';
+function showCdWin(dogs, msg) {
+  document.getElementById('cdWinMsg').textContent = msg;
+  document.getElementById('cdWinCount').textContent = `已集齐 ${dogs}/${CD_GIFT_TARGET} 只小狗`;
+  document.getElementById('cdWinScreen').style.display = 'flex';
 }
-function closeCdReward() {
-  document.getElementById('cdRewardScreen').style.display = 'none';
+function closeCdWin() {
+  document.getElementById('cdWinScreen').style.display = 'none';
+  cdUpdateUI();
+  const dogs = parseInt(localStorage.getItem(CD_KEY.dogs) || '0');
+  if (dogs >= CD_GIFT_TARGET) setTimeout(showCdGift, 500);
+}
+function showCdGift() {
+  document.getElementById('cdGiftScreen').style.display = 'flex';
+}
+function closeCdGift() {
+  document.getElementById('cdGiftScreen').style.display = 'none';
 }
 
 function isNursesDay() {
@@ -3713,18 +3716,28 @@ function toggleEyeCare() {
 <div id="cdFlipOverlay" style="display:none">
   <div class="cd-flip-box">
     <div class="cd-flip-title">🎉 打到 <span id="cdFlipScore"></span> 分！</div>
-    <div class="cd-flip-subtitle">翻一张牌，看看有什么惊喜～</div>
+    <div class="cd-flip-subtitle">翻一张，看看能不能集到小狗～</div>
     <div class="cd-flip-grid" id="cdFlipGrid"></div>
   </div>
 </div>
 
-<!-- 儿童节奖励解锁 -->
-<div id="cdRewardScreen" style="display:none">
-  <button class="cd-reward-close" onclick="closeCdReward()">×</button>
-  <div class="cd-reward-emoji">🎈</div>
-  <div class="cd-reward-title">解锁了！</div>
-  <div class="cd-reward-msg" id="cdRewardMsg">（奖励文案）</div>
+<!-- 儿童节抽到小狗 -->
+<div id="cdWinScreen" style="display:none">
+  <button class="cd-reward-close" onclick="closeCdWin()">×</button>
+  <div class="cd-reward-emoji">🐶</div>
+  <div class="cd-reward-title">收到一只小狗！</div>
+  <div class="cd-reward-msg" id="cdWinMsg"></div>
+  <div class="cd-reward-count" id="cdWinCount">已集齐 1/5 只小狗</div>
   <div class="cd-reward-hint">长按截图留念 📸</div>
+</div>
+
+<!-- 儿童节集齐礼物 -->
+<div id="cdGiftScreen" style="display:none">
+  <button class="cd-reward-close" onclick="closeCdGift()">×</button>
+  <div class="cd-reward-emoji">🎁</div>
+  <div class="cd-reward-title">集齐啦！</div>
+  <div class="cd-reward-msg">你集齐了 5 只小狗！<br>快来找我领你的儿童节专属礼物吧 🎈</div>
+  <div class="cd-reward-hint">联系我来领奖～</div>
 </div>
 </body>
 </html>
