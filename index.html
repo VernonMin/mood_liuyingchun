@@ -2014,7 +2014,7 @@
       <span class="ca-days" id="caDays"></span>
     </div>
     <div class="ca-desc">
-      打地鼠，集小狗，解锁儿童节小礼品
+      打地鼠集小狗，解锁儿童节小礼品
       <span class="ca-rules-toggle" onclick="document.getElementById('caRulesModal').style.display='flex'">活动规则</span>
     </div>
     <div class="ca-dogs" id="caDogs"></div>
@@ -2334,6 +2334,7 @@ function openGameModal() {
 
 function showGameMenu() {
   stopAllGames();
+  cdWhackSession = false;
   document.getElementById('gameMenu').style.display = '';
   document.getElementById('gameCards').style.display = 'none';
   document.getElementById('gameWhack').style.display = 'none';
@@ -2475,8 +2476,9 @@ function startWhack() {
       stopWhack();
       document.getElementById('whackFinal').textContent = whackScoreVal;
       document.getElementById('whackDone').style.display = 'block';
-      if (isChildrensDayActivity() && localStorage.getItem('lyc_cd_from_challenge') === '1' && whackScoreVal >= 350) {
+      if (isChildrensDayActivity() && (cdWhackSession || localStorage.getItem('lyc_cd_from_challenge') === '1') && whackScoreVal >= 350) {
         localStorage.removeItem('lyc_cd_from_challenge');
+        cdWhackSession = false;
         setTimeout(() => showCdFlipCard(whackScoreVal), 600);
       } else {
         localStorage.removeItem('lyc_cd_from_challenge');
@@ -3034,6 +3036,7 @@ function openChallengeGame() {
   cdState.tokens_used += 1;
   cdSaveState();
   localStorage.setItem('lyc_cd_from_challenge', '1');
+  cdWhackSession = true;
   cdUpdateUI();
   openGameModal();
   setTimeout(() => startGame('whack'), 80);
@@ -3057,6 +3060,7 @@ function showCdFlipCard(score) {
 }
 
 let cdFlipDone = false;
+let cdWhackSession = false;
 function cdFlipPick(card) {
   if (cdFlipDone) return;
   cdFlipDone = true;
