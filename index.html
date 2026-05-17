@@ -2471,6 +2471,7 @@ function scheduleWhackMole() {
 }
 
 function startWhack() {
+  if (isChildrensDayActivity()) cdWhackSession = true;
   whackScoreVal = 0; whackTimeLeft = 30; whackActive.clear();
   stopWhack();
   document.getElementById('whackScore').textContent = '0';
@@ -2497,7 +2498,7 @@ function startWhack() {
       stopWhack();
       document.getElementById('whackFinal').textContent = whackScoreVal;
       document.getElementById('whackDone').style.display = 'block';
-      if (isChildrensDayActivity() && (cdWhackSession || localStorage.getItem('lyc_cd_from_challenge') === '1') && whackScoreVal >= 350) {
+      if (isChildrensDayActivity() && (cdWhackSession || localStorage.getItem('lyc_cd_from_challenge') === '1') && whackScoreVal >= 10) {
         localStorage.removeItem('lyc_cd_from_challenge');
         setTimeout(() => showCdFlipCard(whackScoreVal), 600);
       } else {
