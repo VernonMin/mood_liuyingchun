@@ -2973,17 +2973,19 @@ function cdDaysLeft() {
 }
 
 let cdState = { dogs: 0, tokens_earned: 0, tokens_used: 0, daily_date: '' };
+let cdStateLoaded = false;
 
 async function cdInit() {
   try {
     const res = await fetch('/api/cd_state');
-    if (res.ok) cdState = await res.json();
+    if (res.ok) { cdState = await res.json(); cdStateLoaded = true; }
   } catch {}
   cdApplyDailyTokens();
   cdUpdateUI();
 }
 
 function cdSaveState() {
+  if (!cdStateLoaded) return;
   fetch('/api/cd_state', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -2995,7 +2997,6 @@ function cdApplyDailyTokens() {
   const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
   if (cdState.daily_date !== today) {
     cdState.daily_date = today;
-    // 每天重置：已用清零，已赚重设为 3
     cdState.tokens_earned = 3;
     cdState.tokens_used = 0;
     cdSaveState();
