@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>刘迎春的开心小角落</title>
 <link rel="preload" as="image" href="/shinchan_splash.png">
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     min-height: 100vh;
-    background: linear-gradient(160deg, #fdf6ee 0%, #f7f0e6 50%, #f2ebe0 100%);
+    background: radial-gradient(ellipse at center, #FDF8EE 0%, #F5EDD8 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: 'ZCOOL XiaoWei', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     overflow-x: hidden;
     position: relative;
   }
@@ -31,13 +32,13 @@
   #splash {
     position: fixed;
     inset: 0;
-    background: linear-gradient(160deg, #fdf6ee 0%, #f7f0e6 50%, #f2ebe0 100%);
+    background: radial-gradient(ellipse at center, #FDF8EE 0%, #F5EDD8 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    transition: opacity 0.8s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
 
@@ -54,7 +55,7 @@
     opacity: 0;
   }
   .splash-dog.ready {
-    animation: splashDog 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation: splashDog 1s cubic-bezier(0.34, 1.56, 0.64, 1) both, dogFloat 2s ease-in-out 1s infinite;
   }
 
   @keyframes splashDog {
@@ -65,10 +66,15 @@
     100% { transform: translateY(0); opacity: 1; }
   }
 
+  @keyframes dogFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+
   .splash-line {
     opacity: 0;
     transform: translateY(12px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
   }
 
@@ -80,25 +86,40 @@
   .splash-greeting {
     font-size: 22px;
     color: #c4756a;
-    font-weight: 700;
+    font-weight: 400;
     letter-spacing: 3px;
     margin: 24px 0 12px;
+    font-family: 'ZCOOL XiaoWei', serif;
   }
 
   .splash-sub {
-    font-size: 14px;
+    font-size: 13px;
     color: #a06870;
-    letter-spacing: 2px;
+    letter-spacing: 0.2em;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    opacity: 0.6;
   }
 
   .splash-hint {
     position: absolute;
     bottom: 48px;
-    font-size: 12px;
-    color: #d4b8b0;
-    letter-spacing: 1px;
     opacity: 0;
     animation: fadeHint 1s ease 1.8s forwards;
+  }
+
+  .pulse-dot {
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: #c4a882;
+    border-radius: 50%;
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50%      { transform: scale(1.6); opacity: 0.9; }
   }
 
   @keyframes fadeHint {
@@ -109,7 +130,7 @@
   #main {
     opacity: 0;
     transform: translateY(16px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -172,7 +193,7 @@
     background: rgba(255,255,255,0.9);
     backdrop-filter: blur(12px);
     border-radius: 36px;
-    padding: 48px 40px 40px;
+    padding: 56px 40px 48px;
     text-align: center;
     box-shadow: 0 8px 40px rgba(220,150,200,0.2), 0 2px 12px rgba(180,130,220,0.12);
     border: 2px solid rgba(255,200,230,0.6);
@@ -184,12 +205,13 @@
 
   /* 小狗 */
   .dog {
-    width: 90px;
-    height: 90px;
+    width: 72px;
+    height: 72px;
     display: inline-block;
     animation: dogWag 0.8s infinite alternate ease-in-out;
     transform-origin: bottom center;
     object-fit: contain;
+    opacity: 0.85;
   }
 
   @keyframes dogWag {
@@ -201,8 +223,9 @@
     font-size: 24px;
     color: #c4756a;
     margin: 14px 0 6px;
-    font-weight: 800;
+    font-weight: 400;
     letter-spacing: 3px;
+    font-family: 'ZCOOL XiaoWei', serif;
   }
 
   .subtitle {
@@ -215,8 +238,8 @@
   /* 语录框 */
   .quote-box {
     background: linear-gradient(135deg, #fdf6ec, #fdf0ea);
-    border-radius: 24px;
-    padding: 28px 24px;
+    border-radius: 20px;
+    padding: 36px 24px;
     min-height: 108px;
     display: flex;
     align-items: center;
@@ -241,7 +264,7 @@
     font-weight: 500;
     opacity: 0;
     transform: translateY(8px) scale(0.98);
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .quote-text.show {
@@ -251,24 +274,24 @@
 
   /* 按钮 */
   .btn {
-    background: linear-gradient(135deg, #d4857a, #c4756a);
+    background: #C4956A;
     color: white;
     border: none;
     padding: 16px 52px;
     font-size: 18px;
     font-weight: 700;
-    border-radius: 50px;
+    border-radius: 75px;
     cursor: pointer;
     letter-spacing: 3px;
-    box-shadow: 0 6px 20px rgba(196,100,210,0.35);
-    transition: all 0.2s ease;
+    box-shadow: 0 6px 20px rgba(196,149,106,0.35);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
   }
 
   .btn:hover {
     transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 10px 28px rgba(196,100,210,0.45);
+    box-shadow: 0 10px 28px rgba(196,149,106,0.45);
   }
 
   .btn:active {
@@ -468,7 +491,7 @@
     align-items: center;
     gap: 2px;
     background: #fdf6ec;
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 8px 4px;
     border: 1.5px solid #e0c8c4;
   }
@@ -611,14 +634,16 @@
   }
 
   .greeting {
-    font-size: 14px;
-    color: #a06870;
+    font-size: 12px;
+    color: #b09088;
     margin-bottom: 16px;
-    letter-spacing: 1px;
+    letter-spacing: 0.1em;
     min-height: 20px;
     opacity: 0;
     transform: translateY(6px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
   }
 
   .greeting.show {
@@ -654,10 +679,10 @@
     gap: 4px;
     background: #fdf6ec;
     border: 2px solid #e0c8c4;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 10px 14px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     min-width: 62px;
   }
 
@@ -1981,7 +2006,7 @@
   <img class="splash-dog" src="/shinchan_splash.png" alt="" />
   <p class="splash-line splash-greeting" id="splashGreeting"></p>
   <p class="splash-line splash-sub" id="splashSub"></p>
-  <span class="splash-hint">轻触任意处进入 🐾</span>
+  <span class="splash-hint"><span class="pulse-dot"></span></span>
 </div>
 
 <!-- 左侧面板 -->
@@ -3197,7 +3222,7 @@ function launchNurseRain() {
 }
 
 const splashGreetings = [
-  { main: '来啦～', sub: '' },
+  { main: '你的小角落', sub: 'Yours.' },
 ];
 
 let splashDismissed = false;
@@ -3227,7 +3252,7 @@ function dismissSplash() {
 }
 
 const picked = splashGreetings[Math.floor(Math.random() * splashGreetings.length)];
-const greetingText = picked.main;
+const greetingText = 'Yours.';
 
 window.addEventListener('DOMContentLoaded', () => {
   fetch('/api/visit', { method: 'POST', keepalive: true });
