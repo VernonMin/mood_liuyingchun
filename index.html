@@ -519,6 +519,18 @@
   }
   .bottom-link-btn:hover { color: #8b5858; }
 
+  .tagline {
+    margin-top: 24px;
+    font-size: 11px;
+    color: #c4b8b0;
+    letter-spacing: 0.15em;
+    font-family: 'Noto Serif SC', serif;
+  }
+  .tagline em {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+
 
   .bottom-modal-mask {
     position: fixed;
@@ -2106,6 +2118,8 @@
     <button class="bottom-link-btn" onclick="openHistoryModal()">📖 刘迎春的历史心情</button>
     <button class="bottom-link-btn" onclick="openGameModal()">🎮 刘迎春的摸鱼小游戏</button>
   </div>
+
+  <p class="tagline">你的小角落 · <em>Yours.</em></p>
 </div>
 </div>
 
@@ -3222,7 +3236,7 @@ function launchNurseRain() {
 }
 
 const splashGreetings = [
-  { main: '你的小角落', sub: 'Yours.' },
+  { main: '来啦～', sub: 'Yours.' },
 ];
 
 let splashDismissed = false;
@@ -3252,7 +3266,7 @@ function dismissSplash() {
 }
 
 const picked = splashGreetings[Math.floor(Math.random() * splashGreetings.length)];
-const greetingText = 'Yours.';
+const greetingText = picked.main;
 
 window.addEventListener('DOMContentLoaded', () => {
   fetch('/api/visit', { method: 'POST', keepalive: true });
