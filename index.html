@@ -151,21 +151,20 @@
 
   /* 蜡笔小新背景图 */
   .shinchan-bg {
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    opacity: 0.6;
+    transform: translate(-50%, -50%);
+    width: 360px;
+    opacity: 0.1;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
     mix-blend-mode: multiply;
-    display: block;
   }
 
   @media (max-width: 780px) {
     .shinchan-bg {
-      width: 100%;
+      width: 280px;
     }
   }
 
@@ -202,7 +201,6 @@
     width: 90%;
     position: relative;
     z-index: 10;
-    overflow: hidden;
   }
 
   /* 小狗 */
@@ -1927,6 +1925,7 @@
 </head>
 <body>
 
+<img class="shinchan-bg" src="together.jpg" alt="">
 <audio id="bgm" preload="auto"></audio>
 <div id="eyeCareOverlay"></div>
 <button id="eyeCareBtn" onclick="toggleEyeCare()" title="护眼模式">🌙 护眼</button>
@@ -2132,7 +2131,7 @@
     <button class="bottom-link-btn" onclick="openGameModal()">🎮 刘迎春的摸鱼小游戏</button>
   </div>
 
-  <img class="shinchan-bg" src="together.jpg" alt="">
+
 </div>
 </div>
 
