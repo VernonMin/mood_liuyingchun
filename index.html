@@ -3446,15 +3446,9 @@ function saveJar() {
 }
 
 // 背景音乐
-const bgmList = ['zuichibi.mp3', 'jiangnan.mp3'];
-let bgmIndex = -1;
-
 function playNextBgm() {
   const bgm = document.getElementById('bgm');
-  let next;
-  do { next = Math.floor(Math.random() * bgmList.length); } while (next === bgmIndex);
-  bgmIndex = next;
-  bgm.src = bgmList[bgmIndex];
+  bgm.src = 'daoxiang.mp3';
   bgm.volume = 0.35;
   bgm.load();
   bgm.addEventListener('canplay', function handler() {
