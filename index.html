@@ -3073,22 +3073,25 @@ function cdUpdateUI() {
   document.getElementById('childrensActivityCard').style.display = '';
 
   const slotsEl = document.getElementById('caDogs');
-  slotsEl.innerHTML = '';
-  for (let i = 0; i < CD_GIFT_TARGET; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'ca-dog-slot' + (i < dogs ? ' filled' : '');
-    if (i < dogs) {
-      const img = document.createElement('img');
-      img.src = `dog_cd${i + 1}.png`;
-      img.alt = '';
-      img.style.cursor = 'pointer';
-      img.onclick = () => {
-        document.getElementById('cdDogZoomImg').src = img.src;
-        document.getElementById('cdDogZoom').style.display = 'flex';
-      };
-      slot.appendChild(img);
+  const currentFilled = slotsEl.querySelectorAll('.ca-dog-slot.filled').length;
+  if (currentFilled !== dogs) {
+    slotsEl.innerHTML = '';
+    for (let i = 0; i < CD_GIFT_TARGET; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'ca-dog-slot' + (i < dogs ? ' filled' : '');
+      if (i < dogs) {
+        const img = document.createElement('img');
+        img.src = `dog_cd${i + 1}.png`;
+        img.alt = '';
+        img.style.cursor = 'pointer';
+        img.onclick = () => {
+          document.getElementById('cdDogZoomImg').src = img.src;
+          document.getElementById('cdDogZoom').style.display = 'flex';
+        };
+        slot.appendChild(img);
+      }
+      slotsEl.appendChild(slot);
     }
-    slotsEl.appendChild(slot);
   }
 
   const dogsLabel = document.getElementById('caDogsLabel');
