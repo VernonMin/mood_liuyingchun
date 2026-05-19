@@ -4364,6 +4364,13 @@ function toggleEyeCare() {
           document.getElementById('l520WinTxt').textContent = prize;
           step(3);
           fireCC();
+          setTimeout(() => {
+            const centerX = Math.max(8, Math.min(window.innerWidth / 2 - 31, window.innerWidth - 78));
+            _dogIsWalking = true;
+            _dogTargetX = centerX;
+            document.getElementById('dogWidget').classList.add('dog-walking');
+            _dogOnArrival = () => showDogBubble('汪呜～迎春的手气也太好了吧，连好运都偏爱你！');
+          }, 600);
           const btn = document.getElementById('l520OpenBtn');
           btn.disabled = true;
           document.getElementById('l520OpenHint').textContent = `已抽过啦：${prize}`;
