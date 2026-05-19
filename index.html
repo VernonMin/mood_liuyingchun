@@ -1959,6 +1959,10 @@
     position: absolute; top: 20px; right: 20px;
     background: none; border: none; font-size: 22px; color: #c4a882; cursor: pointer; line-height: 1;
   }
+  .l520-back {
+    position: absolute; top: 20px; left: 20px;
+    background: none; border: none; font-size: 13px; color: #c4a882; cursor: pointer; letter-spacing: 1px;
+  }
   .l520-badge {
     display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #8a5010;
     background: linear-gradient(135deg, #f8d9a0, #f0c060);
@@ -2239,7 +2243,7 @@
 
   <button class="btn" onclick="praise()">夸 我 ！</button>
   <button id="l520OpenBtn" onclick="openL520()" style="display:none">五月礼遇 · 转转看</button>
-  <span id="l520OpenHint" style="display:none"></span>
+  <span id="l520OpenHint" style="display:none">仅限一次</span>
   <button id="nurseRainBtn" onclick="launchNurseRain()">🩺 护士节限定彩蛋</button>
 
   <div class="share-row">
@@ -4162,6 +4166,7 @@ function toggleEyeCare() {
   </div>
 
   <div id="l520S2" class="l520-step">
+    <button class="l520-back" onclick="l520Back()">← 返回</button>
     <div class="l520-slogan">心有所念，皆能如愿</div>
     <div class="l520-sel-hint">已选：<strong id="l520PickedTxt"></strong></div>
     <div class="l520-wheel-wrap">
@@ -4349,6 +4354,10 @@ function toggleEyeCare() {
     return m > 5 || (m === 5 && day >= 20);
   }
 
+  window.l520Back = function () {
+    step(1);
+  };
+
   window.openL520 = function () {
     if (document.getElementById('l520OpenBtn').disabled) return;
     picked = -1;
@@ -4387,7 +4396,7 @@ function toggleEyeCare() {
         btn.disabled = true;
         hint.textContent = `已抽过啦：${record.prize}`;
       } else {
-        hint.textContent = '';
+        hint.textContent = '仅限一次';
       }
     } catch (e) {
       hint.textContent = '';
