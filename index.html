@@ -4096,7 +4096,7 @@ function toggleEyeCare() {
     const cx = canvas.width / 2, cy = canvas.height / 2, r = cx - 6;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < PRIZES.length; i++) {
       const a0  = rot - Math.PI / 2 + i * SLICE;
       const a1  = a0 + SLICE;
       const mid = (a0 + a1) / 2;
