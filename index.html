@@ -2009,6 +2009,14 @@
     transition: background 0.2s, color 0.2s;
   }
   .l520-win-close:hover { background: #c4756a; color: #fff; }
+
+  /* 覆盖全局 canvas 样式，让轮盘留在正常文档流里 */
+  #l520WC {
+    position: static;
+    display: block;
+    pointer-events: none;
+    z-index: auto;
+  }
 </style>
 </head>
 <body>
@@ -4015,7 +4023,7 @@ function toggleEyeCare() {
     <div class="l520-h1">转盘决定</div>
     <div class="l520-sel-hint">已选：<strong id="l520PickedTxt"></strong></div>
     <div class="l520-wheel-wrap">
-      <div class="l520-ptr">▼</div>
+      <div class="l520-ptr"></div>
       <canvas id="l520WC" width="260" height="260"></canvas>
     </div>
     <button class="l520-spin-btn" id="l520SpinBtn" onclick="l520Spin()">开始抽奖</button>
@@ -4111,17 +4119,15 @@ function toggleEyeCare() {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(mid);
+      const tx = cx + Math.cos(mid) * r * 0.58;
+      const ty = cy + Math.sin(mid) * r * 0.58;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#5a3010';
       ctx.font = '700 11px "Noto Serif SC", PingFang SC, serif';
       LINES[i].forEach((line, li) => {
-        ctx.fillText(line, r * 0.58, (li - 0.5) * 14);
+        ctx.fillText(line, tx, ty + (li - 0.5) * 14);
       });
-      ctx.restore();
     }
 
     ctx.beginPath();
