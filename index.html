@@ -3809,6 +3809,53 @@ document.getElementById('bgm').addEventListener('ended', playNextBgm);
 
 // 雪纳瑞狗狗
 const _dogMoodMap = { '很好': 'happy', '还行': 'okay', '有点累': 'tired', '不太好': 'sad' };
+let _lastMoodEntry = null;
+
+async function _loadLastMood() {
+  try {
+    const res = await fetch('/api/mood');
+    const moods = await res.json();
+    if (moods && moods.length > 0) _lastMoodEntry = moods[0];
+  } catch {}
+}
+
+function _getMemoryMsg() {
+  if (!_lastMoodEntry) return null;
+  const now8 = Date.now() + 8 * 3600 * 1000;
+  const today = new Date(now8).toISOString().slice(0, 10);
+  const yesterday = new Date(now8 - 86400000).toISOString().slice(0, 10);
+  const { date, mood } = _lastMoodEntry;
+  const ref = date === today ? '今天' : date === yesterday ? '昨天' : '上次';
+  const map = {
+    '很好':   [`${ref}心情很好，今天也要棒棒的`, `${ref}很开心，今天呢？`],
+    '还行':   [`${ref}说还行，今天好一点了吗`, `${ref}还行，今天也加油哦`],
+    '有点累': [`${ref}说有点累，今天好点了吗`, `${ref}辛苦了，要多休息哦`],
+    '不太好': [`${ref}不太好受，现在好一些了吗`, `${ref}心情不好，今天好一点了吗`],
+  };
+  const pool = map[mood];
+  if (!pool) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function _checkDailyGreet() {
+  const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+  if (localStorage.getItem('lyc_dog_last_greet') === today) return;
+  localStorage.setItem('lyc_dog_last_greet', today);
+  const hour = new Date(Date.now() + 8 * 3600 * 1000).getUTCHours();
+  const greetings =
+    hour < 6  ? ['这么晚了，早点休息哦', '夜深了，注意身体'] :
+    hour < 12 ? ['早上好，今天也会是好日子', '早安，今天加油哦'] :
+    hour < 18 ? ['下午好，今天过得怎么样', '下午了，记得休息一下'] :
+                ['晚上好，辛苦了', '今天也辛苦了，好好休息'];
+  const msg = greetings[Math.floor(Math.random() * greetings.length)];
+  setTimeout(() => {
+    const centerX = Math.max(8, Math.min(window.innerWidth / 2 - 31, window.innerWidth - 78));
+    _dogIsWalking = true;
+    _dogTargetX = centerX;
+    document.getElementById('dogWidget').classList.add('dog-walking');
+    _dogOnArrival = () => showDogBubble(msg);
+  }, 2500);
+}
 let _dogBubbleTimer = null;
 let _dogX = window.innerWidth - 85;
 let _dogVx = -0.9;
@@ -3901,6 +3948,10 @@ function _dogResume() {
 function _dogPause() {
   _dogIsWalking = false;
   document.getElementById('dogWidget').classList.remove('dog-walking');
+  if (_lastMoodEntry && Math.random() < 0.15) {
+    const msg = _getMemoryMsg();
+    if (msg) setTimeout(() => showDogBubble(msg), 600);
+  }
   clearTimeout(_dogPauseTimer);
   _dogPauseTimer = setTimeout(_dogResume, 1800 + Math.random() * 3200);
 }
@@ -4070,6 +4121,8 @@ function renameDog() {
   w.style.top  = _dogY + 'px';
   document.getElementById('dogNameLabel').textContent = _getDogName();
   _loadDogName();
+  _loadLastMood();
+  _checkDailyGreet();
   _dogFlipDir();
   _dogResume();
   _dogInterval = setInterval(_dogStep, 35);
