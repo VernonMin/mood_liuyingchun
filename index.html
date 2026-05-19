@@ -2088,6 +2088,31 @@
   }
   .l520-win-close:hover { background: #c4756a; color: #fff; }
 
+  /* 转盘确认弹窗 */
+  #l520ConfirmMask {
+    position: fixed; inset: 0; background: rgba(30,15,0,0.45);
+    display: flex; align-items: center; justify-content: center; z-index: 9600;
+  }
+  .l520-confirm-box {
+    background: linear-gradient(160deg, #fff8ee, #fff0e0);
+    border-radius: 20px; padding: 28px 24px 22px;
+    max-width: 280px; width: 88%; text-align: center;
+    box-shadow: 0 10px 36px rgba(100,50,0,0.18);
+  }
+  .l520-confirm-title { font-size: 15px; font-weight: 700; color: #c4756a; letter-spacing: 2px; margin-bottom: 10px; font-family: 'Noto Serif SC', serif; }
+  .l520-confirm-desc  { font-size: 12px; color: #9a6840; line-height: 1.9; margin-bottom: 22px; }
+  .l520-confirm-btns  { display: flex; gap: 12px; justify-content: center; }
+  .l520-confirm-ok {
+    background: linear-gradient(135deg, #f5a040, #e06820); color: #fff;
+    border: none; border-radius: 20px; padding: 9px 24px;
+    font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 1px;
+  }
+  .l520-confirm-cancel {
+    background: none; border: 1.5px solid #d4b090; color: #a07848;
+    border-radius: 20px; padding: 9px 24px;
+    font-size: 13px; cursor: pointer; letter-spacing: 1px;
+  }
+
   /* 覆盖全局 canvas 样式，让轮盘留在正常文档流里 */
   #l520WC {
     position: static;
@@ -2243,7 +2268,7 @@
 
   <button class="btn" onclick="praise()">夸 我 ！</button>
   <button id="l520OpenBtn" onclick="openL520()" style="display:none">五月礼遇 · 转转看</button>
-  <span id="l520OpenHint" style="display:none">仅限一次</span>
+  <span id="l520OpenHint" style="display:none"></span>
   <button id="nurseRainBtn" onclick="launchNurseRain()">🩺 护士节限定彩蛋</button>
 
   <div class="share-row">
@@ -4173,7 +4198,7 @@ function toggleEyeCare() {
       <div class="l520-ptr"></div>
       <canvas id="l520WC" width="260" height="260"></canvas>
     </div>
-    <button class="l520-spin-btn" id="l520SpinBtn" onclick="l520Spin()">开始抽奖</button>
+    <button class="l520-spin-btn" id="l520SpinBtn" onclick="l520AskSpin()">开始抽奖</button>
   </div>
 
   <div id="l520S3" class="l520-step">
@@ -4183,6 +4208,17 @@ function toggleEyeCare() {
     <div class="l520-win-name" id="l520WinTxt"></div>
     <div class="l520-win-note">随时可以来兑换</div>
     <button class="l520-win-close" onclick="closeL520()">好，我记住了</button>
+  </div>
+</div>
+
+<div id="l520ConfirmMask" style="display:none">
+  <div class="l520-confirm-box">
+    <div class="l520-confirm-title">确认参与本次礼遇？</div>
+    <div class="l520-confirm-desc">本次礼遇仅可参与一次<br>转盘结果即为最终答案</div>
+    <div class="l520-confirm-btns">
+      <button class="l520-confirm-cancel" onclick="document.getElementById('l520ConfirmMask').style.display='none'">再想想</button>
+      <button class="l520-confirm-ok" onclick="l520ConfirmSpin()">确认转动</button>
+    </div>
   </div>
 </div>
 
@@ -4358,6 +4394,16 @@ function toggleEyeCare() {
     step(1);
   };
 
+  window.l520AskSpin = function () {
+    if (picked < 0) return;
+    document.getElementById('l520ConfirmMask').style.display = 'flex';
+  };
+
+  window.l520ConfirmSpin = function () {
+    document.getElementById('l520ConfirmMask').style.display = 'none';
+    l520Spin();
+  };
+
   window.openL520 = function () {
     if (document.getElementById('l520OpenBtn').disabled) return;
     picked = -1;
@@ -4396,7 +4442,7 @@ function toggleEyeCare() {
         btn.disabled = true;
         hint.textContent = `已抽过啦：${record.prize}`;
       } else {
-        hint.textContent = '仅限一次';
+        hint.textContent = '';
       }
     } catch (e) {
       hint.textContent = '';
