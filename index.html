@@ -4016,6 +4016,15 @@ function _getDogName() {
   return localStorage.getItem('lyc_dog_name') || '豆豆';
 }
 
+async function _loadDogName() {
+  try {
+    const res = await fetch('/api/dog_name');
+    const { name } = await res.json();
+    localStorage.setItem('lyc_dog_name', name);
+    document.getElementById('dogNameLabel').textContent = name;
+  } catch {}
+}
+
 function renameDog() {
   const label = document.getElementById('dogNameLabel');
   const input = document.getElementById('dogNameInput');
@@ -4029,6 +4038,11 @@ function renameDog() {
     const name = input.value.trim() || '豆豆';
     localStorage.setItem('lyc_dog_name', name);
     label.textContent = name;
+    fetch('/api/dog_name', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    }).catch(() => {});
     label.style.display = '';
     input.style.display = 'none';
     input.removeEventListener('blur', confirm);
@@ -4055,6 +4069,7 @@ function renameDog() {
   w.style.left = _dogX + 'px';
   w.style.top  = _dogY + 'px';
   document.getElementById('dogNameLabel').textContent = _getDogName();
+  _loadDogName();
   _dogFlipDir();
   _dogResume();
   _dogInterval = setInterval(_dogStep, 35);
