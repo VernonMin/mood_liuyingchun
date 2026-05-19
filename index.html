@@ -3294,10 +3294,10 @@ function cdUpdateUI() {
 
   const flipTokens = cdState.flip_tokens || 0;
   const flipRow = document.getElementById('caFlipRow');
-  if (flipTokens > 0 && dogs < CD_GIFT_TARGET) {
+  if (dogs < CD_GIFT_TARGET) {
     flipRow.style.display = '';
     document.getElementById('caFlipLabel').textContent = `翻牌资格：${flipTokens}次`;
-    document.getElementById('caFlipBtn').disabled = false;
+    document.getElementById('caFlipBtn').disabled = flipTokens <= 0;
   } else {
     flipRow.style.display = 'none';
   }
