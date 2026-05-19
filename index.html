@@ -3838,15 +3838,12 @@ function _getMemoryMsg() {
 }
 
 function _checkDailyGreet() {
-  const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
-  if (localStorage.getItem('lyc_dog_last_greet') === today) return;
-  localStorage.setItem('lyc_dog_last_greet', today);
   const hour = new Date(Date.now() + 8 * 3600 * 1000).getUTCHours();
   const greetings =
-    hour < 6  ? ['这么晚了，早点休息哦', '夜深了，注意身体'] :
-    hour < 12 ? ['早上好，今天也会是好日子', '早安，今天加油哦'] :
-    hour < 18 ? ['下午好，今天过得怎么样', '下午了，记得休息一下'] :
-                ['晚上好，辛苦了', '今天也辛苦了，好好休息'];
+    hour < 6  ? ['迎春，这么晚了，早点休息哦', '迎春，夜深了，注意身体'] :
+    hour < 12 ? ['迎春早上好，今天也会是好日子', '早安迎春，今天加油哦'] :
+    hour < 18 ? ['迎春下午好，今天过得怎么样', '迎春，下午了，记得休息一下'] :
+                ['迎春晚上好，辛苦了', '迎春，今天也辛苦了，好好休息'];
   const msg = greetings[Math.floor(Math.random() * greetings.length)];
   setTimeout(() => {
     const centerX = Math.max(8, Math.min(window.innerWidth / 2 - 31, window.innerWidth - 78));
