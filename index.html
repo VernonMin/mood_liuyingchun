@@ -4357,8 +4357,14 @@ function toggleEyeCare() {
   };
 
   window.closeL520 = function () {
+    const onWinStep = document.getElementById('l520S3').classList.contains('on');
     document.getElementById('l520Overlay').style.display = 'none';
     document.getElementById('l520CC').style.display = 'none';
+    if (onWinStep) {
+      const btn = document.getElementById('l520OpenBtn');
+      btn.disabled = false;
+      document.getElementById('l520OpenHint').textContent = '';
+    }
   };
 
   async function init() {
