@@ -4476,6 +4476,11 @@ function toggleEyeCare() {
   window.l520AskSpin = function () {
     if (picked < 0) return;
     document.getElementById('l520ConfirmMask').style.display = 'flex';
+    const centerX = Math.max(8, Math.min(window.innerWidth / 2 - 31, window.innerWidth - 78));
+    _dogIsWalking = true;
+    _dogTargetX = centerX;
+    document.getElementById('dogWidget').classList.add('dog-walking');
+    _dogOnArrival = () => showDogBubble('迎春，加油，我帮你吹个好运汪～');
   };
 
   window.l520ConfirmSpin = function () {
