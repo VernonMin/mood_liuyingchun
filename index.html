@@ -4008,6 +4008,7 @@ function toggleEyeCare() {
       <div class="l520-card" onclick="l520Pick(0,this)">影视会员月卡/季卡</div>
       <div class="l520-card" onclick="l520Pick(1,this)">追剧零食大礼包</div>
       <div class="l520-card" onclick="l520Pick(2,this)">指定奶茶一杯</div>
+      <div class="l520-card" onclick="l520Pick(3,this)">漂亮马克杯一只</div>
     </div>
   </div>
 
@@ -4034,11 +4035,11 @@ function toggleEyeCare() {
 
 <script>
 (function () {
-  const PRIZES     = ['影视会员月卡/季卡', '追剧零食大礼包', '指定奶茶一杯'];
-  const COLORS     = ['#f5c8a0', '#f8e098', '#f0e0d0'];
-  const LINES      = [['影视会员', '月卡/季卡'], ['追剧零食', '大礼包'], ['指定奶茶', '一杯']];
+  const PRIZES     = ['影视会员月卡/季卡', '追剧零食大礼包', '指定奶茶一杯', '漂亮马克杯一只'];
+  const COLORS     = ['#f5c8a0', '#f8e098', '#f0e0d0', '#f5d8c0'];
+  const LINES      = [['影视会员', '月卡/季卡'], ['追剧零食', '大礼包'], ['指定奶茶', '一杯'], ['漂亮马克杯', '一只']];
   const TWO_PI     = Math.PI * 2;
-  const SLICE      = TWO_PI / 3;
+  const SLICE      = TWO_PI / PRIZES.length;
   let picked = -1;
 
   function step(n) {
