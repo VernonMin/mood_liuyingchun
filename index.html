@@ -1944,22 +1944,57 @@
   .l520-h1 { font-size: 22px; font-weight: 700; color: #c4756a; letter-spacing: 3px; margin-bottom: 8px; }
   .l520-hint { font-size: 13px; color: #c4a882; letter-spacing: 1px; margin-bottom: 24px; }
 
-  .l520-cards { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+  .l520-cards { display: flex; flex-direction: column; gap: 14px; width: 100%; }
   .l520-card {
-    background: linear-gradient(135deg, #f8e8c8, #f5d898);
-    border: 2px solid rgba(200,150,60,0.25); border-radius: 16px;
-    padding: 16px 20px; font-size: 16px; font-weight: 700; color: #7a4820; letter-spacing: 1.5px;
-    cursor: pointer; box-shadow: 0 3px 12px rgba(160,100,30,0.1);
-    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
+    position: relative;
+    background: linear-gradient(150deg, #fdf6ee, #f8eed8);
+    border: 1.5px solid rgba(200,165,90,0.3);
+    border-radius: 16px;
+    padding: 18px 44px 18px 22px;
+    font-size: 15px; font-weight: 600; color: #6a4020; letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(160,100,30,0.07), 0 1px 2px rgba(160,100,30,0.05);
+    transition: transform 0.2s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     -webkit-tap-highlight-color: transparent;
+    text-align: left;
   }
-  .l520-card:hover  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(160,100,30,0.18); }
-  .l520-card:active { transform: scale(0.97); }
+  .l520-card::before {
+    content: '🐾';
+    position: absolute;
+    bottom: 8px; right: 10px;
+    font-size: 15px;
+    opacity: 0.1;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .l520-card::after {
+    content: '';
+    position: absolute;
+    top: 50%; right: 16px;
+    transform: translateY(-50%);
+    font-size: 11px; font-weight: 700; color: #b07030; letter-spacing: 0.5px;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .l520-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(160,100,30,0.13), 0 2px 6px rgba(160,100,30,0.08);
+    border-color: rgba(200,165,90,0.55);
+  }
+  .l520-card:active { transform: scale(0.97); box-shadow: 0 1px 4px rgba(160,100,30,0.08); }
   .l520-card.picked {
-    border-color: #c4756a;
-    background: linear-gradient(135deg, #fde8d0, #f8c8a0);
-    box-shadow: 0 4px 16px rgba(196,117,106,0.3);
+    border-color: #c8903a;
+    background: linear-gradient(150deg, #fef0d8, #f8e0a8);
+    box-shadow: 0 4px 16px rgba(200,145,60,0.18), 0 1px 4px rgba(200,145,60,0.12);
   }
+  .l520-card.picked::before { opacity: 0.22; }
+  .l520-card.picked::after  { content: '✓ 已选'; opacity: 1; }
+
+  .l520-loading {
+    font-size: 13px; color: #c4a882; letter-spacing: 1.5px;
+    animation: l520Pulse 1s ease-in-out infinite;
+    margin-top: 8px;
+  }
+  @keyframes l520Pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
 
   .l520-sel-hint { font-size: 13px; color: #9a6860; letter-spacing: 1px; margin-bottom: 20px; }
   .l520-sel-hint strong { color: #c4756a; }
@@ -4009,12 +4044,12 @@ function toggleEyeCare() {
   <button class="l520-x" onclick="closeL520()">×</button>
 
   <div id="l520S1" class="l520-step">
-    <div class="l520-h1">选一个小心愿</div>
-    <div class="l520-hint">选好了，交给转盘来决定</div>
-    <div class="l520-cards">
-      <div class="l520-card" onclick="l520Pick(0,this)">影视会员月卡/季卡</div>
+    <div class="l520-h1">随心选一份</div>
+    <div class="l520-hint" id="l520Hint1">选好了，就可以去转一转啦</div>
+    <div class="l520-cards" id="l520Cards">
+      <div class="l520-card" onclick="l520Pick(0,this)">光影陪伴权益</div>
       <div class="l520-card" onclick="l520Pick(1,this)">追剧零食大礼包</div>
-      <div class="l520-card" onclick="l520Pick(2,this)">指定奶茶一杯</div>
+      <div class="l520-card" onclick="l520Pick(2,this)">清甜日常补给</div>
       <div class="l520-card" onclick="l520Pick(3,this)">漂亮马克杯一只</div>
     </div>
   </div>
@@ -4041,9 +4076,9 @@ function toggleEyeCare() {
 
 <script>
 (function () {
-  const PRIZES     = ['影视会员月卡/季卡', '追剧零食大礼包', '指定奶茶一杯', '漂亮马克杯一只'];
+  const PRIZES     = ['光影陪伴权益', '追剧零食大礼包', '清甜日常补给', '漂亮马克杯一只'];
   const COLORS     = ['#f5c8a0', '#f8e098', '#f0e0d0', '#f5d8c0'];
-  const LINES      = [['影视会员', '月卡/季卡'], ['追剧零食', '大礼包'], ['指定奶茶', '一杯'], ['漂亮马克杯', '一只']];
+  const LINES      = [['光影陪伴', '权益'], ['追剧零食', '大礼包'], ['清甜日常', '补给'], ['漂亮马克杯', '一只']];
   const TWO_PI     = Math.PI * 2;
   const SLICE      = TWO_PI / PRIZES.length;
   let picked = -1;
@@ -4063,9 +4098,19 @@ function toggleEyeCare() {
     document.querySelectorAll('.l520-card').forEach(c => c.classList.remove('picked'));
     el.classList.add('picked');
     setTimeout(() => {
+      const hint = document.getElementById('l520Hint1');
+      hint.textContent = '正在加载今日好运…';
+      hint.className = 'l520-loading';
+      document.getElementById('l520Cards').style.pointerEvents = 'none';
+    }, 220);
+    setTimeout(() => {
       document.getElementById('l520PickedTxt').textContent = PRIZES[idx];
+      const hint = document.getElementById('l520Hint1');
+      hint.textContent = '选好了，就可以去转一转啦';
+      hint.className = 'l520-hint';
+      document.getElementById('l520Cards').style.pointerEvents = '';
       step(2);
-    }, 260);
+    }, 860);
   };
 
   window.l520Spin = function () {
