@@ -1964,10 +1964,26 @@
   .l520-sel-hint { font-size: 13px; color: #9a6860; letter-spacing: 1px; margin-bottom: 20px; }
   .l520-sel-hint strong { color: #c4756a; }
   .l520-wheel-wrap { position: relative; padding-top: 18px; margin-bottom: 22px; }
+  #l520OpenBtn {
+    display: block;
+    margin: 16px auto 0;
+    background: linear-gradient(135deg, #c4756a, #a85c52);
+    color: #fff; border: none; border-radius: 28px;
+    padding: 12px 32px; font-size: 14px; font-weight: 700;
+    font-family: 'Noto Serif SC', serif; letter-spacing: 2px;
+    cursor: pointer; box-shadow: 0 4px 16px rgba(196,117,106,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  #l520OpenBtn:hover  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(196,117,106,0.45); }
+  #l520OpenBtn:active { transform: scale(0.96); }
+
   .l520-ptr {
-    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    font-size: 22px; color: #c4756a; line-height: 1;
-    filter: drop-shadow(0 2px 3px rgba(196,117,106,0.45));
+    position: absolute; top: -2px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 20px solid #c4756a;
+    filter: drop-shadow(0 3px 4px rgba(196,117,106,0.5));
   }
   .l520-spin-btn {
     background: linear-gradient(135deg, #c4756a, #a85c52); color: #fff;
@@ -2195,6 +2211,8 @@
     <p class="mood-status" id="moodStatus"></p>
     <button class="jar-view-btn" onclick="openJarView()">🫙 好心情罐子</button>
   </div>
+
+  <button id="l520OpenBtn" onclick="openL520()" style="display:none">520 小心愿抽奖</button>
 
   <div class="bottom-links">
     <button class="bottom-link-btn" onclick="openFestivalsModal()">📅 刘迎春的小节日</button>
@@ -4159,15 +4177,25 @@ function toggleEyeCare() {
     })();
   }
 
+  window.openL520 = function () {
+    picked = -1;
+    document.querySelectorAll('.l520-card').forEach(c => c.classList.remove('picked'));
+    document.getElementById('l520Overlay').style.display = 'flex';
+    step(1);
+  };
+
   window.closeL520 = function () {
     document.getElementById('l520Overlay').style.display = 'none';
     document.getElementById('l520CC').style.display = 'none';
   };
 
   function init() {
-    if (new URLSearchParams(location.search).get('lottery') === '1') {
-      document.getElementById('l520Overlay').style.display = 'flex';
-      step(1);
+    const params = new URLSearchParams(location.search);
+    if (params.get('lottery') === '1') {
+      localStorage.setItem('l520dev', '1');
+    }
+    if (localStorage.getItem('l520dev') === '1') {
+      document.getElementById('l520OpenBtn').style.display = 'block';
     }
   }
 
