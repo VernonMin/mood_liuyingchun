@@ -2045,6 +2045,13 @@
     opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none;
     background: linear-gradient(135deg, #c4a882, #b09878);
   }
+  .l520-sub-label {
+    display: block;
+    font-size: 10px;
+    color: #c4a882;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
   #l520OpenHint {
     display: block;
     font-size: 11px;
@@ -2268,6 +2275,7 @@
 
   <button class="btn" onclick="praise()">夸 我 ！</button>
   <button id="l520OpenBtn" onclick="openL520()" style="display:none">五月礼遇</button>
+  <span class="l520-sub-label" id="l520SubLabel" style="display:none">转盘抽礼</span>
   <span id="l520OpenHint" style="display:none"></span>
   <button id="nurseRainBtn" onclick="launchNurseRain()">🩺 护士节限定彩蛋</button>
 
@@ -4428,6 +4436,7 @@ function toggleEyeCare() {
     const hint = document.getElementById('l520OpenHint');
     btn.style.display  = 'block';
     hint.style.display = 'block';
+    document.getElementById('l520SubLabel').style.display = 'block';
 
     if (!devMode && !isUnlocked()) {
       btn.disabled = true;
