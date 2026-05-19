@@ -4242,6 +4242,9 @@ function toggleEyeCare() {
           document.getElementById('l520WinTxt').textContent = prize;
           step(3);
           fireCC();
+          const btn = document.getElementById('l520OpenBtn');
+          btn.disabled = true;
+          document.getElementById('l520OpenHint').textContent = `已抽过啦：${prize}`;
           fetch('/api/lottery520', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -4357,14 +4360,8 @@ function toggleEyeCare() {
   };
 
   window.closeL520 = function () {
-    const onWinStep = document.getElementById('l520S3').classList.contains('on');
     document.getElementById('l520Overlay').style.display = 'none';
     document.getElementById('l520CC').style.display = 'none';
-    if (onWinStep) {
-      const btn = document.getElementById('l520OpenBtn');
-      btn.disabled = false;
-      document.getElementById('l520OpenHint').textContent = '';
-    }
   };
 
   async function init() {
