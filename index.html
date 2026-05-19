@@ -1804,6 +1804,29 @@
   }
   .ca-play-btn:active   { transform: scale(0.94); }
   .ca-play-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+  .ca-flip-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(200,130,60,0.25);
+  }
+  .ca-flip-label { font-size: 12px; color: #a07040; font-weight: 600; }
+  .ca-flip-btn {
+    background: linear-gradient(135deg, #8ec5fc, #5b9ef8);
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+  .ca-flip-btn:active   { transform: scale(0.94); }
+  .ca-flip-btn:disabled { opacity: 0.38; cursor: not-allowed; }
 
   /* 进度 toast */
   #cdToast {
@@ -2239,6 +2262,10 @@
     <div class="ca-footer">
       <span class="ca-tokens" id="caTokens">游戏机会：0次</span>
       <button class="ca-play-btn" id="caPlayBtn" onclick="openChallengeGame()">去挑战 →</button>
+    </div>
+    <div class="ca-flip-row" id="caFlipRow" style="display:none">
+      <span class="ca-flip-label" id="caFlipLabel">翻牌资格：0次</span>
+      <button class="ca-flip-btn" id="caFlipBtn" onclick="openCdFlip()">开始翻牌 →</button>
     </div>
   </div>
 
@@ -2701,7 +2728,14 @@ function startWhack() {
       }).catch(() => {});
       if (isChildrensDayActivity() && (cdWhackSession || localStorage.getItem('lyc_cd_from_challenge') === '1') && whackScoreVal >= 350) {
         localStorage.removeItem('lyc_cd_from_challenge');
-        setTimeout(() => showCdFlipCard(whackScoreVal), 600);
+        cdState.flip_tokens = (cdState.flip_tokens || 0) + 1;
+        cdSaveState();
+        cdUpdateUI();
+        const toast = document.getElementById('cdToast');
+        toast.textContent = `打到 ${whackScoreVal} 分！获得翻牌资格 +1，共 ${cdState.flip_tokens} 次`;
+        toast.classList.add('show');
+        clearTimeout(cdToastTimer);
+        cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
       } else {
         localStorage.removeItem('lyc_cd_from_challenge');
       }
@@ -3168,7 +3202,7 @@ function cdDaysLeft() {
   return Math.max(0, Math.ceil((end - b) / 86400000));
 }
 
-let cdState = { dogs: 0, tokens_earned: 0, tokens_used: 0, daily_date: '' };
+let cdState = { dogs: 0, tokens_earned: 0, tokens_used: 0, daily_date: '', flip_tokens: 0 };
 let cdStateLoaded = false;
 
 async function cdInit() {
@@ -3252,11 +3286,21 @@ function cdUpdateUI() {
 
   const hint = document.getElementById('caHint');
   if (dogs >= CD_GIFT_TARGET) hint.textContent = '集齐啦！找我领你的儿童节小礼品';
-  else hint.textContent = '每夸我一次得一次机会，打到 350 分可抽奖';
+  else hint.textContent = '每夸我一次得一次机会，打到 350 分可获得翻牌资格';
 
   const btn = document.getElementById('caPlayBtn');
   btn.disabled = tokens <= 0;
   btn.textContent = tokens > 0 ? '去挑战 →' : '暂无机会';
+
+  const flipTokens = cdState.flip_tokens || 0;
+  const flipRow = document.getElementById('caFlipRow');
+  if (flipTokens > 0 && dogs < CD_GIFT_TARGET) {
+    flipRow.style.display = '';
+    document.getElementById('caFlipLabel').textContent = `翻牌资格：${flipTokens}次`;
+    document.getElementById('caFlipBtn').disabled = false;
+  } else {
+    flipRow.style.display = 'none';
+  }
 }
 
 function openChallengeGame() {
@@ -3269,9 +3313,11 @@ function openChallengeGame() {
   setTimeout(() => startGame('whack'), 80);
 }
 
-// 翻牌抽奖（打地鼠结束后触发）
+// 翻牌抽奖
 function showCdFlipCard(score) {
-  document.getElementById('cdFlipScore').textContent = score;
+  const titleEl = document.getElementById('cdFlipTitle');
+  titleEl.textContent = score != null ? `打到 ${score} 分！` : '翻牌抽奖';
+  document.getElementById('cdFlipNextBtn').style.display = 'none';
   const grid = document.getElementById('cdFlipGrid');
   grid.innerHTML = '';
   const winIdx = Math.floor(Math.random() * 9);
@@ -3279,15 +3325,27 @@ function showCdFlipCard(score) {
     const item = document.createElement('div');
     item.className = 'cd-flip-item';
     item.dataset.win = i === winIdx ? '1' : '0';
-    item.textContent = '🎈';
+    item.textContent = '?';
     item.onclick = () => cdFlipPick(item);
     grid.appendChild(item);
   }
   document.getElementById('cdFlipOverlay').style.display = 'flex';
 }
 
+function openCdFlip() {
+  if ((cdState.flip_tokens || 0) <= 0) return;
+  cdState.flip_tokens -= 1;
+  cdSaveState();
+  cdUpdateUI();
+  showCdFlipCard(null);
+}
+
 let cdFlipDone = false;
 let cdWhackSession = false;
+
+function cdFlipNext() {
+  openCdFlip();
+}
 function cdFlipPick(card) {
   if (cdFlipDone) return;
   cdFlipDone = true;
@@ -3299,19 +3357,26 @@ function cdFlipPick(card) {
     if (c.dataset.win === '1') c.classList.add('win-card');
   });
   setTimeout(() => {
-    document.getElementById('cdFlipOverlay').style.display = 'none';
     cdFlipDone = false;
     if (isWin) {
+      document.getElementById('cdFlipOverlay').style.display = 'none';
       cdState.dogs += 1;
       cdSaveState();
       showCdWin(cdState.dogs);
     } else {
-      const toast = document.getElementById('cdToast');
-      toast.textContent = '💪 差一点点，再来一次！';
-      toast.classList.add('show');
-      clearTimeout(cdToastTimer);
-      cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-      cdUpdateUI();
+      const remaining = cdState.flip_tokens || 0;
+      if (remaining > 0) {
+        document.getElementById('cdFlipTitle').textContent = `差一点！还剩 ${remaining} 次资格`;
+        document.getElementById('cdFlipNextBtn').style.display = '';
+      } else {
+        document.getElementById('cdFlipOverlay').style.display = 'none';
+        const toast = document.getElementById('cdToast');
+        toast.textContent = '差一点点，再来一次！';
+        toast.classList.add('show');
+        clearTimeout(cdToastTimer);
+        cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+        cdUpdateUI();
+      }
     }
   }, 1600);
 }
@@ -3324,7 +3389,11 @@ function showCdWin(dogs) {
 function closeCdWin() {
   document.getElementById('cdWinScreen').style.display = 'none';
   cdUpdateUI();
-  if (cdState.dogs >= CD_GIFT_TARGET) setTimeout(showCdGift, 500);
+  if (cdState.dogs >= CD_GIFT_TARGET) {
+    setTimeout(showCdGift, 500);
+  } else if ((cdState.flip_tokens || 0) > 0) {
+    setTimeout(openCdFlip, 400);
+  }
 }
 function showCdGift() {
   document.getElementById('cdGiftScreen').style.display = 'flex';
@@ -4015,7 +4084,7 @@ function toggleEyeCare() {
     <button class="ca-rules-close" onclick="document.getElementById('caRulesModal').style.display='none'">×</button>
     <div class="ca-rules-title">活动规则</div>
     <div class="ca-rule">① 每天自动获得 3 次游戏机会，夸我可额外获得</div>
-    <div class="ca-rule">② 打地鼠得分达到 350 分，可以翻牌抽奖</div>
+    <div class="ca-rule">② 打地鼠得分达到 350 分，获得翻牌资格（可存起来一次性开）</div>
     <div class="ca-rule">③ 翻到小狗即可收入囊中，集齐 5 只可领儿童节小礼品</div>
   </div>
 </div>
@@ -4027,9 +4096,10 @@ function toggleEyeCare() {
 
 <div id="cdFlipOverlay" style="display:none">
   <div class="cd-flip-box">
-    <div class="cd-flip-title">🎉 打到 <span id="cdFlipScore"></span> 分！</div>
+    <div class="cd-flip-title" id="cdFlipTitle"></div>
     <div class="cd-flip-subtitle">翻一张，看看能不能集到小狗～</div>
     <div class="cd-flip-grid" id="cdFlipGrid"></div>
+    <button class="ca-flip-btn" id="cdFlipNextBtn" style="display:none;margin-top:16px;width:100%" onclick="cdFlipNext()">继续翻下一张 →</button>
   </div>
 </div>
 

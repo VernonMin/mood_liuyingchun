@@ -4,7 +4,7 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-const DEFAULT = { dogs: 0, tokens_earned: 0, tokens_used: 0, daily_date: '' };
+const DEFAULT = { dogs: 0, tokens_earned: 0, tokens_used: 0, daily_date: '', flip_tokens: 0 };
 
 export async function onRequestOptions() {
   return new Response(null, { headers: CORS });
