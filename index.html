@@ -4240,11 +4240,7 @@ function toggleEyeCare() {
   };
 
   function init() {
-    const params = new URLSearchParams(location.search);
-    if (params.get('lottery') === '1') {
-      localStorage.setItem('l520dev', '1');
-    }
-    if (localStorage.getItem('l520dev') === '1') {
+    if (new URLSearchParams(location.search).get('lottery') === '1') {
       document.getElementById('l520OpenBtn').style.display = 'block';
     }
   }
