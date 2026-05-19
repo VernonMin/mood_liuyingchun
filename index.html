@@ -4148,7 +4148,7 @@ function toggleEyeCare() {
 
   <div id="l520S1" class="l520-step">
     <div class="l520-h1">选一个，交给今天的运气</div>
-    <div class="l520-hint" id="l520Hint1">选好了，就可以去转一转啦</div>
+    <div class="l520-hint" id="l520Hint1">选好了，就可以去转一转了</div>
     <div class="l520-cards" id="l520Cards">
       <div class="l520-card" onclick="l520Pick(0,this)">软乎乎毛绒玩偶</div>
       <div class="l520-card" onclick="l520Pick(1,this)">宅家追剧礼盒（零食+小毯子）</div>
@@ -4212,7 +4212,7 @@ function toggleEyeCare() {
     setTimeout(() => {
       document.getElementById('l520PickedTxt').textContent = PRIZES[idx];
       const hint = document.getElementById('l520Hint1');
-      hint.textContent = '选好了，就可以去转一转啦';
+      hint.textContent = '选好了，就可以去转一转了';
       hint.className = 'l520-hint';
       document.getElementById('l520Cards').style.pointerEvents = '';
       step(2);
@@ -4350,7 +4350,7 @@ function toggleEyeCare() {
     picked = -1;
     document.querySelectorAll('.l520-card').forEach(c => c.classList.remove('picked'));
     const hint = document.getElementById('l520Hint1');
-    hint.textContent = '选好了，就可以去转一转啦';
+    hint.textContent = '选好了，就可以去转一转了';
     hint.className = 'l520-hint';
     document.getElementById('l520Cards').style.pointerEvents = '';
     document.getElementById('l520Overlay').style.display = 'flex';
