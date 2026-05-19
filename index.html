@@ -2382,7 +2382,11 @@
       <div class="whack-grid" id="whackGrid"></div>
       <div class="game-done" id="whackDone" style="display:none">
         得了 <strong id="whackFinal">0</strong> 分！
-        <button class="game-reset" onclick="startWhack()">再来一局</button>
+        <div id="whackFlipMsg" style="display:none;font-size:12px;color:#c86820;margin:6px 0 2px;font-weight:600"></div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px">
+          <button class="game-reset" onclick="startWhack()">再来一局</button>
+          <button class="game-reset" id="whackCloseBtn" style="display:none;background:#aaa" onclick="stopAllGames();closeBottomModal('gameModal')">关闭</button>
+        </div>
       </div>
     </div>
 
@@ -2731,13 +2735,14 @@ function startWhack() {
         cdState.flip_tokens = (cdState.flip_tokens || 0) + 1;
         cdSaveState();
         cdUpdateUI();
-        const toast = document.getElementById('cdToast');
-        toast.textContent = `打到 ${whackScoreVal} 分！获得翻牌资格 +1，共 ${cdState.flip_tokens} 次`;
-        toast.classList.add('show');
-        clearTimeout(cdToastTimer);
-        cdToastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+        const msg = document.getElementById('whackFlipMsg');
+        msg.textContent = `获得翻牌资格 +1，共 ${cdState.flip_tokens} 次，可在活动卡片开奖`;
+        msg.style.display = '';
+        document.getElementById('whackCloseBtn').style.display = '';
       } else {
         localStorage.removeItem('lyc_cd_from_challenge');
+        document.getElementById('whackFlipMsg').style.display = 'none';
+        document.getElementById('whackCloseBtn').style.display = 'none';
       }
     }
   }, 1000);
@@ -3345,6 +3350,18 @@ let cdWhackSession = false;
 
 function cdFlipNext() {
   openCdFlip();
+}
+
+function closeCdFlipOverlay() {
+  const hasFlipped = document.querySelector('#cdFlipGrid .cd-flip-item.flipped');
+  if (!hasFlipped) {
+    cdState.flip_tokens = (cdState.flip_tokens || 0) + 1;
+    cdSaveState();
+    cdUpdateUI();
+  }
+  cdFlipDone = false;
+  document.getElementById('cdFlipNextBtn').style.display = 'none';
+  document.getElementById('cdFlipOverlay').style.display = 'none';
 }
 function cdFlipPick(card) {
   if (cdFlipDone) return;
@@ -4095,7 +4112,8 @@ function toggleEyeCare() {
 </div>
 
 <div id="cdFlipOverlay" style="display:none">
-  <div class="cd-flip-box">
+  <div class="cd-flip-box" style="position:relative">
+    <button class="cd-reward-close" onclick="closeCdFlipOverlay()">×</button>
     <div class="cd-flip-title" id="cdFlipTitle"></div>
     <div class="cd-flip-subtitle">翻一张，看看能不能集到小狗～</div>
     <div class="cd-flip-grid" id="cdFlipGrid"></div>
