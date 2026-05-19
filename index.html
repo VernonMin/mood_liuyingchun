@@ -1921,6 +1921,78 @@
     background: none; border: none;
     font-size: 24px; color: #c4a882; cursor: pointer;
   }
+
+  /* ── 520 抽奖 ── */
+  #l520Overlay {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at center, #FDF8EE 0%, #F5EDD8 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 8500; text-align: center; padding: 24px 20px;
+    font-family: 'Noto Serif SC', 'PingFang SC', serif;
+  }
+  .l520-x {
+    position: absolute; top: 20px; right: 20px;
+    background: none; border: none; font-size: 22px; color: #c4a882; cursor: pointer; line-height: 1;
+  }
+  .l520-badge {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #8a5010;
+    background: linear-gradient(135deg, #f8d9a0, #f0c060);
+    padding: 3px 14px; border-radius: 20px; margin-bottom: 14px;
+  }
+  .l520-step { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 300px; }
+  .l520-step.on { display: flex; }
+  .l520-h1 { font-size: 22px; font-weight: 700; color: #c4756a; letter-spacing: 3px; margin-bottom: 8px; }
+  .l520-hint { font-size: 13px; color: #c4a882; letter-spacing: 1px; margin-bottom: 24px; }
+
+  .l520-cards { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+  .l520-card {
+    background: linear-gradient(135deg, #f8e8c8, #f5d898);
+    border: 2px solid rgba(200,150,60,0.25); border-radius: 16px;
+    padding: 16px 20px; font-size: 16px; font-weight: 700; color: #7a4820; letter-spacing: 1.5px;
+    cursor: pointer; box-shadow: 0 3px 12px rgba(160,100,30,0.1);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .l520-card:hover  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(160,100,30,0.18); }
+  .l520-card:active { transform: scale(0.97); }
+  .l520-card.picked {
+    border-color: #c4756a;
+    background: linear-gradient(135deg, #fde8d0, #f8c8a0);
+    box-shadow: 0 4px 16px rgba(196,117,106,0.3);
+  }
+
+  .l520-sel-hint { font-size: 13px; color: #9a6860; letter-spacing: 1px; margin-bottom: 20px; }
+  .l520-sel-hint strong { color: #c4756a; }
+  .l520-wheel-wrap { position: relative; padding-top: 18px; margin-bottom: 22px; }
+  .l520-ptr {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    font-size: 22px; color: #c4756a; line-height: 1;
+    filter: drop-shadow(0 2px 3px rgba(196,117,106,0.45));
+  }
+  .l520-spin-btn {
+    background: linear-gradient(135deg, #c4756a, #a85c52); color: #fff;
+    border: none; border-radius: 28px; padding: 14px 44px;
+    font-size: 16px; font-weight: 700; font-family: 'Noto Serif SC', serif; letter-spacing: 2px;
+    cursor: pointer; box-shadow: 0 6px 20px rgba(196,117,106,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .l520-spin-btn:hover   { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(196,117,106,0.45); }
+  .l520-spin-btn:active  { transform: scale(0.96); }
+  .l520-spin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none; }
+
+  .l520-win-float { font-size: 58px; margin-bottom: 16px; animation: l520Flt 2s ease-in-out infinite; }
+  @keyframes l520Flt { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .l520-win-h { font-size: 24px; font-weight: 700; color: #c4756a; letter-spacing: 3px; margin-bottom: 12px; }
+  .l520-win-deco { width: 50px; height: 1px; background: linear-gradient(90deg,transparent,#c4a882,transparent); margin: 0 auto 14px; }
+  .l520-win-name { font-size: 20px; font-weight: 700; color: #7a4820; letter-spacing: 2px; margin-bottom: 8px; }
+  .l520-win-note { font-size: 13px; color: #c4a882; letter-spacing: 1px; line-height: 1.9; margin-bottom: 28px; }
+  .l520-win-close {
+    background: none; border: 2px solid #c4756a; color: #c4756a;
+    border-radius: 28px; padding: 12px 36px; font-size: 14px; font-weight: 700;
+    font-family: 'Noto Serif SC', serif; letter-spacing: 2px; cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .l520-win-close:hover { background: #c4756a; color: #fff; }
 </style>
 </head>
 <body>
@@ -3904,5 +3976,207 @@ function toggleEyeCare() {
   <div class="cd-reward-msg">你集齐了 5 只小狗！<br>快来找我领你的儿童节专属礼物吧 🎈</div>
   <div class="cd-reward-hint">联系我来领奖～</div>
 </div>
+
+<!-- 520 抽奖 -->
+<canvas id="l520CC" style="position:fixed;top:0;left:0;pointer-events:none;z-index:8600;display:none"></canvas>
+<div id="l520Overlay" style="display:none">
+  <button class="l520-x" onclick="closeL520()">×</button>
+
+  <div id="l520S1" class="l520-step">
+    <div class="l520-badge">✦ 5 · 2 · 0 ✦</div>
+    <div class="l520-h1">选一个小心愿</div>
+    <div class="l520-hint">选好了，交给转盘来决定</div>
+    <div class="l520-cards">
+      <div class="l520-card" onclick="l520Pick(0,this)">影视会员月卡/季卡</div>
+      <div class="l520-card" onclick="l520Pick(1,this)">追剧零食大礼包</div>
+      <div class="l520-card" onclick="l520Pick(2,this)">指定奶茶一杯</div>
+    </div>
+  </div>
+
+  <div id="l520S2" class="l520-step">
+    <div class="l520-badge">✦ 5 · 2 · 0 ✦</div>
+    <div class="l520-h1">转盘决定</div>
+    <div class="l520-sel-hint">已选：<strong id="l520PickedTxt"></strong></div>
+    <div class="l520-wheel-wrap">
+      <div class="l520-ptr">▼</div>
+      <canvas id="l520WC" width="260" height="260"></canvas>
+    </div>
+    <button class="l520-spin-btn" id="l520SpinBtn" onclick="l520Spin()">开始抽奖</button>
+  </div>
+
+  <div id="l520S3" class="l520-step">
+    <div class="l520-win-float">🎉</div>
+    <div class="l520-win-h">恭喜中奖！</div>
+    <div class="l520-win-deco"></div>
+    <div class="l520-win-name" id="l520WinTxt"></div>
+    <div class="l520-win-note">随时可以来兑换<br>我记着呢</div>
+    <button class="l520-win-close" onclick="closeL520()">好，我记住了</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const PRIZES     = ['影视会员月卡/季卡', '追剧零食大礼包', '指定奶茶一杯'];
+  const COLORS     = ['#f5c8a0', '#f8e098', '#f0e0d0'];
+  const LINES      = [['影视会员', '月卡/季卡'], ['追剧零食', '大礼包'], ['指定奶茶', '一杯']];
+  const TWO_PI     = Math.PI * 2;
+  const SLICE      = TWO_PI / 3;
+  let picked = -1;
+
+  function step(n) {
+    [1, 2, 3].forEach(i => {
+      document.getElementById('l520S' + i).classList.toggle('on', i === n);
+    });
+    if (n === 2) {
+      document.getElementById('l520SpinBtn').disabled = false;
+      requestAnimationFrame(() => drawWheel(0));
+    }
+  }
+
+  window.l520Pick = function (idx, el) {
+    picked = idx;
+    document.querySelectorAll('.l520-card').forEach(c => c.classList.remove('picked'));
+    el.classList.add('picked');
+    setTimeout(() => {
+      document.getElementById('l520PickedTxt').textContent = PRIZES[idx];
+      step(2);
+    }, 260);
+  };
+
+  window.l520Spin = function () {
+    if (picked < 0) return;
+    document.getElementById('l520SpinBtn').disabled = true;
+
+    // 计算停在已选奖品的目标角度
+    const raw    = -(picked * SLICE + SLICE / 2);
+    const target = ((raw % TWO_PI) + TWO_PI) % TWO_PI;
+    const final  = 5 * TWO_PI + target;
+    const dur    = 4200;
+    const t0     = performance.now();
+
+    function frame(now) {
+      const p     = Math.min((now - t0) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      drawWheel(final * eased);
+      if (p < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        drawWheel(final);
+        setTimeout(() => {
+          document.getElementById('l520WinTxt').textContent = PRIZES[picked];
+          step(3);
+          fireCC();
+        }, 500);
+      }
+    }
+    requestAnimationFrame(frame);
+  };
+
+  function drawWheel(rot) {
+    const canvas = document.getElementById('l520WC');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const cx = canvas.width / 2, cy = canvas.height / 2, r = cx - 6;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < 3; i++) {
+      const a0  = rot - Math.PI / 2 + i * SLICE;
+      const a1  = a0 + SLICE;
+      const mid = (a0 + a1) / 2;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, a0, a1);
+      ctx.closePath();
+      ctx.fillStyle = COLORS[i];
+      ctx.fill();
+      ctx.strokeStyle = '#c8903a';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(mid);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#5a3010';
+      ctx.font = '700 11px "Noto Serif SC", PingFang SC, serif';
+      LINES[i].forEach((line, li) => {
+        ctx.fillText(line, r * 0.58, (li - 0.5) * 14);
+      });
+      ctx.restore();
+    }
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, TWO_PI);
+    ctx.strokeStyle = '#c8903a';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 13, 0, TWO_PI);
+    ctx.fillStyle = '#c4756a';
+    ctx.fill();
+    ctx.strokeStyle = '#fff8ee';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  function fireCC() {
+    const canvas = document.getElementById('l520CC');
+    canvas.style.display = 'block';
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pal = ['#f0c060', '#c4756a', '#f5d898', '#c4a882', '#a8d0a0'];
+    const ps  = Array.from({ length: 90 }, () => ({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 80,
+      r: 4 + Math.random() * 5,
+      c: pal[Math.floor(Math.random() * pal.length)],
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 4,
+      a: Math.random() * Math.PI * 2,
+      sp: (Math.random() - 0.5) * 0.15,
+    }));
+    (function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      ps.forEach(p => {
+        if (p.y > canvas.height + 10) return;
+        alive = true;
+        p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.a += p.sp;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.a);
+        ctx.globalAlpha = Math.max(0, 1 - p.y / canvas.height);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+        ctx.restore();
+      });
+      if (alive) requestAnimationFrame(draw);
+      else canvas.style.display = 'none';
+    })();
+  }
+
+  window.closeL520 = function () {
+    document.getElementById('l520Overlay').style.display = 'none';
+    document.getElementById('l520CC').style.display = 'none';
+  };
+
+  function init() {
+    if (new URLSearchParams(location.search).get('lottery') === '1') {
+      document.getElementById('l520Overlay').style.display = 'flex';
+      step(1);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
 </body>
 </html>
