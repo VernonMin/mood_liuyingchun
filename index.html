@@ -2009,8 +2009,21 @@
     cursor: pointer; box-shadow: 0 4px 16px rgba(196,117,106,0.35);
     transition: transform 0.15s, box-shadow 0.15s;
   }
-  #l520OpenBtn:hover  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(196,117,106,0.45); }
-  #l520OpenBtn:active { transform: scale(0.96); }
+  #l520OpenBtn:hover:not(:disabled)  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(196,117,106,0.45); }
+  #l520OpenBtn:active:not(:disabled) { transform: scale(0.96); }
+  #l520OpenBtn:disabled {
+    opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none;
+    background: linear-gradient(135deg, #c4a882, #b09878);
+  }
+  #l520OpenHint {
+    display: block;
+    font-size: 11px;
+    color: #c4a882;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
 
   .l520-ptr {
     position: absolute; top: -2px; left: 50%; transform: translateX(-50%);
@@ -2256,6 +2269,7 @@
   </div>
 
   <button id="l520OpenBtn" onclick="openL520()" style="display:none">迎春的好运小转盘</button>
+  <span id="l520OpenHint" style="display:none"></span>
 
   <div class="bottom-links">
     <button class="bottom-link-btn" onclick="openFestivalsModal()">📅 刘迎春的小节日</button>
@@ -4135,9 +4149,15 @@ function toggleEyeCare() {
       } else {
         drawWheel(final);
         setTimeout(() => {
-          document.getElementById('l520WinTxt').textContent = PRIZES[picked];
+          const prize = PRIZES[picked];
+          document.getElementById('l520WinTxt').textContent = prize;
           step(3);
           fireCC();
+          fetch('/api/lottery520', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prize }),
+          }).catch(() => {});
         }, 500);
       }
     }
@@ -4229,9 +4249,20 @@ function toggleEyeCare() {
     })();
   }
 
+  function isUnlocked() {
+    const d = new Date(Date.now() + 8 * 60 * 60 * 1000);
+    const m = d.getUTCMonth() + 1, day = d.getUTCDate();
+    return m > 5 || (m === 5 && day >= 20);
+  }
+
   window.openL520 = function () {
+    if (document.getElementById('l520OpenBtn').disabled) return;
     picked = -1;
     document.querySelectorAll('.l520-card').forEach(c => c.classList.remove('picked'));
+    const hint = document.getElementById('l520Hint1');
+    hint.textContent = '选好了，就可以去转一转啦';
+    hint.className = 'l520-hint';
+    document.getElementById('l520Cards').style.pointerEvents = '';
     document.getElementById('l520Overlay').style.display = 'flex';
     step(1);
   };
@@ -4241,9 +4272,31 @@ function toggleEyeCare() {
     document.getElementById('l520CC').style.display = 'none';
   };
 
-  function init() {
-    if (new URLSearchParams(location.search).get('lottery') === '1') {
-      document.getElementById('l520OpenBtn').style.display = 'block';
+  async function init() {
+    const devMode = new URLSearchParams(location.search).get('lottery') === '1';
+    const btn  = document.getElementById('l520OpenBtn');
+    const hint = document.getElementById('l520OpenHint');
+    btn.style.display  = 'block';
+    hint.style.display = 'block';
+
+    if (!devMode && !isUnlocked()) {
+      btn.disabled = true;
+      hint.textContent = 'See you tomorrow, stay tuned.';
+      return;
+    }
+
+    // 检查是否已抽过
+    try {
+      const res    = await fetch('/api/lottery520');
+      const record = await res.json();
+      if (record && record.prize) {
+        btn.disabled = true;
+        hint.textContent = `已抽过啦：${record.prize}`;
+      } else {
+        hint.textContent = '';
+      }
+    } catch (e) {
+      hint.textContent = '';
     }
   }
 
