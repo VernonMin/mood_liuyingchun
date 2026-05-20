@@ -4535,7 +4535,7 @@ function toggleEyeCare() {
     try {
       const res    = await fetch('/api/lottery520');
       const record = await res.json();
-      if (record && record.prize) {
+      if (record && record.prize && !devMode) {
         btn.disabled = true;
         hint.textContent = `已抽过啦：${record.prize}`;
       } else {
