@@ -2137,14 +2137,25 @@
   /* ── 战利品弹窗 ── */
   #zltOverlay {
     position: fixed; inset: 0;
-    background: radial-gradient(ellipse at center, #FDF8EE 0%, #F5EDD8 100%);
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    z-index: 8550; text-align: center; padding: 60px 20px 48px;
-    font-family: 'Noto Serif SC', 'PingFang SC', serif;
+    background: rgba(30, 15, 0, 0.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 8550;
+    padding: 20px;
+  }
+  .zlt-modal {
+    position: relative;
+    background: linear-gradient(160deg, #fff8ee 0%, #fff0e0 100%);
+    border-radius: 22px;
+    padding: 44px 24px 36px;
+    width: 100%; max-width: 340px;
+    max-height: 80vh;
     overflow-y: auto;
+    box-shadow: 0 12px 48px rgba(100, 50, 0, 0.22);
+    font-family: 'Noto Serif SC', 'PingFang SC', serif;
+    text-align: center;
   }
   .zlt-x {
-    position: absolute; top: 20px; right: 20px;
+    position: absolute; top: 16px; right: 18px;
     background: none; border: none; font-size: 22px; color: #c4a882; cursor: pointer; line-height: 1;
   }
   .zlt-badge {
@@ -2153,12 +2164,9 @@
     padding: 3px 14px; border-radius: 20px; margin-bottom: 14px;
   }
   .zlt-title {
-    font-size: 22px; font-weight: 700; color: #c4756a; letter-spacing: 3px; margin-bottom: 6px;
+    font-size: 20px; font-weight: 700; color: #c4756a; letter-spacing: 3px; margin-bottom: 22px;
   }
-  .zlt-subtitle {
-    font-size: 12px; color: #c4a882; letter-spacing: 2px; margin-bottom: 28px;
-  }
-  .zlt-state { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 320px; }
+  .zlt-state { display: none; flex-direction: column; align-items: center; width: 100%; }
   .zlt-state.on { display: flex; }
 
   /* 总览网格 */
@@ -4667,24 +4675,25 @@ function toggleEyeCare() {
 
 <!-- 战利品弹窗 -->
 <div id="zltOverlay" style="display:none">
-  <button class="zlt-x" onclick="closeZlt()">×</button>
+  <div class="zlt-modal">
+    <button class="zlt-x" onclick="closeZlt()">×</button>
 
-  <!-- 总览 -->
-  <div id="zltS1" class="zlt-state on">
-    <div class="zlt-badge">战利品</div>
-    <div class="zlt-title">刘迎春的战利品</div>
-    <div class="zlt-subtitle" id="zltSubtitle"></div>
-    <div class="zlt-grid" id="zltGrid"></div>
-  </div>
+    <!-- 总览 -->
+    <div id="zltS1" class="zlt-state on">
+      <div class="zlt-badge">战利品</div>
+      <div class="zlt-title">刘迎春的战利品</div>
+      <div class="zlt-grid" id="zltGrid"></div>
+    </div>
 
-  <!-- 详情 -->
-  <div id="zltS2" class="zlt-state">
-    <button class="zlt-back" onclick="zltShowS1()">← 返回</button>
-    <div class="zlt-detail-activity" id="zltDetailActivity"></div>
-    <div class="zlt-detail-deco"></div>
-    <div class="zlt-detail-prize" id="zltDetailPrize"></div>
-    <div class="zlt-detail-slogan" id="zltDetailSlogan"></div>
-    <div class="zlt-detail-date" id="zltDetailDate"></div>
+    <!-- 详情 -->
+    <div id="zltS2" class="zlt-state">
+      <button class="zlt-back" onclick="zltShowS1()">← 返回</button>
+      <div class="zlt-detail-activity" id="zltDetailActivity"></div>
+      <div class="zlt-detail-deco"></div>
+      <div class="zlt-detail-prize" id="zltDetailPrize"></div>
+      <div class="zlt-detail-slogan" id="zltDetailSlogan"></div>
+      <div class="zlt-detail-date" id="zltDetailDate"></div>
+    </div>
   </div>
 </div>
 
@@ -4702,16 +4711,13 @@ function toggleEyeCare() {
   }
 
   function renderGrid() {
-    const grid     = document.getElementById('zltGrid');
-    const subtitle = document.getElementById('zltSubtitle');
+    const grid = document.getElementById('zltGrid');
 
     if (!_prizes || _prizes.length === 0) {
-      subtitle.textContent = '';
       grid.innerHTML = '<div class="zlt-empty">还没有战利品<br>快去赢一个吧</div>';
       return;
     }
 
-    subtitle.textContent = `共 ${_prizes.length} 份心意`;
     grid.innerHTML = _prizes.map((p, i) => `
       <div class="zlt-mini-card" onclick="zltShowDetail(${i})">
         <div class="zlt-mini-activity">${p.activity}</div>
