@@ -2133,6 +2133,108 @@
     pointer-events: none;
     z-index: auto;
   }
+
+  /* ── 战利品弹窗 ── */
+  #zltOverlay {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at center, #FDF8EE 0%, #F5EDD8 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    z-index: 8550; text-align: center; padding: 60px 20px 48px;
+    font-family: 'Noto Serif SC', 'PingFang SC', serif;
+    overflow-y: auto;
+  }
+  .zlt-x {
+    position: absolute; top: 20px; right: 20px;
+    background: none; border: none; font-size: 22px; color: #c4a882; cursor: pointer; line-height: 1;
+  }
+  .zlt-badge {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #8a5010;
+    background: linear-gradient(135deg, #f8d9a0, #f0c060);
+    padding: 3px 14px; border-radius: 20px; margin-bottom: 14px;
+  }
+  .zlt-title {
+    font-size: 22px; font-weight: 700; color: #c4756a; letter-spacing: 3px; margin-bottom: 6px;
+  }
+  .zlt-subtitle {
+    font-size: 12px; color: #c4a882; letter-spacing: 2px; margin-bottom: 28px;
+  }
+  .zlt-state { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 320px; }
+  .zlt-state.on { display: flex; }
+
+  /* 总览网格 */
+  .zlt-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%;
+  }
+  .zlt-mini-card {
+    background: linear-gradient(160deg, #fff8ee, #fff0e0);
+    border: 1px solid #e8d0b0; border-radius: 14px;
+    padding: 16px 12px 14px; cursor: pointer; text-align: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 10px rgba(180,120,60,0.08);
+  }
+  .zlt-mini-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(180,120,60,0.15); }
+  .zlt-mini-card:active { transform: scale(0.97); }
+  .zlt-mini-activity {
+    font-size: 11px; color: #c4a882; letter-spacing: 2px; margin-bottom: 10px;
+  }
+  .zlt-mini-prize {
+    font-size: 13px; font-weight: 700; color: #7a4820; letter-spacing: 1px;
+    line-height: 1.6; margin-bottom: 10px;
+  }
+  .zlt-mini-deco {
+    width: 30px; height: 1px;
+    background: linear-gradient(90deg, transparent, #c4a882, transparent);
+    margin: 0 auto 8px;
+  }
+  .zlt-mini-date {
+    font-size: 10px; color: #c4b090; letter-spacing: 1px;
+  }
+
+  /* 详情卡片 */
+  .zlt-back {
+    position: absolute; top: 20px; left: 20px;
+    background: none; border: none; font-size: 13px; color: #c4a882; cursor: pointer; letter-spacing: 1px;
+  }
+  .zlt-detail-activity {
+    font-size: 13px; color: #c4a882; letter-spacing: 3px; margin-bottom: 32px;
+  }
+  .zlt-detail-deco {
+    width: 50px; height: 1px;
+    background: linear-gradient(90deg, transparent, #c4a882, transparent);
+    margin: 0 auto 28px;
+  }
+  .zlt-detail-prize {
+    font-size: 24px; font-weight: 700; color: #7a4820; letter-spacing: 2px;
+    line-height: 1.5; margin-bottom: 24px; max-width: 240px;
+  }
+  .zlt-detail-slogan {
+    font-size: 13px; color: #c4a882; letter-spacing: 2px; margin-bottom: 16px; line-height: 1.9;
+  }
+  .zlt-detail-date {
+    font-size: 12px; color: #c4b090; letter-spacing: 2px;
+  }
+
+  /* 空状态 */
+  .zlt-empty {
+    font-size: 14px; color: #c4a882; letter-spacing: 2px; line-height: 2.2; margin-top: 20px;
+  }
+
+  /* 入口按钮 */
+  #zltOpenBtn {
+    display: none;
+    margin: 10px auto 0;
+    background: none;
+    border: 1.5px solid #c4a882;
+    color: #9a6860;
+    border-radius: 28px;
+    padding: 9px 28px;
+    font-size: 13px;
+    font-family: 'Noto Serif SC', serif;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  #zltOpenBtn:hover { border-color: #c4756a; color: #c4756a; }
 </style>
 </head>
 <body>
@@ -2282,6 +2384,7 @@
   <button class="btn" onclick="praise()">夸 我 ！</button>
   <button id="l520OpenBtn" onclick="openL520()" style="display:none">五月礼遇・转一转</button>
   <span id="l520OpenHint" style="display:none"></span>
+  <button id="zltOpenBtn" onclick="openZlt()">刘迎春的战利品</button>
   <button id="nurseRainBtn" onclick="launchNurseRain()">🩺 护士节限定彩蛋</button>
 
   <div class="share-row">
@@ -4385,6 +4488,14 @@ function toggleEyeCare() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prize }),
           }).catch(() => {});
+          // 同步写入战利品统一记录
+          const today = new Date(Date.now() + 8 * 60 * 60 * 1000)
+            .toISOString().slice(0, 10).replace(/-/g, '.');
+          fetch('/api/prizes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ activity: '五月礼遇', prize, date: today, slogan: '心有所念，皆能如愿' }),
+          }).catch(() => {});
         }, 500);
       }
     }
@@ -4550,6 +4661,99 @@ function toggleEyeCare() {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
+  }
+})();
+</script>
+
+<!-- 战利品弹窗 -->
+<div id="zltOverlay" style="display:none">
+  <button class="zlt-x" onclick="closeZlt()">×</button>
+
+  <!-- 总览 -->
+  <div id="zltS1" class="zlt-state on">
+    <div class="zlt-badge">战利品</div>
+    <div class="zlt-title">刘迎春的战利品</div>
+    <div class="zlt-subtitle" id="zltSubtitle"></div>
+    <div class="zlt-grid" id="zltGrid"></div>
+  </div>
+
+  <!-- 详情 -->
+  <div id="zltS2" class="zlt-state">
+    <button class="zlt-back" onclick="zltShowS1()">← 返回</button>
+    <div class="zlt-detail-activity" id="zltDetailActivity"></div>
+    <div class="zlt-detail-deco"></div>
+    <div class="zlt-detail-prize" id="zltDetailPrize"></div>
+    <div class="zlt-detail-slogan" id="zltDetailSlogan"></div>
+    <div class="zlt-detail-date" id="zltDetailDate"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  let _prizes = [];
+
+  async function loadPrizes() {
+    try {
+      const res = await fetch('/api/prizes');
+      _prizes = await res.json() || [];
+    } catch (e) {
+      _prizes = [];
+    }
+  }
+
+  function renderGrid() {
+    const grid     = document.getElementById('zltGrid');
+    const subtitle = document.getElementById('zltSubtitle');
+
+    if (!_prizes || _prizes.length === 0) {
+      subtitle.textContent = '';
+      grid.innerHTML = '<div class="zlt-empty">还没有战利品<br>快去赢一个吧</div>';
+      return;
+    }
+
+    subtitle.textContent = `共 ${_prizes.length} 份心意`;
+    grid.innerHTML = _prizes.map((p, i) => `
+      <div class="zlt-mini-card" onclick="zltShowDetail(${i})">
+        <div class="zlt-mini-activity">${p.activity}</div>
+        <div class="zlt-mini-prize">${p.prize}</div>
+        <div class="zlt-mini-deco"></div>
+        <div class="zlt-mini-date">${p.date}</div>
+      </div>
+    `).join('');
+  }
+
+  window.openZlt = async function () {
+    document.getElementById('zltOverlay').style.display = 'flex';
+    zltShowS1();
+    await loadPrizes();
+    renderGrid();
+  };
+
+  window.closeZlt = function () {
+    document.getElementById('zltOverlay').style.display = 'none';
+  };
+
+  window.zltShowS1 = function () {
+    document.getElementById('zltS1').classList.add('on');
+    document.getElementById('zltS2').classList.remove('on');
+  };
+
+  window.zltShowDetail = function (idx) {
+    const p = _prizes[idx];
+    if (!p) return;
+    document.getElementById('zltDetailActivity').textContent = p.activity;
+    document.getElementById('zltDetailPrize').textContent    = p.prize;
+    document.getElementById('zltDetailSlogan').textContent   = p.slogan || '';
+    document.getElementById('zltDetailDate').textContent     = p.date;
+    document.getElementById('zltS1').classList.remove('on');
+    document.getElementById('zltS2').classList.add('on');
+  };
+
+  // ?preview=1 时才显示入口按钮
+  const previewMode = new URLSearchParams(location.search).get('preview') === '1';
+  if (previewMode) {
+    const btn = document.getElementById('zltOpenBtn');
+    if (btn) btn.style.display = 'block';
   }
 })();
 </script>
