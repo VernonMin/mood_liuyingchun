@@ -4754,11 +4754,18 @@ function toggleEyeCare() {
     document.getElementById('zltS2').classList.add('on');
   };
 
-  // ?preview=1 时才显示入口按钮
+  // 有奖品就显示入口，?preview=1 强制显示（用于测试空状态）
   const previewMode = new URLSearchParams(location.search).get('preview') === '1';
   if (previewMode) {
     const btn = document.getElementById('zltOpenBtn');
     if (btn) btn.style.display = 'block';
+  } else {
+    fetch('/api/prizes').then(r => r.json()).then(list => {
+      if (list && list.length > 0) {
+        const btn = document.getElementById('zltOpenBtn');
+        if (btn) btn.style.display = 'block';
+      }
+    }).catch(() => {});
   }
 })();
 </script>
