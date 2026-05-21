@@ -336,6 +336,17 @@
     font-weight: bold;
     font-size: 16px;
   }
+  @keyframes counterJiggle {
+    0%   { transform: scale(1); }
+    25%  { transform: scale(1.12) rotate(-3deg); }
+    50%  { transform: scale(1.12) rotate(3deg); }
+    75%  { transform: scale(1.05) rotate(-1deg); }
+    100% { transform: scale(1); }
+  }
+  #praiseCounter.jiggle {
+    display: inline-block;
+    animation: counterJiggle 0.4s ease;
+  }
 
   /* 左侧面板 */
   .side-panel {
@@ -2148,7 +2159,7 @@
   </div>
 
   <div class="counter">
-    <p>已被夸了 <span id="count">0</span> 次，越夸越可爱 🐾</p>
+    <p id="praiseCounter">已被夸了 <span id="count">0</span> 次，越夸越可爱 🐾</p>
   </div>
 
   <div class="mood-section">
@@ -2756,6 +2767,10 @@ async function praise() {
   incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
   launchShinchan();
+  const pc = document.getElementById('praiseCounter');
+  pc.classList.remove('jiggle');
+  void pc.offsetWidth;
+  pc.classList.add('jiggle');
   if (isChildrensDayActivity()) cdPraiseHook();
 
   const el = document.getElementById('quote');
