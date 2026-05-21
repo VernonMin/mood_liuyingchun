@@ -1975,21 +1975,6 @@
   }
 
   /* 入口按钮 */
-  #zltOpenBtn {
-    display: none;
-    margin: 10px auto 0;
-    background: none;
-    border: 1.5px solid #c4a882;
-    color: #9a6860;
-    border-radius: 28px;
-    padding: 9px 28px;
-    font-size: 13px;
-    font-family: 'Noto Serif SC', serif;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  #zltOpenBtn:hover { border-color: #c4756a; color: #c4756a; }
 </style>
 </head>
 <body>
@@ -2131,7 +2116,6 @@
   </div>
 
   <button class="btn" onclick="praise()">夸 我 ！</button>
-  <button id="zltOpenBtn" onclick="openZlt()">刘迎春赢到的</button>
 
   <div class="share-row">
     <button class="share-btn" id="shareBtn" onclick="doShare()">
@@ -2193,6 +2177,7 @@
 
   <div class="bottom-links">
     <button class="bottom-link-btn" onclick="openFestivalsModal()">📅 刘迎春的小节日</button>
+    <button class="bottom-link-btn" onclick="openZlt()">🎁 刘迎春赢到的</button>
     <button class="bottom-link-btn" onclick="openHistoryModal()">📖 刘迎春的历史心情</button>
     <button class="bottom-link-btn" onclick="openGameModal()">🎮 刘迎春的摸鱼小游戏</button>
   </div>
@@ -4121,19 +4106,6 @@ function toggleEyeCare() {
     document.getElementById('zltS2').classList.add('on');
   };
 
-  // 有奖品就显示入口，?preview=1 强制显示（用于测试空状态）
-  const previewMode = new URLSearchParams(location.search).get('preview') === '1';
-  if (previewMode) {
-    const btn = document.getElementById('zltOpenBtn');
-    if (btn) btn.style.display = 'block';
-  } else {
-    fetch('/api/prizes').then(r => r.json()).then(list => {
-      if (list && list.length > 0) {
-        const btn = document.getElementById('zltOpenBtn');
-        if (btn) btn.style.display = 'block';
-      }
-    }).catch(() => {});
-  }
 })();
 </script>
 </body>
