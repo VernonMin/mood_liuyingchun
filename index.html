@@ -2337,6 +2337,9 @@ const quotePool = quotes.flatMap(q => Array(q.w).fill(q.t));
 
 const emojis = ['🐶','🐾','✨','🍡','💫','🎀','🍓'];
 let lastIndex = -1;
+// 旅行期间：第一次点夸我固定显示这句
+const TRIP_FIRST_QUOTE = '在外面的日子有限，希望刘迎春把每一天都装满。';
+let firstPraise = true;
 
 function getBeijingDate() {
   const beijing = new Date(Date.now() + 8 * 60 * 60 * 1000);
@@ -2745,6 +2748,16 @@ async function praise() {
 
   const el = document.getElementById('quote');
   el.classList.remove('show');
+
+  // 旅行期间：第一次点夸我固定显示旅行文案
+  if (firstPraise) {
+    firstPraise = false;
+    setTimeout(() => {
+      el.textContent = TRIP_FIRST_QUOTE;
+      el.classList.add('show');
+    }, 150);
+    return;
+  }
 
   // 20% 概率走 AI 生成
   if (Math.random() < 0.2) {
