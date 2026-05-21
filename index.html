@@ -4490,7 +4490,6 @@ function toggleEyeCare() {
           }, 600);
           const btn = document.getElementById('l520OpenBtn');
           btn.disabled = true;
-          document.getElementById('l520OpenHint').textContent = `已抽过啦：${prize}`;
           fetch('/api/lottery520', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -4656,7 +4655,7 @@ function toggleEyeCare() {
       const record = await res.json();
       if (record && record.prize && !devMode) {
         btn.disabled = true;
-        hint.textContent = `已抽过啦：${record.prize}`;
+        hint.textContent = '';
       } else {
         hint.textContent = '';
       }
