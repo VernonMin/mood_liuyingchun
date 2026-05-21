@@ -3374,6 +3374,28 @@ updateSideCount(count);
 if (isChildrensDayActivity()) cdInit();
 
 // 心情
+// 计算连续记录天数（从今天往前数）
+function calcStreak(moods) {
+  const dateSet = new Set(moods.map(m => m.date));
+  let streak = 0;
+  let d = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  while (true) {
+    const key = d.toISOString().slice(0, 10);
+    if (!dateSet.has(key)) break;
+    streak++;
+    d.setUTCDate(d.getUTCDate() - 1);
+  }
+  return streak;
+}
+
+function streakText(streak, emoji, mood, isToday) {
+  const base = isToday
+    ? `今天已记录：${emoji} ${mood}`
+    : `已记录：${emoji} ${mood}，谢谢你告诉我`;
+  if (streak >= 2) return `${base} · 已连续 ${streak} 天 🐾`;
+  return `${base} 🐾`;
+}
+
 async function setMood(btn) {
   const mood = btn.dataset.mood;
   const emoji = btn.dataset.emoji;
@@ -3393,10 +3415,11 @@ async function setMood(btn) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mood, emoji }),
     });
-    status.textContent = `已记录：${emoji} ${mood}，谢谢你告诉我 🐾`;
-    // 刷新右侧历史
+    // 刷新历史并计算连续天数
     const res = await fetch('/api/mood');
-    renderHistory(await res.json());
+    const moods = await res.json();
+    renderHistory(moods);
+    status.textContent = streakText(calcStreak(moods), emoji, mood, false);
   } catch {
     status.textContent = '记录失败，待会儿再试试';
   }
@@ -3417,7 +3440,8 @@ async function loadTodayMood() {
     if (todayMood) {
       const btn = document.querySelector(`.mood-btn[data-mood="${todayMood.mood}"]`);
       if (btn) btn.classList.add('active');
-      document.getElementById('moodStatus').textContent = `今天已记录：${todayMood.emoji} ${todayMood.mood} 🐾`;
+      const streak = calcStreak(moods);
+      document.getElementById('moodStatus').textContent = streakText(streak, todayMood.emoji, todayMood.mood, true);
       updateSideMood(todayMood.emoji, todayMood.mood);
       setDogState(todayMood.mood);
     }
