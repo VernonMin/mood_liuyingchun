@@ -1,6 +1,6 @@
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
@@ -25,7 +25,7 @@ export async function onRequestGet({ env }) {
       const raw  = legacy.time || '';
       const date = raw.slice(0, 10).replace(/-/g, '.') || '2025.05.20';
       prizes = [
-        { activity: '五月礼遇', prize: legacy.prize, date, slogan: '心有所念，皆能如愿' },
+        { activity: '五月礼遇', prize: legacy.prize, date, slogan: '心有所念，皆能如愿', redeemed: false },
         ...prizes,
       ];
     }
@@ -47,7 +47,33 @@ export async function onRequestPost({ request, env }) {
   }
 
   const prizes = await env.LIUYINGCHUN_MOOD_KV.get(KV_KEY, 'json') || [];
-  prizes.push({ activity, prize, date: date || '', slogan: slogan || '' });
+  prizes.push({ activity, prize, date: date || '', slogan: slogan || '', redeemed: false });
+  await env.LIUYINGCHUN_MOOD_KV.put(KV_KEY, JSON.stringify(prizes));
+
+  return new Response(JSON.stringify({ ok: true }), {
+    headers: { 'Content-Type': 'application/json', ...CORS },
+  });
+}
+
+// PATCH：更新指定 index 的兑换状态
+export async function onRequestPatch({ request, env }) {
+  const { index, redeemed } = await request.json();
+  if (typeof index !== 'number' || typeof redeemed !== 'boolean') {
+    return new Response(JSON.stringify({ ok: false, reason: 'invalid_params' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...CORS },
+    });
+  }
+
+  const prizes = await env.LIUYINGCHUN_MOOD_KV.get(KV_KEY, 'json') || [];
+  if (index < 0 || index >= prizes.length) {
+    return new Response(JSON.stringify({ ok: false, reason: 'out_of_range' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...CORS },
+    });
+  }
+
+  prizes[index].redeemed = redeemed;
   await env.LIUYINGCHUN_MOOD_KV.put(KV_KEY, JSON.stringify(prizes));
 
   return new Response(JSON.stringify({ ok: true }), {

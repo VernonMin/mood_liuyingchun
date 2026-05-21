@@ -2222,6 +2222,27 @@
     font-size: 12px; color: #c4b090; letter-spacing: 2px;
   }
 
+  /* 已兑换角标 */
+  .zlt-mini-card.redeemed { opacity: 0.6; }
+  .zlt-mini-redeemed-tag {
+    display: inline-block; font-size: 10px; color: #a07848; letter-spacing: 1px;
+    border: 1px solid #d4b888; border-radius: 8px; padding: 1px 7px; margin-bottom: 8px;
+  }
+
+  /* 兑换按钮 */
+  .zlt-redeem-btn {
+    margin-top: 28px;
+    background: none; border: 1.5px solid #c4756a; color: #c4756a;
+    border-radius: 24px; padding: 10px 32px;
+    font-size: 13px; font-family: 'Noto Serif SC', serif; letter-spacing: 2px;
+    cursor: pointer; transition: background 0.2s, color 0.2s;
+  }
+  .zlt-redeem-btn:hover { background: #c4756a; color: #fff; }
+  .zlt-redeem-btn.redeemed {
+    border-color: #b0c890; color: #7a9860;
+  }
+  .zlt-redeem-btn.redeemed:hover { background: #b0c890; color: #fff; }
+
   /* 空状态 */
   .zlt-empty {
     font-size: 14px; color: #c4a882; letter-spacing: 2px; line-height: 2.2; margin-top: 20px;
@@ -4680,7 +4701,6 @@ function toggleEyeCare() {
 
     <!-- 总览 -->
     <div id="zltS1" class="zlt-state on">
-      <div class="zlt-badge">战利品</div>
       <div class="zlt-title">刘迎春的战利品</div>
       <div class="zlt-grid" id="zltGrid"></div>
     </div>
@@ -4693,6 +4713,7 @@ function toggleEyeCare() {
       <div class="zlt-detail-prize" id="zltDetailPrize"></div>
       <div class="zlt-detail-slogan" id="zltDetailSlogan"></div>
       <div class="zlt-detail-date" id="zltDetailDate"></div>
+      <button class="zlt-redeem-btn" id="zltRedeemBtn" onclick="zltToggleRedeem()"></button>
     </div>
   </div>
 </div>
@@ -4710,6 +4731,8 @@ function toggleEyeCare() {
     }
   }
 
+  let _currentIdx = -1;
+
   function renderGrid() {
     const grid = document.getElementById('zltGrid');
 
@@ -4719,13 +4742,25 @@ function toggleEyeCare() {
     }
 
     grid.innerHTML = _prizes.map((p, i) => `
-      <div class="zlt-mini-card" onclick="zltShowDetail(${i})">
+      <div class="zlt-mini-card${p.redeemed ? ' redeemed' : ''}" onclick="zltShowDetail(${i})">
+        ${p.redeemed ? '<div class="zlt-mini-redeemed-tag">已兑换</div>' : ''}
         <div class="zlt-mini-activity">${p.activity}</div>
         <div class="zlt-mini-prize">${p.prize}</div>
         <div class="zlt-mini-deco"></div>
         <div class="zlt-mini-date">${p.date}</div>
       </div>
     `).join('');
+  }
+
+  function updateRedeemBtn(redeemed) {
+    const btn = document.getElementById('zltRedeemBtn');
+    if (redeemed) {
+      btn.textContent = '已兑换 · 点击撤销';
+      btn.classList.add('redeemed');
+    } else {
+      btn.textContent = '标记已兑换';
+      btn.classList.remove('redeemed');
+    }
   }
 
   window.openZlt = async function () {
@@ -4740,6 +4775,7 @@ function toggleEyeCare() {
   };
 
   window.zltShowS1 = function () {
+    _currentIdx = -1;
     document.getElementById('zltS1').classList.add('on');
     document.getElementById('zltS2').classList.remove('on');
   };
@@ -4747,12 +4783,27 @@ function toggleEyeCare() {
   window.zltShowDetail = function (idx) {
     const p = _prizes[idx];
     if (!p) return;
+    _currentIdx = idx;
     document.getElementById('zltDetailActivity').textContent = p.activity;
     document.getElementById('zltDetailPrize').textContent    = p.prize;
     document.getElementById('zltDetailSlogan').textContent   = p.slogan || '';
     document.getElementById('zltDetailDate').textContent     = p.date;
+    updateRedeemBtn(!!p.redeemed);
     document.getElementById('zltS1').classList.remove('on');
     document.getElementById('zltS2').classList.add('on');
+  };
+
+  window.zltToggleRedeem = async function () {
+    if (_currentIdx < 0) return;
+    const newVal = !_prizes[_currentIdx].redeemed;
+    _prizes[_currentIdx].redeemed = newVal;
+    updateRedeemBtn(newVal);
+    renderGrid();
+    fetch('/api/prizes', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index: _currentIdx, redeemed: newVal }),
+    }).catch(() => {});
   };
 
   // ?preview=1 时才显示入口按钮
