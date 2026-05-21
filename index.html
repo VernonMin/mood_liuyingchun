@@ -3637,7 +3637,7 @@ function _checkDailyGreet() {
   const hour = new Date(Date.now() + 8 * 3600 * 1000).getUTCHours();
   const greetings =
     hour < 6  ? ['迎春，这么晚了，在外面旅行也要早点睡哦 🐾', '迎春，夜深了，今天玩得怎么样呀，早点休息 🐾'] :
-    hour < 12 ? ['迎春早呀，旅途愉快哦，在外面要注意安全哦 🐾', '迎春早呀，今天想去哪里拍照呀 🐾'] :
+    hour < 12 ? ['迎春早呀，旅途愉快呀，在外面要注意安全哦 🐾', '迎春早呀，今天想去哪里拍照呀 🐾'] :
     hour < 18 ? ['迎春下午好，吃到好吃的了吗，有拍到喜欢的照片吗 🐾', '迎春，下午了，今天出片顺利吗 🐾'] :
                 ['迎春晚上好，今天行程开心吗，有没有吃到好吃的呀 🐾', '迎春晚上好，今天有没有拍到喜欢的照片呢 🐾'];
   const msg = greetings[Math.floor(Math.random() * greetings.length)];
