@@ -3642,12 +3642,8 @@ function _checkDailyGreet() {
                 ['迎春晚上好，今天行程开心吗，有没有吃到好吃的呀 🐾', '迎春晚上好，今天有没有拍到喜欢的照片呢 🐾'];
   const msg = greetings[Math.floor(Math.random() * greetings.length)];
   setTimeout(() => {
-    const centerX = Math.max(8, Math.min(window.innerWidth / 2 - 31, window.innerWidth - 78));
-    _dogIsWalking = true;
-    _dogTargetX = centerX;
-    document.getElementById('dogWidget').classList.add('dog-walking');
-    _dogOnArrival = () => showDogBubble(msg);
-  }, 2500);
+    showDogBubble(msg);
+  }, 1000);
 }
 let _dogBubbleTimer = null;
 let _dogX = window.innerWidth - 85;
