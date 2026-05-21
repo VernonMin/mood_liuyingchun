@@ -11,11 +11,11 @@ export async function onRequestOptions() {
   return new Response(null, { headers: CORS });
 }
 
-// GET：返回全部战利品（自动兼容旧的 520 记录）
+// GET：返回全部战利品，首次调用时自动迁移旧 520 记录
 export async function onRequestGet({ env }) {
   let prizes = await env.LIUYINGCHUN_MOOD_KV.get(KV_KEY, 'json') || [];
 
-  // 兼容旧版 520 单条记录，若尚未迁移则动态合并
+  // 一次性迁移：把旧 lottery520_result 写入 prizes_list 并删除
   const legacy = await env.LIUYINGCHUN_MOOD_KV.get(LEGACY_KEY, 'json');
   if (legacy && legacy.prize) {
     const alreadyIn = prizes.some(
@@ -28,6 +28,9 @@ export async function onRequestGet({ env }) {
         { activity: '五月礼遇', prize: legacy.prize, date, slogan: '心有所念，皆能如愿' },
         ...prizes,
       ];
+      // 永久写入新结构，删除旧 key
+      await env.LIUYINGCHUN_MOOD_KV.put(KV_KEY, JSON.stringify(prizes));
+      await env.LIUYINGCHUN_MOOD_KV.delete(LEGACY_KEY);
     }
   }
 
