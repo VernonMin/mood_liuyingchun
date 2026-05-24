@@ -37,6 +37,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding-bottom: 48px;
     z-index: 9999;
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
@@ -99,6 +100,34 @@
     font-family: 'Playfair Display', serif;
     font-style: italic;
     opacity: 0.6;
+  }
+
+  .splash-title-cd {
+    font-size: 12px;
+    color: #a0896a;
+    letter-spacing: 2px;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 400;
+    margin-bottom: 36px;
+    background: rgba(196, 160, 100, 0.10);
+    border: 1px solid rgba(196, 160, 100, 0.28);
+    border-radius: 20px;
+    padding: 5px 16px;
+    opacity: 1;
+  }
+
+  @keyframes cdDotFloat {
+    0%, 100% { transform: translateY(0) scale(1);    opacity: 0.5; }
+    50%       { transform: translateY(-10px) scale(1.15); opacity: 0.75; }
+  }
+
+  .cd-sparkle {
+    position: fixed;
+    pointer-events: none;
+    border-radius: 50%;
+    z-index: 10000;
+    animation: cdDotFloat var(--dur, 3.5s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
   }
 
   .splash-hint {
@@ -2086,6 +2115,7 @@
 
 <!-- 欢迎屏 -->
 <div id="splash" onclick="dismissSplash()">
+  <p class="splash-line splash-title-cd" id="splashTitleCd"></p>
   <img class="splash-dog" src="/shinchan_splash.png" alt="" />
   <p class="splash-line splash-greeting" id="splashGreeting"></p>
   <p class="splash-line splash-sub" id="splashSub"></p>
@@ -3329,7 +3359,7 @@ function closeCdGift() {
 }
 
 const splashGreetings = [
-  { main: '来啦～', sub: '' },
+  { main: '你本来就是小朋友', sub: '', titleCd: '刘迎春的六一活动季' },
 ];
 
 let splashDismissed = false;
@@ -3342,6 +3372,7 @@ function dismissSplash() {
   const main = document.getElementById('main');
   const panel = document.getElementById('sidePanel');
   splash.classList.add('hide');
+  document.querySelectorAll('.cd-sparkle').forEach(el => el.remove());
   setTimeout(() => {
     splash.style.display = 'none';
     main.classList.add('show');
@@ -3365,6 +3396,28 @@ window.addEventListener('DOMContentLoaded', () => {
   fetch('/api/visit', { method: 'POST', keepalive: true });
   document.getElementById('splashGreeting').textContent = picked.main;
   document.getElementById('splashSub').textContent = picked.sub;
+
+  const titleCdEl = document.getElementById('splashTitleCd');
+  if (picked.titleCd) {
+    titleCdEl.textContent = picked.titleCd;
+    setTimeout(() => titleCdEl.classList.add('show'), 150);
+
+    const cdDots = [
+      { x: '9%',  y: '14%', size: 6, color: '#f0c0c0', dur: '3.2s', delay: '0s'   },
+      { x: '83%', y: '19%', size: 5, color: '#f5d888', dur: '4.1s', delay: '0.6s' },
+      { x: '6%',  y: '54%', size: 7, color: '#e8b8d0', dur: '3.7s', delay: '1.2s' },
+      { x: '91%', y: '48%', size: 5, color: '#f5b8a0', dur: '4.4s', delay: '0.3s' },
+      { x: '17%', y: '81%', size: 6, color: '#f5d888', dur: '3.5s', delay: '0.9s' },
+      { x: '79%', y: '76%', size: 5, color: '#f0c0c0', dur: '4.2s', delay: '1.5s' },
+      { x: '50%', y: '7%',  size: 5, color: '#e8b8d0', dur: '3.9s', delay: '0.4s' },
+    ];
+    cdDots.forEach(d => {
+      const el = document.createElement('span');
+      el.className = 'cd-sparkle';
+      el.style.cssText = `left:${d.x};top:${d.y};width:${d.size}px;height:${d.size}px;background:${d.color};--dur:${d.dur};--delay:${d.delay};`;
+      document.body.appendChild(el);
+    });
+  }
 
   const dogImg = document.querySelector('.splash-dog');
   function runSplash() {
