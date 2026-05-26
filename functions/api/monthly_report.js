@@ -14,7 +14,7 @@ const SYSTEM_PROMPT = `你是一个专门为刘迎春写月度心情信的助手
 3. 说她是什么样的人，不只说她做了什么事
 4. 如果有不太好的天，不回避，温柔地提：「有几天不太好，但她没有跟自己较劲」
 5. 语气克制，像一个懂她的朋友，不煽情，不夸张
-6. 不超过100字
+6. 150字左右，可以有两三段
 7. 只输出信的正文，不要标题，不要署名，不要任何额外内容
 8. 不要出现「春风」「阳光」「温暖」「绽放」「闪闪发光」等词`;
 
@@ -115,7 +115,6 @@ async function generateReport(env, month) {
   const [y2, mo2] = month.split('-').map(Number);
   let letter = `${y2}年${mo2}月，刘迎春认真地过着每一天。好的不好的，都是她真实的这个月。`;
 
-  let _debug = null;
   try {
     const res = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
@@ -130,15 +129,14 @@ async function generateReport(env, month) {
           { role: 'user', content: dataDesc },
         ],
         temperature: 0.9,
-        max_tokens: 400,
+        max_tokens: 600,
       }),
     });
     const data = await res.json();
-    _debug = { status: res.status, raw: JSON.stringify(data).slice(0, 500) };
     const content = data.choices?.[0]?.message?.content || '';
     if (content) letter = content.trim();
   } catch (e) {
-    _debug = { error: e.message };
+    // 用默认兜底
   }
 
   return {
@@ -150,6 +148,5 @@ async function generateReport(env, month) {
     moodCounts,
     dominantMood,
     letter,
-    _debug,
   };
 }
