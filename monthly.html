@@ -562,7 +562,7 @@ function render(data) {
     );
   }
 
-  const scEmojiHtml = sortedMoods.slice(0, 10).map(e => {
+  const scEmojiHtml = sortedMoods.map(e => {
     const day = parseInt(e.date.split('-')[2]);
     return `<div class="sc-emoji-item">
       <span class="sc-emoji-icon">${e.emoji}</span>
