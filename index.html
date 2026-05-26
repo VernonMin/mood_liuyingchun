@@ -2210,7 +2210,8 @@
       </button>
     </div>
     <p class="mood-status" id="moodStatus"></p>
-    <button class="jar-view-btn" onclick="openJarView()">🫙 好心情罐子</button>
+    <!-- 好心情罐子入口已隐藏 -->
+
   </div>
 
   <div class="bottom-links">
@@ -3505,8 +3506,6 @@ async function setMood(btn) {
 
   if (mood === '有点累' || mood === '不太好') {
     openReflect(mood, emoji);
-  } else if (mood === '很好') {
-    openJar();
   }
 }
 
