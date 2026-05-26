@@ -334,12 +334,37 @@ function render(data) {
   const recorded  = data.moodData?.length || 0;
   const mc        = data.moodCounts || {};
 
-  // Best day
+  // Best day：优先选「很好」且有罐子记录的天，取罐子文字最长的那条
   let bestDay = null;
+  let bestDayJar = null;
   if (recorded > 0) {
-    bestDay = [...data.moodData].sort((a, b) => moodScore(b.mood) - moodScore(a.mood))[0];
+    const jarMap = {};
+    (data.jarEntries || []).forEach(e => {
+      if (!jarMap[e.date] || e.text.length > jarMap[e.date].text.length) {
+        jarMap[e.date] = e;
+      }
+    });
+
+    // 1. 很好 + 有罐子，取罐子最长
+    const vgWithJar = data.moodData.filter(m => m.mood === '很好' && jarMap[m.date]);
+    if (vgWithJar.length > 0) {
+      bestDay = vgWithJar.reduce((a, b) =>
+        (jarMap[b.date]?.text?.length || 0) > (jarMap[a.date]?.text?.length || 0) ? b : a
+      );
+    } else {
+      // 2. 任意好心情 + 有罐子，取罐子最长
+      const goodWithJar = data.moodData.filter(m => moodScore(m.mood) >= 3 && jarMap[m.date]);
+      if (goodWithJar.length > 0) {
+        bestDay = goodWithJar.reduce((a, b) =>
+          (jarMap[b.date]?.text?.length || 0) > (jarMap[a.date]?.text?.length || 0) ? b : a
+        );
+      } else {
+        // 3. 兜底：心情最好的天
+        bestDay = [...data.moodData].sort((a, b) => moodScore(b.mood) - moodScore(a.mood))[0];
+      }
+    }
+    bestDayJar = bestDay ? (jarMap[bestDay.date] || null) : null;
   }
-  const bestDayJar = bestDay && data.jarEntries?.find(e => e.date === bestDay.date);
 
   // Mood summary text
   const good = (mc['很好'] || 0) + (mc['还行'] || 0);
