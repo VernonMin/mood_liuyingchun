@@ -2041,6 +2041,27 @@
   }
 
   /* 入口按钮 */
+
+  /* 心情月报全屏遮罩 */
+  #monthlyOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: #1a100c;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #monthlyOverlay.open {
+    pointer-events: all;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #monthlyFrame {
+    width: 100%; height: 100%;
+    border: none; display: block;
+  }
 </style>
 </head>
 <body>
@@ -2239,7 +2260,7 @@
       </button>
     </div>
     <p class="mood-status" id="moodStatus"></p>
-    <button class="monthly-entry-card" onclick="window.location.href='/monthly'">
+    <button class="monthly-entry-card" onclick="openMonthly()">
       <div class="mec-label">心情月报</div>
       <div class="mec-month" id="mecMonth">—</div>
       <div class="mec-preview" id="mecPreview"></div>
@@ -2531,6 +2552,7 @@ function initFestivals() {
 initFestivals();
 
 function openFestivalsModal() {
+  track('open_festivals');
   initFestivals();
   document.getElementById('festivalModal').classList.add('show');
 }
@@ -2540,6 +2562,7 @@ function openHistoryModal() {
 }
 
 function openGameModal() {
+  track('open_games');
   document.getElementById('gameModal').classList.add('show');
   showGameMenu();
 }
@@ -2555,6 +2578,7 @@ function showGameMenu() {
 }
 
 function startGame(type) {
+  track('start_game_' + type);
   document.getElementById('gameMenu').style.display = 'none';
   if (type === 'cards') {
     document.getElementById('gameCards').style.display = '';
@@ -2824,6 +2848,7 @@ function launchShinchan() {
 }
 
 async function praise() {
+  track('praise');
   incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
   launchShinchan();
@@ -3033,6 +3058,7 @@ async function drawCard() {
 }
 
 async function doShare() {
+  track('share');
   _currentDataUrl = await drawCard();
   document.getElementById('previewImg').src = _currentDataUrl;
   document.getElementById('previewMask').classList.add('show');
@@ -3396,6 +3422,7 @@ let splashDismissed = false;
 function dismissSplash() {
   if (splashDismissed) return;
   splashDismissed = true;
+  track('page_load');
   playNextBgm();
   const splash = document.getElementById('splash');
   const main = document.getElementById('main');
@@ -3511,6 +3538,7 @@ function streakText(streak, emoji, mood, isToday) {
 async function setMood(btn) {
   const mood = btn.dataset.mood;
   const emoji = btn.dataset.emoji;
+  track('mood_' + mood);
 
   document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -4242,6 +4270,7 @@ function toggleEyeCare() {
   }
 
   window.openZlt = async function () {
+    track('open_prizes');
     document.getElementById('zltOverlay').style.display = 'flex';
     zltShowS1();
     await loadPrizes();
@@ -4269,6 +4298,35 @@ function toggleEyeCare() {
   };
 
 })();
+
+// ── 埋点 ──
+function track(event) {
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, page: 'index' }),
+  }).catch(() => {});
+}
+
+// ── 心情月报遮罩 ──
+function openMonthly() {
+  track('open_monthly');
+  const f = document.getElementById('monthlyFrame');
+  const o = document.getElementById('monthlyOverlay');
+  if (!f.getAttribute('src')) {
+    f.src = '/monthly';
+  }
+  o.classList.add('open');
+}
+function closeMonthly() {
+  document.getElementById('monthlyOverlay').classList.remove('open');
+}
 </script>
+
+<!-- 心情月报遮罩 -->
+<div id="monthlyOverlay">
+  <iframe id="monthlyFrame" src=""></iframe>
+</div>
+
 </body>
 </html>

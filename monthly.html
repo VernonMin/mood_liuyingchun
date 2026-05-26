@@ -229,12 +229,13 @@ body { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
   <span class="dot">·</span><span class="dot">·</span><span class="dot">·</span>
 </div>
 
-<a id="backBtn" href="/" style="
+<button id="backBtn" onclick="goBack()" style="
   position:fixed; top:18px; left:16px; z-index:100;
   font-size:13px; letter-spacing:1px;
-  color:rgba(245,232,216,0.4); text-decoration:none;
+  color:rgba(245,232,216,0.4); background:none; border:none;
+  cursor:pointer; font-family:inherit;
   transition:color 0.3s; padding:6px 4px;
-">← 返回</a>
+">← 返回</button>
 
 <div id="monthNav">
   <button class="nav-btn" id="prevBtn" onclick="changeMonth(-1)">‹</button>
@@ -579,6 +580,14 @@ function setNavTheme(dark) {
     label.style.color = 'rgba(196,149,106,0.5)';
     dots.forEach(d => { d.style.background = d.classList.contains('active') ? 'rgba(196,149,106,0.65)' : 'rgba(196,149,106,0.18)'; });
     if (back) back.style.color = 'rgba(196,149,106,0.45)';
+  }
+}
+
+function goBack() {
+  if (window.parent !== window) {
+    window.parent.closeMonthly();
+  } else {
+    window.location.href = '/';
   }
 }
 
