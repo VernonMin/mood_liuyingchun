@@ -7,325 +7,136 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-html {
-  scroll-snap-type: y mandatory;
-  overflow-y: scroll;
-  height: 100%;
-}
-body {
-  font-family: 'Noto Serif SC', 'PingFang SC', serif;
-}
+html { scroll-snap-type: y mandatory; overflow-y: scroll; height: 100%; }
+body { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
 
 /* ── Loading ── */
 #loading {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: #1a100c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  color: #c4a882;
-  font-size: 13px;
-  letter-spacing: 3px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; color: #c4a882; font-size: 13px; letter-spacing: 3px;
 }
 .dot { display: inline-block; animation: blink 1.4s ease-in-out infinite; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
-@keyframes blink {
-  0%, 80%, 100% { opacity: 0.15; }
-  40% { opacity: 1; }
-}
+@keyframes blink { 0%,80%,100%{opacity:.15} 40%{opacity:1} }
 
 /* ── Month Nav ── */
 #monthNav {
-  position: fixed;
-  top: 20px;
-  left: 0; right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  z-index: 100;
-  pointer-events: none;
+  position: fixed; top: 20px; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  z-index: 100; pointer-events: none;
 }
 .nav-btn {
   pointer-events: all;
-  border-radius: 50%;
-  width: 30px; height: 30px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(245,232,216,0.2);
-  background: transparent;
-  color: rgba(245,232,216,0.4);
-  transition: all 0.3s;
+  border-radius: 50%; width: 30px; height: 30px; font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(245,232,216,0.2); background: transparent;
+  color: rgba(245,232,216,0.4); transition: all 0.3s;
 }
 .nav-btn:hover:not(:disabled) { color: rgba(245,232,216,0.8); }
 .nav-btn:disabled { opacity: 0.12; cursor: default; }
 #navLabel {
-  font-size: 11px;
-  letter-spacing: 2px;
-  min-width: 90px;
-  text-align: center;
-  color: rgba(245,232,216,0.35);
-  pointer-events: none;
-  transition: color 0.4s;
+  font-size: 11px; letter-spacing: 2px; min-width: 90px;
+  text-align: center; color: rgba(245,232,216,0.35);
+  pointer-events: none; transition: color 0.4s;
 }
 
 /* ── Scroll Dots ── */
 #scrollDots {
-  position: fixed;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 100;
+  position: fixed; right: 14px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 8px; z-index: 100;
 }
 .s-dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s;
-  background: rgba(245,232,216,0.18);
+  width: 4px; height: 4px; border-radius: 50%; cursor: pointer;
+  transition: all 0.3s; background: rgba(245,232,216,0.18);
 }
-.s-dot.active {
-  background: rgba(245,232,216,0.65);
-  transform: scale(1.6);
-}
+.s-dot.active { background: rgba(245,232,216,0.65); transform: scale(1.6); }
 
 /* ── Sections ── */
 .section {
-  scroll-snap-align: start;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 32px 52px;
-  position: relative;
+  scroll-snap-align: start; min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 32px 52px; position: relative;
 }
-
 .s-dark     { background: #1a100c; }
 .s-mid-dark { background: #1f1208; }
 .s-warm     { background: #fdf8ee; }
 .s-warm-alt { background: #f9f3e8; }
+.s-insight  { background: #f0e6d4; }
 .s-paper    { background: #fffcf5; justify-content: flex-start; }
 
 /* ── Fade animations ── */
-.fu {
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.75s ease, transform 0.75s ease;
-}
+.fu { opacity: 0; transform: translateY(20px); transition: opacity 0.75s ease, transform 0.75s ease; }
 .fu.in { opacity: 1; transform: translateY(0); }
 .fu.d1 { transition-delay: 0.15s; }
 .fu.d2 { transition-delay: 0.30s; }
 .fu.d3 { transition-delay: 0.45s; }
 
-/* ── Section label ── */
-.sec-label {
-  font-size: 11px;
-  letter-spacing: 3px;
-  margin-bottom: 28px;
-}
-.s-dark .sec-label, .s-mid-dark .sec-label { color: rgba(245,232,216,0.3); }
-.s-warm .sec-label, .s-warm-alt .sec-label, .s-paper .sec-label { color: #c4a882; }
+/* ── Shared ── */
+.sec-label { font-size: 11px; letter-spacing: 3px; margin-bottom: 24px; text-align: center; }
+.s-dark .sec-label, .s-mid-dark .sec-label { color: rgba(245,232,216,0.28); }
+.s-warm .sec-label, .s-warm-alt .sec-label, .s-insight .sec-label, .s-paper .sec-label { color: #c4a882; }
 
 /* ── S1 Opener ── */
-.open-year {
-  font-size: 11px;
-  color: rgba(245,232,216,0.28);
-  letter-spacing: 7px;
-  margin-bottom: 16px;
-  font-weight: 300;
-  text-align: center;
-}
-.open-month {
-  font-size: 68px;
-  color: #f5e8d8;
-  font-weight: 300;
-  letter-spacing: 10px;
-  line-height: 1;
-  margin-bottom: 28px;
-  text-align: center;
-}
-.open-sub {
-  font-size: 12px;
-  color: rgba(245,232,216,0.32);
-  letter-spacing: 3px;
-  text-align: center;
-}
+.open-year  { font-size:11px; color:rgba(245,232,216,.28); letter-spacing:7px; margin-bottom:16px; font-weight:300; text-align:center; }
+.open-month { font-size:68px; color:#f5e8d8; font-weight:300; letter-spacing:10px; line-height:1; margin-bottom:28px; text-align:center; }
+.open-sub   { font-size:12px; color:rgba(245,232,216,.3); letter-spacing:3px; text-align:center; }
 .scroll-hint {
-  position: absolute;
-  bottom: 30px;
-  font-size: 10px;
-  color: rgba(245,232,216,0.18);
-  letter-spacing: 3px;
+  position:absolute; bottom:30px; font-size:10px;
+  color:rgba(245,232,216,.16); letter-spacing:3px;
   animation: breathe 2.8s ease-in-out infinite;
 }
-@keyframes breathe {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
+@keyframes breathe { 0%,100%{opacity:.4} 50%{opacity:1} }
 
-/* ── S2 Number ── */
-.num-pre {
-  font-size: 12px;
-  color: rgba(245,232,216,0.32);
-  letter-spacing: 4px;
-  margin-bottom: 14px;
-  text-align: center;
-}
-.num-big {
-  font-size: 108px;
-  color: #f5e8d8;
-  font-weight: 300;
-  line-height: 1;
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  text-align: center;
-}
-.num-unit {
-  font-size: 15px;
-  color: rgba(245,232,216,0.45);
-  letter-spacing: 5px;
-  margin: 6px 0 22px;
-  text-align: center;
-}
-.num-sub {
-  font-size: 11px;
-  color: rgba(245,232,216,0.2);
-  letter-spacing: 2px;
-  text-align: center;
-}
+/* ── S2 Number + Mood merged ── */
+.merged-num-wrap { display:flex; align-items:baseline; justify-content:center; gap:6px; margin-bottom:6px; }
+.merged-num  { font-size:72px; color:#c4756a; font-family:'Playfair Display',serif; font-style:italic; font-weight:300; line-height:1; }
+.merged-unit { font-size:15px; color:#c4a882; letter-spacing:3px; }
+.merged-sub  { font-size:11px; color:#c4b098; letter-spacing:1px; margin-bottom:26px; text-align:center; }
+.mood-grid { display:flex; flex-wrap:wrap; gap:10px 12px; justify-content:center; max-width:300px; margin:0 auto 22px; }
+.mood-cell  { display:flex; flex-direction:column; align-items:center; gap:3px; }
+.mood-cell-emoji { font-size:22px; }
+.mood-cell-day   { font-size:9px; color:#c4b098; }
+.mood-summary-text { font-size:13px; color:#8a6058; letter-spacing:.5px; margin-bottom:8px; text-align:center; }
+.mood-count-row  { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.mood-count-pill { font-size:11px; color:#c4b098; }
 
-/* ── S3 Mood Grid ── */
-.mood-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 12px;
-  justify-content: center;
-  max-width: 300px;
-  margin: 0 auto 26px;
-}
-.mood-cell { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.mood-cell-emoji { font-size: 22px; }
-.mood-cell-day { font-size: 9px; color: #c4b098; }
-.mood-summary-text {
-  font-size: 14px;
-  color: #8a6058;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-.mood-count-row {
-  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
-}
-.mood-count-pill { font-size: 11px; color: #c4b098; }
+/* ── S3 Best Day ── */
+.best-pre        { font-size:10px; color:rgba(245,232,216,.25); letter-spacing:4px; margin-bottom:18px; text-align:center; }
+.best-date       { font-size:13px; color:rgba(245,232,216,.42); letter-spacing:4px; margin-bottom:16px; text-align:center; }
+.best-emoji      { font-size:58px; display:block; margin-bottom:22px; text-align:center; }
+.best-quote      { font-size:15px; color:rgba(245,232,216,.62); line-height:1.9; font-style:italic; max-width:260px; text-align:center; }
+.best-quote-note { font-size:10px; color:rgba(245,232,216,.2); letter-spacing:1.5px; margin-top:12px; text-align:center; }
 
-/* ── S4 Best Day ── */
-.best-pre {
-  font-size: 10px;
-  color: rgba(245,232,216,0.25);
-  letter-spacing: 4px;
-  margin-bottom: 18px;
-  text-align: center;
-}
-.best-date {
-  font-size: 13px;
-  color: rgba(245,232,216,0.42);
-  letter-spacing: 4px;
-  margin-bottom: 16px;
-  text-align: center;
-}
-.best-emoji {
-  font-size: 58px;
-  display: block;
-  margin-bottom: 22px;
-  text-align: center;
-}
-.best-quote {
-  font-size: 15px;
-  color: rgba(245,232,216,0.62);
-  line-height: 1.9;
-  font-style: italic;
-  max-width: 260px;
-  text-align: center;
-}
-.best-quote-note {
-  font-size: 10px;
-  color: rgba(245,232,216,0.2);
-  letter-spacing: 1.5px;
-  margin-top: 12px;
-  text-align: center;
-}
+/* ── S4 Insight ── */
+.insight-pre    { font-size:10px; color:rgba(160,120,90,.5); letter-spacing:4px; margin-bottom:20px; text-align:center; }
+.insight-big    { font-size:48px; color:#b86a5a; font-family:'Playfair Display',serif; font-style:italic; font-weight:300; line-height:1.15; text-align:center; margin-bottom:16px; max-width:280px; }
+.insight-detail { font-size:13px; color:#a07860; letter-spacing:.5px; text-align:center; line-height:1.8; max-width:240px; }
 
 /* ── S5 Jar ── */
-.jar-wrap { width: 100%; max-width: 320px; }
-.jar-list { display: flex; flex-direction: column; gap: 26px; }
-.jar-item-text {
-  font-size: 15px;
-  color: #7a5850;
-  line-height: 1.85;
-  font-style: italic;
-  margin-bottom: 5px;
-}
-.jar-item-date { font-size: 10px; color: #c4b098; letter-spacing: 1px; }
+.jar-wrap { width:100%; max-width:320px; }
+.jar-list { display:flex; flex-direction:column; gap:26px; }
+.jar-item-text { font-size:15px; color:#7a5850; line-height:1.85; font-style:italic; margin-bottom:5px; }
+.jar-item-date { font-size:10px; color:#c4b098; letter-spacing:1px; }
 
 /* ── S6 Letter ── */
-.letter-inner {
-  width: 100%;
-  max-width: 340px;
-  padding-top: 8px;
-}
-.letter-cap {
-  font-size: 11px;
-  color: #c4a882;
-  letter-spacing: 3px;
-  margin-bottom: 22px;
-}
-.letter-body {
-  font-size: 15px;
-  color: #8a6058;
-  line-height: 2.1;
-  white-space: pre-line;
-}
+.letter-inner { width:100%; max-width:340px; padding-top:8px; }
+.letter-cap   { font-size:11px; color:#c4a882; letter-spacing:3px; margin-bottom:22px; }
+.letter-body  { font-size:15px; color:#8a6058; line-height:2.1; white-space:pre-line; }
 
 /* ── S7 Close ── */
-.close-line1 {
-  font-size: 16px;
-  color: #c4a882;
-  letter-spacing: 1px;
-  margin-bottom: 14px;
-  font-weight: 300;
-  text-align: center;
-}
-.close-line2 {
-  font-size: 32px;
-  color: #c4756a;
-  letter-spacing: 2px;
-  font-weight: 500;
-  text-align: center;
-}
+.close-line1 { font-size:16px; color:#c4a882; letter-spacing:1px; margin-bottom:14px; font-weight:300; text-align:center; }
+.close-line2 { font-size:32px; color:#c4756a; letter-spacing:2px; font-weight:500; text-align:center; }
 .regen-btn {
-  position: absolute;
-  bottom: 30px;
-  background: none;
-  border: 1px solid rgba(196,149,106,0.18);
-  border-radius: 20px;
-  padding: 5px 18px;
-  font-size: 10px;
-  color: rgba(196,168,130,0.32);
-  cursor: pointer;
-  font-family: inherit;
-  letter-spacing: 1px;
-  transition: all 0.2s;
+  position:absolute; bottom:30px;
+  background:none; border:1px solid rgba(196,149,106,.18); border-radius:20px;
+  padding:5px 18px; font-size:10px; color:rgba(196,168,130,.32);
+  cursor:pointer; font-family:inherit; letter-spacing:1px; transition:all .2s;
 }
-.regen-btn:hover { color: #c4756a; border-color: rgba(196,149,106,0.4); }
+.regen-btn:hover { color:#c4756a; border-color:rgba(196,149,106,.4); }
 </style>
 </head>
 <body>
@@ -385,13 +196,59 @@ function moodScore(mood) {
   return { '很好': 4, '还行': 3, '有点累': 2, '不太好': 1 }[mood] || 0;
 }
 
+function findInsight(data, totalDays) {
+  const moodData   = data.moodData   || [];
+  const jarEntries = data.jarEntries || [];
+  const mc         = data.moodCounts || {};
+  const recorded   = moodData.length;
+  if (recorded === 0) return null;
+
+  // 全勤
+  if (recorded >= totalDays) {
+    return { big: '一天都没漏', detail: `${totalDays} 天，全部记录下来了` };
+  }
+  // 没有任何难受的天
+  if ((mc['不太好'] || 0) === 0 && (mc['有点累'] || 0) === 0) {
+    return { big: '没有难受的天', detail: '这个月，每一天你都过得还好' };
+  }
+  // 没有不太好的天
+  if ((mc['不太好'] || 0) === 0 && recorded >= 4) {
+    const tired = mc['有点累'] || 0;
+    return {
+      big: '没有太难受',
+      detail: tired > 0 ? `有 ${tired} 天有点累，但没有真正难受过` : '这个月没有太难受的时候'
+    };
+  }
+  // 最长连续记录 ≥ 5 天
+  const dates = moodData.map(e => e.date).sort();
+  let maxStreak = 1, cur = 1;
+  for (let i = 1; i < dates.length; i++) {
+    const diff = (new Date(dates[i]) - new Date(dates[i-1])) / 86400000;
+    if (diff === 1) { cur++; maxStreak = Math.max(maxStreak, cur); }
+    else cur = 1;
+  }
+  if (maxStreak >= 5) {
+    return { big: `连续 ${maxStreak} 天`, detail: '这是这个月最长的连续记录' };
+  }
+  // 很好的天超过一半
+  const vg = mc['很好'] || 0;
+  if (vg >= Math.ceil(recorded / 2) && recorded >= 4) {
+    return { big: `${vg} 天很好`, detail: '超过了这个月记录天数的一半' };
+  }
+  // 罐子存了 ≥ 3 条
+  if (jarEntries.length >= 3) {
+    return { big: `${jarEntries.length} 句话`, detail: '这个月她存进了罐子' };
+  }
+  return null;
+}
+
 function render(data) {
   const [y, m] = data.month.split('-').map(Number);
-  const monthCN  = MONTH_CN[m - 1];
+  const monthCN   = MONTH_CN[m - 1];
   const isCurrent = data.month === beijingYM();
   const totalDays = new Date(y, m, 0).getDate();
   const recorded  = data.moodData?.length || 0;
-  const mc = data.moodCounts || {};
+  const mc        = data.moodCounts || {};
 
   // Best day
   let bestDay = null;
@@ -404,14 +261,17 @@ function render(data) {
   const good = (mc['很好'] || 0) + (mc['还行'] || 0);
   const bad  = (mc['有点累'] || 0) + (mc['不太好'] || 0);
   const moodSummary =
-    recorded === 0          ? '这个月还没有记录' :
-    good >= recorded * 0.7  ? '大多数时候，心情不错' :
-    bad  >= recorded * 0.6  ? '这个月有些疲惫的时候' :
-                              '心情有起有落，都是真实的你';
+    recorded === 0         ? '这个月还没有记录' :
+    good >= recorded * 0.7 ? '大多数时候，心情不错' :
+    bad  >= recorded * 0.6 ? '这个月有些疲惫的时候' :
+                             '心情有起有落，都是真实的你';
+
+  // Insight
+  const insight = findInsight(data, totalDays);
 
   const html = [];
 
-  // ── S1 Opener ──
+  // ── S1 开场 ──
   html.push(`
     <section class="section s-dark">
       <div class="open-year fu">${y}</div>
@@ -421,19 +281,7 @@ function render(data) {
     </section>
   `);
 
-  // ── S2 Number ──
-  html.push(`
-    <section class="section s-mid-dark">
-      <div class="num-pre fu">你记录了</div>
-      <div class="num-big fu d1">${recorded}</div>
-      <div class="num-unit fu d1">天</div>
-      <div class="num-sub fu d2">${
-        recorded === totalDays ? '这个月，一天都没漏掉' : `${monthCN}月共 ${totalDays} 天`
-      }</div>
-    </section>
-  `);
-
-  // ── S3 Mood Grid ──
+  // ── S2 数字 + 心情网格 合并 ──
   const sortedMoods = [...(data.moodData || [])].sort((a, b) => a.date.localeCompare(b.date));
   const gridHtml = sortedMoods.map(e => {
     const day = parseInt(e.date.split('-')[2]);
@@ -447,19 +295,23 @@ function render(data) {
 
   html.push(`
     <section class="section s-warm">
-      <div class="sec-label fu">这个月的心情</div>
+      <div class="merged-num-wrap fu">
+        <span class="merged-num">${recorded}</span>
+        <span class="merged-unit">天</span>
+      </div>
+      <div class="merged-sub fu d1">${monthCN}月共 ${totalDays} 天</div>
       ${recorded > 0
-        ? `<div class="mood-grid fu d1">${gridHtml}</div>`
-        : `<div style="color:#c4b098;font-size:13px;margin-bottom:26px;text-align:center" class="fu d1">这个月还没有记录</div>`
+        ? `<div class="mood-grid fu d2">${gridHtml}</div>`
+        : `<div style="color:#c4b098;font-size:13px;margin-bottom:24px;text-align:center" class="fu d2">这个月还没有记录</div>`
       }
-      <div class="fu d2">
+      <div class="fu d3">
         <div class="mood-summary-text">${moodSummary}</div>
         <div class="mood-count-row">${countsHtml}</div>
       </div>
     </section>
   `);
 
-  // ── S4 Best Day (conditional) ──
+  // ── S3 最好的那天 (conditional) ──
   if (bestDay) {
     const bd = bestDay.date.split('-').map(Number);
     html.push(`
@@ -470,15 +322,26 @@ function render(data) {
         ${bestDayJar
           ? `<div class="best-quote fu d2">「${bestDayJar.text}」</div>
              <div class="best-quote-note fu d3">她存进罐子的话</div>`
-          : `<div class="best-quote fu d2" style="opacity:0.32">那天，她过得很好</div>`
+          : `<div class="best-quote fu d2" style="opacity:.3">那天，她过得很好</div>`
         }
       </section>
     `);
   }
 
-  // ── S5 Jar Entries (conditional) ──
+  // ── S4 意外发现 (conditional) ──
+  if (insight) {
+    html.push(`
+      <section class="section s-insight">
+        <div class="insight-pre fu">注意到了</div>
+        <div class="insight-big fu d1">${insight.big}</div>
+        <div class="insight-detail fu d2">${insight.detail}</div>
+      </section>
+    `);
+  }
+
+  // ── S5 罐子 (conditional) ──
   if (data.jarEntries?.length > 0) {
-    const jarItemsHtml = data.jarEntries.map(e => {
+    const jarHtml = data.jarEntries.map(e => {
       const d = e.date.split('-').map(Number);
       return `<div class="fu">
         <div class="jar-item-text">「${e.text}」</div>
@@ -489,13 +352,13 @@ function render(data) {
       <section class="section s-warm-alt">
         <div class="jar-wrap">
           <div class="sec-label fu">你存进罐子的话</div>
-          <div class="jar-list">${jarItemsHtml}</div>
+          <div class="jar-list">${jarHtml}</div>
         </div>
       </section>
     `);
   }
 
-  // ── S6 Letter ──
+  // ── S6 信 ──
   html.push(`
     <section class="section s-paper">
       <div class="letter-inner">
@@ -505,7 +368,7 @@ function render(data) {
     </section>
   `);
 
-  // ── S7 Closing ──
+  // ── S7 结尾 ──
   const closeLine = isCurrent ? `${monthCN}月还在继续。` : `${monthCN}月过去了。`;
   html.push(`
     <section class="section s-warm">
@@ -519,23 +382,20 @@ function render(data) {
   document.getElementById('report').innerHTML = html.join('');
   window.scrollTo(0, 0);
 
-  // Fix section indices & setup dots
+  // Fix indices & dots
   const sections = document.querySelectorAll('.section');
   sections.forEach((s, i) => s.dataset.idx = i);
 
-  const dotsEl = document.getElementById('scrollDots');
-  dotsEl.innerHTML = Array.from(sections, (_, i) =>
+  document.getElementById('scrollDots').innerHTML = Array.from(sections, (_, i) =>
     `<div class="s-dot${i === 0 ? ' active' : ''}" onclick="scrollToSection(${i})"></div>`
   ).join('');
 
-  // IntersectionObserver
+  // Observer
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
+      entry.target.querySelectorAll('.fu').forEach(el => setTimeout(() => el.classList.add('in'), 80));
       const idx = parseInt(entry.target.dataset.idx);
-      entry.target.querySelectorAll('.fu').forEach(el => {
-        setTimeout(() => el.classList.add('in'), 80);
-      });
       document.querySelectorAll('.s-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
       const isDark = entry.target.classList.contains('s-dark') || entry.target.classList.contains('s-mid-dark');
       setNavTheme(isDark);
