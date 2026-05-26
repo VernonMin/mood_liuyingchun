@@ -15,9 +15,8 @@ const SYSTEM_PROMPT = `你是一个专门为刘迎春写月度心情信的助手
 4. 如果有不太好的天，不回避，温柔地提：「有几天不太好，但她没有跟自己较劲」
 5. 语气克制，像一个懂她的朋友，不煽情，不夸张
 6. 不超过100字
-7. 只输出正文，不要标题，不要署名
-8. 不要出现「春风」「阳光」「温暖」「绽放」「闪闪发光」等词
-9. 返回JSON格式：{"letter": "..."}`;
+7. 只输出信的正文，不要标题，不要署名，不要任何额外内容
+8. 不要出现「春风」「阳光」「温暖」「绽放」「闪闪发光」等词`;
 
 export async function onRequestOptions() {
   return new Response(null, { headers: CORS });
@@ -131,13 +130,11 @@ async function generateReport(env, month) {
         ],
         temperature: 0.9,
         max_tokens: 400,
-        response_format: { type: 'json_object' },
       }),
     });
     const data = await res.json();
     const content = data.choices?.[0]?.message?.content || '';
-    const parsed = JSON.parse(content);
-    if (parsed.letter) letter = parsed.letter;
+    if (content) letter = content.trim();
   } catch (e) {
     // 用默认兜底
   }
