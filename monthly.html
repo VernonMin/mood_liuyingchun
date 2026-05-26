@@ -586,7 +586,7 @@ function render(data) {
         <div class="sc-closing">你很好。</div>
         <div class="sc-brand">刘迎春的开心小角落</div>
       </div>
-      <button class="save-card-btn" onclick="saveCard()">保存卡片</button>
+      <button class="save-card-btn" style="pointer-events:none">生成中…</button>
     </section>
   `);
 
@@ -609,8 +609,28 @@ function render(data) {
       entry.target.querySelectorAll('.fu').forEach(el => setTimeout(() => el.classList.add('in'), 80));
       const idx = parseInt(entry.target.dataset.idx);
       document.querySelectorAll('.s-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
-      const isDark = entry.target.classList.contains('s-dark') || entry.target.classList.contains('s-mid-dark');
+      const isDark = entry.target.classList.contains('s-dark') || entry.target.classList.contains('s-mid-dark') || entry.target.classList.contains('s-sharecard');
       setNavTheme(isDark);
+
+      // S8：滑入后自动把卡片渲染成 <img>，长按即可保存
+      if (entry.target.classList.contains('s-sharecard') && !entry.target.dataset.imgDone) {
+        entry.target.dataset.imgDone = '1';
+        setTimeout(async () => {
+          const card = entry.target.querySelector('.sharecard-wrap');
+          if (!card || typeof html2canvas === 'undefined') return;
+          try {
+            const canvas = await html2canvas(card, {
+              scale: 2, useCORS: true, backgroundColor: null, logging: false,
+            });
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/png');
+            img.style.cssText = `width:${card.offsetWidth}px; border-radius:22px; display:block; box-shadow:0 8px 32px rgba(0,0,0,0.3);`;
+            card.replaceWith(img);
+            const btn = entry.target.querySelector('.save-card-btn');
+            if (btn) { btn.style.pointerEvents = 'none'; btn.textContent = '长按图片保存到相册'; }
+          } catch(e) { /* 保留原始卡片，降级 */ }
+        }, 900); // 等 fade-in 动画跑完
+      }
     });
   }, { threshold: 0.45 });
 
