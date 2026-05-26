@@ -496,9 +496,9 @@ function render(data) {
   `);
 
   // ── S8 截图卡 ──
-  // 取最长的罐子原话作为引用
-  let scJar = null;
-  if (data.jarEntries?.length > 0) {
+  // 优先用「最好的那天」的罐子记录，与 S3 叙事一致；无则取最长
+  let scJar = bestDayJar || null;
+  if (!scJar && data.jarEntries?.length > 0) {
     scJar = data.jarEntries.reduce((a, b) =>
       (a.text?.length || 0) >= (b.text?.length || 0) ? a : b
     );
