@@ -1094,8 +1094,8 @@
   /* 心情月报入口卡片 */
   .monthly-entry-card {
     margin-top: 16px;
-    background: rgba(255,246,232,0.85);
-    border: 1.5px solid rgba(196,149,106,0.18);
+    background: rgba(255,255,255,0.78);
+    border: 1.5px solid rgba(196,149,106,0.22);
     border-radius: 16px;
     padding: 14px 18px;
     width: 100%;
@@ -1107,8 +1107,8 @@
     display: block;
   }
   .monthly-entry-card:hover {
-    background: rgba(255,243,224,0.95);
-    border-color: rgba(196,149,106,0.32);
+    background: rgba(255,255,255,0.92);
+    border-color: rgba(196,149,106,0.35);
   }
   .mec-label {
     font-size: 10px;
@@ -2549,7 +2549,7 @@ function initFestivals() {
 initFestivals();
 
 function openFestivalsModal() {
-  track('open_festivals');
+  track('点击刘迎春的小节日');
   initFestivals();
   document.getElementById('festivalModal').classList.add('show');
 }
@@ -2559,7 +2559,6 @@ function openHistoryModal() {
 }
 
 function openGameModal() {
-  track('open_games');
   document.getElementById('gameModal').classList.add('show');
   showGameMenu();
 }
@@ -2575,7 +2574,6 @@ function showGameMenu() {
 }
 
 function startGame(type) {
-  track('start_game_' + type);
   document.getElementById('gameMenu').style.display = 'none';
   if (type === 'cards') {
     document.getElementById('gameCards').style.display = '';
@@ -2845,7 +2843,6 @@ function launchShinchan() {
 }
 
 async function praise() {
-  track('praise');
   incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
   launchShinchan();
@@ -3055,7 +3052,6 @@ async function drawCard() {
 }
 
 async function doShare() {
-  track('share');
   _currentDataUrl = await drawCard();
   document.getElementById('previewImg').src = _currentDataUrl;
   document.getElementById('previewMask').classList.add('show');
@@ -3419,7 +3415,6 @@ let splashDismissed = false;
 function dismissSplash() {
   if (splashDismissed) return;
   splashDismissed = true;
-  track('page_load');
   playNextBgm();
   const splash = document.getElementById('splash');
   const main = document.getElementById('main');
@@ -3535,7 +3530,6 @@ function streakText(streak, emoji, mood, isToday) {
 async function setMood(btn) {
   const mood = btn.dataset.mood;
   const emoji = btn.dataset.emoji;
-  track('mood_' + mood);
 
   document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -4267,7 +4261,7 @@ function toggleEyeCare() {
   }
 
   window.openZlt = async function () {
-    track('open_prizes');
+    track('点击刘迎春赢到的');
     document.getElementById('zltOverlay').style.display = 'flex';
     zltShowS1();
     await loadPrizes();
@@ -4307,7 +4301,7 @@ function track(event) {
 
 // ── 心情月报遮罩 ──
 function openMonthly() {
-  track('open_monthly');
+  track('点击心情月报');
   const f = document.getElementById('monthlyFrame');
   const o = document.getElementById('monthlyOverlay');
   if (!f.getAttribute('src')) {
