@@ -1123,6 +1123,13 @@
     letter-spacing: 0.5px;
     margin-bottom: 5px;
   }
+  .mec-preview {
+    font-size: 13px;
+    color: #a07860;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+    min-height: 18px;
+  }
   .mec-action {
     font-size: 11px;
     color: #c4756a;
@@ -2235,14 +2242,14 @@
     <button class="monthly-entry-card" onclick="window.location.href='/monthly'">
       <div class="mec-label">心情月报</div>
       <div class="mec-month" id="mecMonth">—</div>
-      <div class="mec-action">查看本月 →</div>
+      <div class="mec-preview" id="mecPreview"></div>
+      <div class="mec-action" id="mecAction">查看本月 →</div>
     </button>
   </div>
 
   <div class="bottom-links">
     <button class="bottom-link-btn" onclick="openFestivalsModal()">📅 刘迎春的小节日</button>
     <button class="bottom-link-btn" onclick="openZlt()">🎁 刘迎春赢到的</button>
-    <button class="bottom-link-btn" onclick="window.location.href='/monthly'">📋 刘迎春的心情月报</button>
     <button class="bottom-link-btn" onclick="openGameModal()">🎮 刘迎春的摸鱼小游戏</button>
   </div>
 
@@ -3582,14 +3589,33 @@ function renderHistory(moods) {
 
 loadTodayMood();
 
-// 心情月报入口：显示当前月份
-(function() {
+// 心情月报入口：从 KV 读当月数据
+async function loadMonthlyCard() {
   const d = new Date(Date.now() + 8 * 3600 * 1000);
   const y = d.getUTCFullYear();
-  const monthCN = ['一','二','三','四','五','六','七','八','九','十','十一','十二'][d.getUTCMonth()];
-  const el = document.getElementById('mecMonth');
-  if (el) el.textContent = `${y} · ${monthCN}月`;
-})();
+  const mo = d.getUTCMonth();
+  const monthCN = ['一','二','三','四','五','六','七','八','九','十','十一','十二'][mo];
+  const monthStr = `${y}-${String(mo + 1).padStart(2, '0')}`;
+
+  const monthEl   = document.getElementById('mecMonth');
+  const previewEl = document.getElementById('mecPreview');
+  const actionEl  = document.getElementById('mecAction');
+
+  if (monthEl) monthEl.textContent = `${y} · ${monthCN}月`;
+
+  try {
+    const r = await fetch(`/api/monthly_report?month=${monthStr}&preview=1`);
+    const data = await r.json();
+    if (data.recorded > 0) {
+      if (previewEl) previewEl.textContent = `${data.recentEmojis.join(' ')} · 已记录 ${data.recorded} 天`;
+    } else {
+      if (actionEl) actionEl.textContent = '这个月还没有记录 →';
+    }
+  } catch {
+    // 静默失败，卡片仍然可点
+  }
+}
+loadMonthlyCard();
 
 const reflectContent = {
   '有点累': {

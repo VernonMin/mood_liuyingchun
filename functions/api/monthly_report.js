@@ -33,6 +33,19 @@ export async function onRequestGet({ env, request }) {
     });
   }
 
+  // 轻量预览模式：只返回心情数据，不调 AI
+  const preview = url.searchParams.get('preview') === '1';
+  if (preview) {
+    const allMoods = await env.LIUYINGCHUN_MOOD_KV.get('moods', 'json') || [];
+    const moodData = allMoods.filter(m => m.date.startsWith(month));
+    const recent = [...moodData].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+    return new Response(JSON.stringify({
+      month,
+      recorded: moodData.length,
+      recentEmojis: recent.map(m => m.emoji),
+    }), { headers: { 'Content-Type': 'application/json', ...CORS } });
+  }
+
   if (!regen) {
     const cached = await env.LIUYINGCHUN_MOOD_KV.get(`monthly_report:${month}`, 'json');
     if (cached) {
