@@ -2044,20 +2044,17 @@
 
   /* 心情月报全屏遮罩 */
   #monthlyOverlay {
+    display: none;          /* 默认彻底隐藏，不拦截任何事件 */
     position: fixed;
     inset: 0;
     z-index: 10000;
     background: #1a100c;
-    pointer-events: none;
     opacity: 0;
     transform: translateY(32px);
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  #monthlyOverlay.open {
-    pointer-events: all;
-    opacity: 1;
-    transform: translateY(0);
-  }
+  #monthlyOverlay.visible { display: block; }
+  #monthlyOverlay.open    { opacity: 1; transform: translateY(0); }
   #monthlyFrame {
     width: 100%; height: 100%;
     border: none; display: block;
@@ -4316,10 +4313,17 @@ function openMonthly() {
   if (!f.getAttribute('src')) {
     f.src = '/monthly';
   }
-  o.classList.add('open');
+  o.classList.add('visible');
+  // 等 display:block 生效后再触发动画
+  requestAnimationFrame(() => requestAnimationFrame(() => o.classList.add('open')));
 }
 function closeMonthly() {
-  document.getElementById('monthlyOverlay').classList.remove('open');
+  const o = document.getElementById('monthlyOverlay');
+  o.classList.remove('open');
+  // 动画结束后真正 display:none，彻底释放触摸事件
+  setTimeout(() => {
+    if (!o.classList.contains('open')) o.classList.remove('visible');
+  }, 320);
 }
 </script>
 
