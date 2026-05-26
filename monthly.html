@@ -226,7 +226,7 @@ function render(data) {
   // 心情轨迹
   let trailHtml = '';
   if (data.moodData?.length > 0) {
-    trailHtml = data.moodData.map(e => {
+    trailHtml = [...data.moodData].reverse().map(e => {
       const day = parseInt(e.date.split('-')[2]);
       return `<div class="mood-item">
         <span class="mood-emoji">${e.emoji}</span>
