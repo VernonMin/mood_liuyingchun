@@ -1091,21 +1091,43 @@
     color: #7a6020;
   }
 
-  /* 打开罐子按钮 */
-  .jar-view-btn {
-    margin-top: 14px;
-    background: transparent;
-    border: 1.5px solid rgba(200,170,80,0.45);
-    border-radius: 50px;
-    padding: 7px 20px;
-    font-size: 13px;
-    color: #b08030;
+  /* 心情月报入口卡片 */
+  .monthly-entry-card {
+    margin-top: 16px;
+    background: rgba(255,255,255,0.72);
+    border: 1.5px solid rgba(196,149,106,0.22);
+    border-radius: 16px;
+    padding: 14px 18px;
+    width: 100%;
+    max-width: 320px;
     cursor: pointer;
-    font-family: inherit;
     transition: all 0.2s;
-    letter-spacing: 0.5px;
+    text-align: left;
+    font-family: inherit;
+    display: block;
   }
-  .jar-view-btn:hover { background: rgba(255,240,180,0.4); }
+  .monthly-entry-card:hover {
+    background: rgba(255,248,235,0.92);
+    border-color: rgba(196,149,106,0.38);
+  }
+  .mec-label {
+    font-size: 10px;
+    color: #c4a882;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .mec-month {
+    font-size: 16px;
+    color: #6a4040;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+  .mec-action {
+    font-size: 11px;
+    color: #c4756a;
+    letter-spacing: 1px;
+  }
 
   /* 罐子查看弹窗 */
   .jar-view-mask {
@@ -2210,8 +2232,11 @@
       </button>
     </div>
     <p class="mood-status" id="moodStatus"></p>
-    <!-- 好心情罐子入口已隐藏 -->
-
+    <button class="monthly-entry-card" onclick="window.location.href='/monthly'">
+      <div class="mec-label">心情月报</div>
+      <div class="mec-month" id="mecMonth">—</div>
+      <div class="mec-action">查看本月 →</div>
+    </button>
   </div>
 
   <div class="bottom-links">
@@ -3556,6 +3581,15 @@ function renderHistory(moods) {
 }
 
 loadTodayMood();
+
+// 心情月报入口：显示当前月份
+(function() {
+  const d = new Date(Date.now() + 8 * 3600 * 1000);
+  const y = d.getUTCFullYear();
+  const monthCN = ['一','二','三','四','五','六','七','八','九','十','十一','十二'][d.getUTCMonth()];
+  const el = document.getElementById('mecMonth');
+  if (el) el.textContent = `${y} · ${monthCN}月`;
+})();
 
 const reflectContent = {
   '有点累': {
