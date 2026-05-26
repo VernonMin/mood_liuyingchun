@@ -81,6 +81,28 @@ body {
   white-space: pre-line;
 }
 
+/* 罐子精选 */
+.jar-featured {
+  margin: 26px 0 0;
+  padding: 20px 18px;
+  background: rgba(196,149,106,0.06);
+  border-radius: 14px;
+  text-align: center;
+}
+.jar-featured-text {
+  font-size: 16px;
+  color: #7a5850;
+  line-height: 1.8;
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 400;
+}
+.jar-featured-date {
+  font-size: 10px;
+  color: #c4b098;
+  margin-top: 10px;
+  letter-spacing: 1px;
+}
+
 /* 分隔线 */
 .trail-divider {
   width: 32px;
@@ -259,6 +281,24 @@ function render(data) {
 
   const footerText = isCurrent ? '本月数据截至今日' : `${monthFull}`;
 
+  // 取最长的一条罐子内容作为精选
+  let featuredJar = null;
+  if (data.jarEntries?.length > 0) {
+    featuredJar = data.jarEntries.reduce((a, b) =>
+      (a.text?.length || 0) >= (b.text?.length || 0) ? a : b
+    );
+  }
+  let jarHtml = '';
+  if (featuredJar) {
+    const jd = featuredJar.date.split('-').map(Number);
+    const jLabel = `${jd[1]}月${jd[2]}日`;
+    jarHtml = `
+      <div class="jar-featured">
+        <div class="jar-featured-text">「${featuredJar.text}」</div>
+        <div class="jar-featured-date">— ${jLabel}</div>
+      </div>`;
+  }
+
   document.getElementById('card').innerHTML = `
     <div class="card-top">
       <div class="card-month">${monthFull}</div>
@@ -266,6 +306,8 @@ function render(data) {
     </div>
 
     <div class="letter">${data.letter || ''}</div>
+
+    ${jarHtml}
 
     ${data.moodData?.length > 0 ? `
       <div class="trail-divider"></div>
