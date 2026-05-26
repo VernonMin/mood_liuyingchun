@@ -141,7 +141,7 @@ body { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
 /* ── S8 截图卡 ── */
 .s-sharecard { background: #1a100c; }
 .sharecard-wrap {
-  width: 290px;
+  width: min(340px, 88vw);
   background: linear-gradient(160deg, #fdf6ec 0%, #f7ead8 100%);
   border-radius: 22px;
   padding: 34px 26px 26px;
@@ -149,6 +149,57 @@ body { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
   flex-direction: column;
   align-items: center;
   position: relative;
+}
+.save-card-btn {
+  margin-top: 28px;
+  background: none;
+  border: 1px solid rgba(245,232,216,0.25);
+  border-radius: 20px;
+  padding: 9px 28px;
+  font-size: 13px;
+  color: rgba(245,232,216,0.65);
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+}
+.save-card-btn:hover  { color: rgba(245,232,216,0.9); border-color: rgba(245,232,216,0.5); }
+.save-card-btn:active { transform: scale(0.96); }
+/* 保存预览遮罩 */
+#saveOverlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.82);
+  z-index: 300;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#saveOverlay img {
+  max-width: 340px;
+  width: 88vw;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  display: block;
+}
+.save-overlay-hint {
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  margin-top: 18px;
+  letter-spacing: 1px;
+}
+.save-overlay-close {
+  margin-top: 14px;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 1px;
 }
 .sc-header {
   font-size: 10px;
@@ -222,8 +273,15 @@ body { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
   letter-spacing: 2px;
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
+
+<div id="saveOverlay" onclick="closeSaveOverlay()">
+  <img id="saveImg" src="" alt="">
+  <p class="save-overlay-hint">iOS：长按图片保存到相册</p>
+  <button class="save-overlay-close" onclick="closeSaveOverlay()">关闭</button>
+</div>
 
 <div id="loading">
   <span class="dot">·</span><span class="dot">·</span><span class="dot">·</span>
@@ -528,7 +586,7 @@ function render(data) {
         <div class="sc-closing">你很好。</div>
         <div class="sc-brand">刘迎春的开心小角落</div>
       </div>
-      <div class="sc-hint">截图保存</div>
+      <button class="save-card-btn" onclick="saveCard()">保存卡片</button>
     </section>
   `);
 
@@ -581,6 +639,36 @@ function setNavTheme(dark) {
     dots.forEach(d => { d.style.background = d.classList.contains('active') ? 'rgba(140,90,50,0.75)' : 'rgba(140,90,50,0.25)'; });
     if (back) back.style.color = 'rgba(140,90,50,0.75)';
   }
+}
+
+async function saveCard() {
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.textContent = '生成中…';
+  try {
+    const card = document.querySelector('.sharecard-wrap');
+    const canvas = await html2canvas(card, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: null,
+      logging: false,
+    });
+    const url = canvas.toDataURL('image/png');
+    document.getElementById('saveImg').src = url;
+    const overlay = document.getElementById('saveOverlay');
+    overlay.style.display = 'flex';
+  } catch(e) {
+    btn.textContent = '生成失败';
+    setTimeout(() => { btn.disabled = false; btn.textContent = '保存卡片'; }, 2000);
+    return;
+  }
+  btn.disabled = false;
+  btn.textContent = '保存卡片';
+}
+
+function closeSaveOverlay(e) {
+  if (e && e.target !== e.currentTarget && !e.target.classList.contains('save-overlay-close')) return;
+  document.getElementById('saveOverlay').style.display = 'none';
 }
 
 function goBack() {
