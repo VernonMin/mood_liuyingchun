@@ -4,19 +4,20 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-const SYSTEM_PROMPT = `你是一个专门为刘迎春写月度心情总结的助手。刘迎春是一名护士，工作认真，对人温柔体贴。
+const SYSTEM_PROMPT = `你是一个专门为刘迎春写月度心情信的助手。刘迎春是一名护士，工作认真，对人温柔体贴。
 
-根据这个月的心情数据，分别写两段话：
-- opening：温柔地描述这个月，2-3句话，像一个懂她的朋友在说话，不超过70字
-- closing：给她一句温暖的月度寄语，1-2句话，不超过50字
+你写的是一封信，不是报告。
 
-风格要求：
-- 口语化、克制、不夸张，不煽情
-- 不要出现「春风」「阳光」「温暖」「绽放」等词
-- 说的是她这个人，不是泛泛的鸡汤
-- 以「刘迎春」开头
-- 返回严格的JSON格式：{"opening": "...", "closing": "..."}
-- 只返回JSON，不要其他内容`;
+写作规则：
+1. 如果有罐子内容，用她存的原话直接开头，加引号，然后从这句话展开
+2. 把心情数字变成观察：不写「很好8天」，写「有好几天很好」
+3. 说她是什么样的人，不只说她做了什么事
+4. 如果有不太好的天，不回避，温柔地提：「有几天不太好，但她没有跟自己较劲」
+5. 语气克制，像一个懂她的朋友，不煽情，不夸张
+6. 不超过100字
+7. 只输出正文，不要标题，不要署名
+8. 不要出现「春风」「阳光」「温暖」「绽放」「闪闪发光」等词
+9. 返回JSON格式：{"letter": "..."}`;
 
 export async function onRequestOptions() {
   return new Response(null, { headers: CORS });
@@ -51,12 +52,15 @@ export async function onRequestGet({ env, request }) {
 }
 
 async function generateReport(env, month) {
+  // 心情数据
   const allMoods = await env.LIUYINGCHUN_MOOD_KV.get('moods', 'json') || [];
   const moodData = allMoods.filter(m => m.date.startsWith(month));
 
+  // 罐子
   const allJar = await env.LIUYINGCHUN_MOOD_KV.get('jar_entries', 'json') || [];
   const jarEntries = allJar.filter(e => e.date && e.date.startsWith(month));
 
+  // 复盘笔记
   const notesList = await env.LIUYINGCHUN_MOOD_KV.list({ prefix: `note_${month}` });
   const notes = [];
   for (const key of notesList.keys) {
@@ -64,6 +68,7 @@ async function generateReport(env, month) {
     if (note) notes.push({ ...note, date: key.name.replace('note_', '') });
   }
 
+  // 统计
   const moodCounts = { '很好': 0, '还行': 0, '有点累': 0, '不太好': 0 };
   moodData.forEach(m => { if (m.mood in moodCounts) moodCounts[m.mood]++; });
   const dominantMood = Object.entries(moodCounts)
@@ -73,24 +78,43 @@ async function generateReport(env, month) {
   const [y, mo] = month.split('-').map(Number);
   const monthLabel = `${y}年${mo}月`;
 
+  // 给 AI 的素材：尽量用她的原话
   let dataDesc = `${monthLabel}，刘迎春记录了${moodData.length}天心情。\n`;
+
   if (moodData.length > 0) {
-    dataDesc += `心情分布：很好${moodCounts['很好']}天，还行${moodCounts['还行']}天，有点累${moodCounts['有点累']}天，不太好${moodCounts['不太好']}天。\n`;
-  }
-  if (jarEntries.length > 0) {
-    dataDesc += `罐子里存了${jarEntries.length}条好心情：${jarEntries.slice(0, 3).map(e => `「${e.text}」`).join('、')}。\n`;
-  }
-  if (notes.length > 0) {
-    dataDesc += `写了${notes.length}条复盘笔记：${notes.slice(0, 2).map(n => `「${n.text}」`).join('、')}。\n`;
-  }
-  if (moodData.length === 0) {
-    dataDesc += '这个月没有记录心情数据。\n';
+    const good = moodCounts['很好'] + moodCounts['还行'];
+    const bad = moodCounts['有点累'] + moodCounts['不太好'];
+    if (good > bad) dataDesc += `大多数时候心情不错，`;
+    else if (bad > good) dataDesc += `这个月有不少疲惫的时候，`;
+    else dataDesc += `心情有起有落，`;
+    if (moodCounts['不太好'] > 0) dataDesc += `有${moodCounts['不太好']}天不太好。\n`;
+    else dataDesc += `没有太难受的天。\n`;
   }
 
-  let aiText = {
-    opening: `${monthLabel}，刘迎春认真地过着每一天，好的不好的都是她的。`,
-    closing: `下个月也好好的。`,
-  };
+  if (jarEntries.length > 0) {
+    dataDesc += `\n她存进罐子的话：\n`;
+    jarEntries.slice(0, 4).forEach(e => {
+      const d = e.date.split('-');
+      dataDesc += `- 「${e.text}」（${parseInt(d[1])}月${parseInt(d[2])}日）\n`;
+    });
+  }
+
+  if (notes.length > 0) {
+    dataDesc += `\n她写的复盘：\n`;
+    notes.slice(0, 2).forEach(n => {
+      dataDesc += `- 「${n.text}」\n`;
+    });
+  }
+
+  if (moodData.length === 0 && jarEntries.length === 0) {
+    dataDesc += '这个月没有记录任何内容。\n';
+  }
+
+  dataDesc += '\n请写一封信。';
+
+  // 默认兜底文案
+  const [y2, mo2] = month.split('-').map(Number);
+  let letter = `${y2}年${mo2}月，刘迎春认真地过着每一天。好的不好的，都是她真实的这个月。`;
 
   try {
     const res = await fetch('https://api.deepseek.com/chat/completions', {
@@ -105,7 +129,7 @@ async function generateReport(env, month) {
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: dataDesc },
         ],
-        temperature: 0.85,
+        temperature: 0.9,
         max_tokens: 400,
         response_format: { type: 'json_object' },
       }),
@@ -113,9 +137,9 @@ async function generateReport(env, month) {
     const data = await res.json();
     const content = data.choices?.[0]?.message?.content || '';
     const parsed = JSON.parse(content);
-    if (parsed.opening && parsed.closing) aiText = parsed;
+    if (parsed.letter) letter = parsed.letter;
   } catch (e) {
-    // 用默认文案兜底
+    // 用默认兜底
   }
 
   return {
@@ -126,6 +150,6 @@ async function generateReport(env, month) {
     notes,
     moodCounts,
     dominantMood,
-    aiText,
+    letter,
   };
 }
