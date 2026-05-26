@@ -353,12 +353,12 @@ function render(data) {
       }
     });
 
-    // 1. 很好 + 有罐子，取罐子最长
-    const vgWithJar = data.moodData.filter(m => m.mood === '很好' && jarMap[m.date]);
+    // 1. 很好 + 有罐子（≥10字），取最近的那天
+    const vgWithJar = data.moodData.filter(m =>
+      m.mood === '很好' && jarMap[m.date] && (jarMap[m.date].text || '').length >= 10
+    );
     if (vgWithJar.length > 0) {
-      bestDay = vgWithJar.reduce((a, b) =>
-        (jarMap[b.date]?.text?.length || 0) > (jarMap[a.date]?.text?.length || 0) ? b : a
-      );
+      bestDay = vgWithJar.sort((a, b) => b.date.localeCompare(a.date))[0];
     } else {
       // 2. 任意好心情 + 有罐子，取罐子最长
       const goodWithJar = data.moodData.filter(m => moodScore(m.mood) >= 3 && jarMap[m.date]);
