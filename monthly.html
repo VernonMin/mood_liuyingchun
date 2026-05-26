@@ -139,89 +139,84 @@ body { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
 .regen-btn:hover { color:#c4756a; border-color:rgba(196,149,106,.4); }
 
 /* ── S8 截图卡 ── */
-.s-sharecard {
-  background: #1a100c;
-  justify-content: center;
-}
+.s-sharecard { background: #1a100c; }
 .sharecard-wrap {
-  width: 300px;
-  background: #fdf4e8;
-  border-radius: 24px;
-  padding: 36px 28px 28px;
+  width: 290px;
+  background: linear-gradient(160deg, #fdf6ec 0%, #f7ead8 100%);
+  border-radius: 22px;
+  padding: 34px 26px 26px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
   position: relative;
 }
-.sc-month-en {
+.sc-header {
   font-size: 10px;
-  color: #c4a882;
+  color: rgba(160,120,90,0.5);
   letter-spacing: 4px;
   margin-bottom: 4px;
+  text-align: center;
 }
-.sc-month-cn {
-  font-size: 36px;
+.sc-month {
+  font-size: 30px;
   color: #2a1810;
   font-weight: 300;
-  letter-spacing: 6px;
-  line-height: 1;
+  letter-spacing: 8px;
+  margin-bottom: 22px;
+  text-align: center;
+}
+.sc-quote-wrap {
+  width: 100%;
+  border-left: 2px solid rgba(196,149,106,0.38);
+  padding-left: 14px;
   margin-bottom: 20px;
 }
-.sc-divider {
-  width: 32px; height: 1px;
-  background: rgba(196,149,106,0.3);
-  margin-bottom: 18px;
+.sc-quote-text {
+  font-size: 13px;
+  color: #6a4040;
+  line-height: 1.9;
+  font-style: italic;
 }
-.sc-stat {
-  font-size: 11px;
-  color: #a07860;
-  letter-spacing: 2px;
-  margin-bottom: 16px;
+.sc-quote-date {
+  font-size: 9px;
+  color: #c4a882;
+  margin-top: 5px;
+  letter-spacing: 1px;
 }
 .sc-emojis {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 6px;
+  gap: 5px 7px;
   justify-content: center;
-  max-width: 240px;
-  margin-bottom: 18px;
+  max-width: 230px;
+  margin-bottom: 22px;
 }
-.sc-emoji { font-size: 18px; }
-.sc-insight {
-  font-size: 12px;
-  color: #b86a5a;
-  letter-spacing: 1px;
-  margin-bottom: 18px;
-  text-align: center;
-  font-style: italic;
+.sc-emoji-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
-.sc-letter-excerpt {
-  font-size: 12px;
-  color: #8a6058;
-  line-height: 1.9;
-  text-align: center;
-  max-width: 240px;
-  margin-bottom: 20px;
-  font-style: italic;
-}
+.sc-emoji-icon { font-size: 17px; }
+.sc-emoji-day  { font-size: 8px; color: #c4b098; }
 .sc-closing {
-  font-size: 16px;
+  font-size: 26px;
   color: #c4756a;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   font-weight: 500;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  text-align: center;
 }
 .sc-brand {
-  font-size: 10px;
-  color: rgba(160,120,90,0.4);
+  font-size: 9px;
+  color: rgba(160,120,90,0.32);
   letter-spacing: 2px;
 }
 .sc-hint {
   position: absolute;
   bottom: -28px;
   font-size: 10px;
-  color: rgba(245,232,216,0.2);
+  color: rgba(245,232,216,0.18);
   letter-spacing: 2px;
 }
 </style>
@@ -466,23 +461,35 @@ function render(data) {
   `);
 
   // ── S8 截图卡 ──
-  const scEmojis = sortedMoods.slice(0, 12).map(e =>
-    `<span class="sc-emoji">${e.emoji}</span>`
-  ).join('');
-  const letterExcerpt = (data.letter || '').split(/[。！？\n]/)[0].trim();
-  const scInsightText = insight ? insight.big : '';
+  // 取最长的罐子原话作为引用
+  let scJar = null;
+  if (data.jarEntries?.length > 0) {
+    scJar = data.jarEntries.reduce((a, b) =>
+      (a.text?.length || 0) >= (b.text?.length || 0) ? a : b
+    );
+  }
+
+  const scEmojiHtml = sortedMoods.slice(0, 10).map(e => {
+    const day = parseInt(e.date.split('-')[2]);
+    return `<div class="sc-emoji-item">
+      <span class="sc-emoji-icon">${e.emoji}</span>
+      <span class="sc-emoji-day">${m}/${day}</span>
+    </div>`;
+  }).join('');
 
   html.push(`
     <section class="section s-sharecard">
       <div class="sharecard-wrap fu">
-        <div class="sc-month-en">${y}</div>
-        <div class="sc-month-cn">${monthCN}月</div>
-        <div class="sc-divider"></div>
-        <div class="sc-stat">记录了 ${recorded} 天心情</div>
-        ${scEmojis ? `<div class="sc-emojis">${scEmojis}</div>` : ''}
-        ${scInsightText ? `<div class="sc-insight">${scInsightText}</div>` : ''}
-        <div class="sc-divider"></div>
-        ${letterExcerpt ? `<div class="sc-letter-excerpt">「${letterExcerpt}」</div>` : ''}
+        <div class="sc-header">${y}</div>
+        <div class="sc-month">${monthCN}月</div>
+        ${scJar ? (() => {
+          const jd = scJar.date.split('-').map(Number);
+          return `<div class="sc-quote-wrap">
+            <div class="sc-quote-text">「${scJar.text}」</div>
+            <div class="sc-quote-date">— ${jd[1]}月${jd[2]}日</div>
+          </div>`;
+        })() : ''}
+        ${scEmojiHtml ? `<div class="sc-emojis">${scEmojiHtml}</div>` : ''}
         <div class="sc-closing">你很好。</div>
         <div class="sc-brand">刘迎春的开心小角落</div>
       </div>
