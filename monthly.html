@@ -296,14 +296,14 @@ function findInsight(data, totalDays) {
   }
   // 没有任何难受的天
   if ((mc['不太好'] || 0) === 0 && (mc['有点累'] || 0) === 0) {
-    return { big: '没有难受的天', detail: '这个月，每一天你都过得还好' };
+    return { big: '每天都还好', detail: '这个月，没有一天真的很难' };
   }
   // 没有不太好的天
   if ((mc['不太好'] || 0) === 0 && recorded >= 4) {
     const tired = mc['有点累'] || 0;
     return {
-      big: '没有太难受',
-      detail: tired > 0 ? `有 ${tired} 天有点累，但没有真正难受过` : '这个月没有太难受的时候'
+      big: '一直都撑住了',
+      detail: tired > 0 ? `有 ${tired} 天有点累，但没有真正倒下去` : '这个月没有很难受的时候'
     };
   }
   // 最长连续记录 ≥ 5 天
