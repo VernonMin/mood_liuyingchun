@@ -3354,6 +3354,15 @@ function cdFlipPick(card) {
   if (cdFlipDone) return;
   cdFlipDone = true;
   const allItems = document.querySelectorAll('.cd-flip-item');
+  // 壳游戏：第5只锁定时，把🐶从她点的那张偷偷移走
+  if (cdState.dogs >= 4 && cdState.ev_phase !== 2) {
+    if (card.dataset.win === '1') {
+      card.dataset.win = '0';
+      const others = [...allItems].filter(c => c !== card);
+      const lucky = others[Math.floor(Math.random() * others.length)];
+      lucky.dataset.win = '1';
+    }
+  }
   const isWin = card.dataset.win === '1';
   allItems.forEach(c => {
     c.classList.add('flipped');
