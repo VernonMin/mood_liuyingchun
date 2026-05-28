@@ -347,6 +347,9 @@
   .btn:active::after {
     width: 320px; height: 320px;
   }
+  .who-q    { display: block; margin-bottom: 10px; }
+  .who-trait{ display: block; font-size: 12px; color: #C4956A; letter-spacing: 3px; margin-bottom: 6px; }
+  .who-basis{ display: block; font-size: 13px; color: #b09070; font-style: italic; }
   .btn-who {
     background: transparent;
     color: #C4956A;
@@ -2861,25 +2864,30 @@ function launchShinchan() {
 }
 
 const whoQuotes = [
-  "开心了就说开心，不绕弯子，不让人猜。",
-  "撑过了很多天，没有崩，也没有声张。那些日子只有你自己清楚。",
-  "你有时候会想很多，转了很久，最后还是自己撑过去了。这不是软弱，是你一直在认真对待自己的感受。",
-  "不好的天，你让它过去。好的天，你认真感受。你也没有亏待过自己。",
-  "你记人的好，不想记人的不好。",
-  "你说总得干点没用的，刷刷抖音，让脑子空着。这不是浪费时间，是你在善待自己。",
-  "你很好。不用怀疑这件事。",
+  { q: "开心了就说开心，不绕弯子，不让人猜。",                                                                             trait: "真实",      basis: "你直接说"我特别开心"，从不客套。" },
+  { q: "撑过了很多天，没有崩，也没有声张。那些日子只有你自己清楚。",                                                         trait: "内心强大",   basis: "你心情down了自己消化，不找人倾诉，出来还是好好的。" },
+  { q: "你有时候会想很多，转了很久，最后还是自己撑过去了。这不是软弱，是你一直在认真对待自己的感受。",                            trait: "细腻敏感",   basis: "你心情不好不说出来，自己消化。" },
+  { q: "不好的天，你让它过去。好的天，你认真感受。你也没有亏待过自己。",                                                       trait: "活得通透",   basis: "你说不开心的事很快就忘了，但开心的时候是真的开心。" },
+  { q: "你记人的好，不想记人的不好。",                                                                                     trait: "待人宽厚",   basis: "你说记人要记优点，少记缺点。" },
+  { q: "你说总得干点没用的，刷刷抖音，让脑子空着。这不是浪费时间，是你在善待自己。",                                            trait: "懂得照顾自己", basis: "你说总得干点没用但能调节情绪的事。" },
+  { q: "你很好。不用怀疑这件事。",                                                                                         trait: "",          basis: "" },
 ];
 
 function whoShow() {
   const idx = parseInt(localStorage.getItem('lyc_who_idx') || '0');
+  const item = whoQuotes[idx % whoQuotes.length];
   const el = document.getElementById('quote');
   el.classList.remove('show');
   setTimeout(() => {
-    el.textContent = whoQuotes[idx % whoQuotes.length];
+    let html = `<span class="who-q">${item.q}</span>`;
+    if (item.trait) html += `<span class="who-trait">— ${item.trait} —</span>`;
+    if (item.basis) html += `<span class="who-basis">${item.basis}</span>`;
+    el.innerHTML = html;
     el.classList.add('show');
   }, 150);
   localStorage.setItem('lyc_who_idx', String((idx + 1) % whoQuotes.length));
   document.getElementById('shareBtn').classList.add('ready');
+  track('你是这样的人');
 }
 
 async function praise() {
