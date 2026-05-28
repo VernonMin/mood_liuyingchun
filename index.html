@@ -347,6 +347,21 @@
   .btn:active::after {
     width: 320px; height: 320px;
   }
+  .btn-who {
+    background: transparent;
+    color: #C4956A;
+    border: 2px solid #C4956A;
+    padding: 11px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 75px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+    margin: 10px auto 0;
+  }
+  .btn-who:active { transform: scale(0.96); }
 
   /* 计数 */
   .counter {
@@ -2201,6 +2216,7 @@
   </div>
 
   <button class="btn" onclick="praise()">夸 我 ！</button>
+  <button class="btn-who" onclick="whoShow()">你是这样的人</button>
 
   <div class="share-row">
     <button class="share-btn" id="shareBtn" onclick="doShare()">
@@ -2420,7 +2436,6 @@ const quotes = [
   { t: "生活藏着无数温柔，有幸见识刘迎春平和踏实的模样。", w: 1 },
   { t: "普通的日常，也藏着令人开心的小美好。", w: 1 },
   // 专属文案
-  { t: "连青蛙都不忍心吃的人，心里一定很软。", w: 3 },
   { t: "晚上视线不太好，世界对刘迎春来说可能模模糊糊，但她每次都走回来了。", w: 3 },
   // 旅行文案（旅行期间启用）
   // { t: "旅途中遇到的每件小事，都是只属于刘迎春的故事。", w: 1 },
@@ -2843,6 +2858,28 @@ function launchShinchan() {
 
     setTimeout(() => { img.remove(); bubble.remove(); }, 4100);
   });
+}
+
+const whoQuotes = [
+  "开心了就说开心，不绕弯子，不让人猜。",
+  "撑过了很多天，没有崩，也没有声张。那些日子只有你自己清楚。",
+  "你有时候会想很多，转了很久，最后还是自己撑过去了。这不是软弱，是你一直在认真对待自己的感受。",
+  "不好的天，你让它过去。好的天，你认真感受。你也没有亏待过自己。",
+  "你记人的好，不想记人的不好。",
+  "你说总得干点没用的，刷刷抖音，让脑子空着。这不是浪费时间，是你在善待自己。",
+  "你很好。不用怀疑这件事。",
+];
+
+function whoShow() {
+  const idx = parseInt(localStorage.getItem('lyc_who_idx') || '0');
+  const el = document.getElementById('quote');
+  el.classList.remove('show');
+  setTimeout(() => {
+    el.textContent = whoQuotes[idx % whoQuotes.length];
+    el.classList.add('show');
+  }, 150);
+  localStorage.setItem('lyc_who_idx', String((idx + 1) % whoQuotes.length));
+  document.getElementById('shareBtn').classList.add('ready');
 }
 
 async function praise() {
