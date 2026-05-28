@@ -347,8 +347,8 @@
   .btn:active::after {
     width: 320px; height: 320px;
   }
-  .who-q    { display: block; margin-bottom: 10px; }
-  .who-trait{ display: block; font-size: 12px; color: #C4956A; letter-spacing: 3px; margin-bottom: 6px; }
+  .who-q    { display: block; margin-bottom: 14px; }
+  .who-trait{ display: inline-block; font-size: 13px; color: #fff; background: #C4956A; border-radius: 20px; padding: 3px 16px; letter-spacing: 2px; font-weight: 700; margin-bottom: 10px; }
   .who-basis{ display: block; font-size: 13px; color: #b09070; font-style: italic; }
   .btn-who {
     background: transparent;
@@ -2881,7 +2881,7 @@ function whoShow() {
   setTimeout(() => {
     let html = `<span class="who-q">${item.q}</span>`;
     if (item.trait) html += `<span class="who-trait">— ${item.trait} —</span>`;
-    if (item.basis) html += `<span class="who-basis">${item.basis}</span>`;
+    if (item.basis) html += `<span class="who-basis">依据：${item.basis}</span>`;
     el.innerHTML = html;
     el.classList.add('show');
   }, 150);
