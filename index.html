@@ -347,6 +347,7 @@
   .btn:active::after {
     width: 320px; height: 320px;
   }
+  .who-progress { text-align: right; font-size: 11px; color: #c4a882; margin-top: 12px; letter-spacing: 1px; }
   .who-q    { display: block; margin-bottom: 14px; }
   .who-trait{ display: inline-block; font-size: 13px; color: #fff; background: #C4956A; border-radius: 20px; padding: 3px 16px; letter-spacing: 2px; font-weight: 700; margin-bottom: 10px; }
   .who-basis{ display: block; font-size: 13px; color: #b09070; font-style: italic; }
@@ -2216,6 +2217,7 @@
   <div class="quote-box">
     <span class="paw-deco">🐾</span>
     <div class="quote-text" id="quote">点下面的按钮试试看 🐾</div>
+    <div class="who-progress" id="whoProgress" style="display:none"></div>
   </div>
 
   <button class="btn" onclick="praise()">夸 我 ！</button>
@@ -2888,6 +2890,9 @@ function whoShow() {
   }, 150);
   localStorage.setItem('lyc_who_idx', String((idx + 1) % whoQuotes.length));
   document.getElementById('shareBtn').classList.add('ready');
+  const prog = document.getElementById('whoProgress');
+  prog.style.display = '';
+  prog.textContent = `${idx + 1} / ${whoQuotes.length}`;
   track('你是这样的人');
 }
 
