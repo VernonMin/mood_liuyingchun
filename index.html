@@ -3408,13 +3408,13 @@ function cdFlipPick(card) {
   if (cdFlipDone) return;
   cdFlipDone = true;
   const allItems = document.querySelectorAll('.cd-flip-item');
-  // 壳游戏：第5只锁定时，把🐶从她点的那张偷偷移走
-  if (cdState.dogs >= 4 && cdState.ev_phase !== 2) {
-    if (card.dataset.win === '1') {
-      card.dataset.win = '0';
+  // 第5只必赢：把🐶偷偷移到她点的那张
+  if (cdState.dogs >= 4) {
+    if (card.dataset.win === '0') {
+      card.dataset.win = '1';
       const others = [...allItems].filter(c => c !== card);
-      const lucky = others[Math.floor(Math.random() * others.length)];
-      lucky.dataset.win = '1';
+      const loser = others.find(c => c.dataset.win === '1');
+      if (loser) loser.dataset.win = '0';
     }
   }
   const isWin = card.dataset.win === '1';
@@ -4263,10 +4263,7 @@ function toggleEyeCare() {
 <!-- 儿童节集齐礼物 -->
 <div id="cdGiftScreen" style="display:none">
   <button class="cd-reward-close" onclick="closeCdGift()">×</button>
-  <div class="cd-reward-emoji">🎁</div>
-  <div class="cd-reward-title">集齐啦！</div>
-  <div class="cd-reward-msg">你集齐了 5 只小狗！<br>快来找我领你的儿童节专属礼物吧 🎈</div>
-  <div class="cd-reward-hint">联系我来领奖～</div>
+  <div class="cd-reward-msg">恭喜迎春集齐了 5 只小狗！<br>每个人心里都有一个小孩，迎春儿童节快乐～</div>
 </div>
 
 <!-- 战利品弹窗 -->
