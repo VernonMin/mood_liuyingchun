@@ -1573,6 +1573,42 @@
     100% { transform: translateY(-340px) rotate(-4deg); }
   }
 
+  /* 消消乐 */
+  .match3-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0 8px;
+    font-size: 14px;
+    color: #8b5858;
+    font-weight: 600;
+  }
+  .match3-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 0 1px;
+  }
+  .m3-cell {
+    aspect-ratio: 1;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: transform 0.12s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.13);
+  }
+  .m3-cell:active { transform: scale(0.88); }
+  .m3-selected {
+    transform: scale(0.85);
+    box-shadow: 0 0 0 3px #8b5858;
+  }
+  .m3-match {
+    animation: m3pop 0.28s ease forwards;
+  }
+  @keyframes m3pop {
+    0%   { transform: scale(1);   opacity: 1; }
+    40%  { transform: scale(1.25); opacity: 0.7; }
+    100% { transform: scale(0);   opacity: 0; }
+  }
+
   /* 雪纳瑞狗狗 */
   #dogWidget {
     position: fixed;
@@ -2348,7 +2384,7 @@
       <div class="game-menu-grid">
         <button class="game-menu-item" onclick="startGame('whack')">打地鼠</button>
         <button class="game-menu-item" onclick="startGame('cards')">翻牌配对</button>
-        <button class="game-menu-item game-coming" disabled>戳气球 <span class="game-soon">Stay Tuned</span></button>
+        <button class="game-menu-item" onclick="startGame('match3')">消消乐</button>
       </div>
     </div>
 
@@ -2389,6 +2425,19 @@
       <div class="game-done" id="balloonDone" style="display:none">
         戳了 <strong id="balloonFinal">0</strong> 个！刘迎春真准 👍
         <button class="game-reset" onclick="startBalloon()">再来一局</button>
+      </div>
+    </div>
+
+    <div id="gameMatch3" style="display:none">
+      <button class="game-back" onclick="showGameMenu()">← 返回</button>
+      <div class="match3-header">
+        <span>得分 <strong id="m3Score">0</strong></span>
+        <span>⏱ <strong id="m3Timer">60</strong>s</span>
+      </div>
+      <div class="match3-grid" id="m3Grid"></div>
+      <div class="game-done" id="m3Done" style="display:none">
+        得了 <strong id="m3Final">0</strong> 分！
+        <button class="game-reset" onclick="startMatch3()">再来一局</button>
       </div>
     </div>
 
@@ -2593,6 +2642,7 @@ function showGameMenu() {
   document.getElementById('gameCards').style.display = 'none';
   document.getElementById('gameWhack').style.display = 'none';
   document.getElementById('gameBalloon').style.display = 'none';
+  document.getElementById('gameMatch3').style.display = 'none';
   document.getElementById('gameTitle').textContent = '🎮 刘迎春的摸鱼小游戏';
 }
 
@@ -2610,10 +2660,142 @@ function startGame(type) {
     document.getElementById('gameBalloon').style.display = '';
     document.getElementById('gameTitle').textContent = '🎈 戳气球';
     startBalloon();
+  } else if (type === 'match3') {
+    document.getElementById('gameMatch3').style.display = '';
+    document.getElementById('gameTitle').textContent = '🍬 消消乐';
+    startMatch3();
   }
 }
 
-function stopAllGames() { stopWhack(); stopBalloon(); }
+function stopAllGames() { stopWhack(); stopBalloon(); stopMatch3(); }
+
+// ── 消消乐 ──
+const M3_COLS = 7, M3_ROWS = 7, M3_COLORS = 5, M3_TIME = 60;
+const M3_PALETTE = ['#f5a0b0','#f5c870','#88c878','#88b8f4','#c890e0'];
+
+let m3Grid = [], m3Selected = null, m3Score = 0, m3TimerVal = M3_TIME;
+let m3Interval = null, m3Busy = false;
+
+function startMatch3() { initMatch3(); }
+function stopMatch3() { clearInterval(m3Interval); m3Interval = null; }
+
+function initMatch3() {
+  m3Score = 0; m3TimerVal = M3_TIME; m3Selected = null; m3Busy = false;
+  document.getElementById('m3Score').textContent = '0';
+  document.getElementById('m3Timer').textContent = M3_TIME;
+  document.getElementById('m3Done').style.display = 'none';
+  m3Grid = Array.from({length: M3_ROWS}, () => Array(M3_COLS).fill(0));
+  for (let r = 0; r < M3_ROWS; r++) {
+    for (let c = 0; c < M3_COLS; c++) {
+      let v;
+      do {
+        v = Math.floor(Math.random() * M3_COLORS);
+      } while (
+        (c >= 2 && m3Grid[r][c-1] === v && m3Grid[r][c-2] === v) ||
+        (r >= 2 && m3Grid[r-1][c] === v && m3Grid[r-2][c] === v)
+      );
+      m3Grid[r][c] = v;
+    }
+  }
+  m3Render();
+  clearInterval(m3Interval);
+  m3Interval = setInterval(() => {
+    m3TimerVal--;
+    document.getElementById('m3Timer').textContent = m3TimerVal;
+    if (m3TimerVal <= 0) { clearInterval(m3Interval); m3End(); }
+  }, 1000);
+}
+
+function m3Render() {
+  const el = document.getElementById('m3Grid');
+  el.innerHTML = '';
+  for (let r = 0; r < M3_ROWS; r++) {
+    for (let c = 0; c < M3_COLS; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'm3-cell';
+      if (m3Grid[r][c] >= 0) cell.style.background = M3_PALETTE[m3Grid[r][c]];
+      if (m3Selected && m3Selected[0] === r && m3Selected[1] === c) cell.classList.add('m3-selected');
+      cell.onclick = () => m3Select(r, c);
+      el.appendChild(cell);
+    }
+  }
+}
+
+function m3Select(r, c) {
+  if (m3Busy || m3TimerVal <= 0) return;
+  if (!m3Selected) { m3Selected = [r, c]; m3Render(); return; }
+  const [sr, sc] = m3Selected;
+  if (sr === r && sc === c) { m3Selected = null; m3Render(); return; }
+  if (Math.abs(r - sr) + Math.abs(c - sc) !== 1) { m3Selected = [r, c]; m3Render(); return; }
+  m3Selected = null;
+  m3TrySwap(sr, sc, r, c);
+}
+
+function m3TrySwap(r1, c1, r2, c2) {
+  m3Busy = true;
+  [m3Grid[r1][c1], m3Grid[r2][c2]] = [m3Grid[r2][c2], m3Grid[r1][c1]];
+  m3Render();
+  if (m3FindMatches().length === 0) {
+    setTimeout(() => {
+      [m3Grid[r1][c1], m3Grid[r2][c2]] = [m3Grid[r2][c2], m3Grid[r1][c1]];
+      m3Render(); m3Busy = false;
+    }, 200);
+  } else {
+    setTimeout(m3ProcessMatches, 150);
+  }
+}
+
+function m3FindMatches() {
+  const matched = new Set();
+  for (let r = 0; r < M3_ROWS; r++) {
+    for (let c = 0; c < M3_COLS - 2; c++) {
+      const v = m3Grid[r][c];
+      if (v >= 0 && v === m3Grid[r][c+1] && v === m3Grid[r][c+2]) {
+        let len = 3;
+        while (c + len < M3_COLS && m3Grid[r][c+len] === v) len++;
+        for (let i = 0; i < len; i++) matched.add(`${r},${c+i}`);
+      }
+    }
+  }
+  for (let c = 0; c < M3_COLS; c++) {
+    for (let r = 0; r < M3_ROWS - 2; r++) {
+      const v = m3Grid[r][c];
+      if (v >= 0 && v === m3Grid[r+1][c] && v === m3Grid[r+2][c]) {
+        let len = 3;
+        while (r + len < M3_ROWS && m3Grid[r+len][c] === v) len++;
+        for (let i = 0; i < len; i++) matched.add(`${r+i},${c}`);
+      }
+    }
+  }
+  return [...matched].map(k => k.split(',').map(Number));
+}
+
+function m3ProcessMatches() {
+  const matches = m3FindMatches();
+  if (matches.length === 0) { m3Busy = false; return; }
+  m3Score += matches.length * 10;
+  document.getElementById('m3Score').textContent = m3Score;
+  const el = document.getElementById('m3Grid');
+  matches.forEach(([r, c]) => { const node = el.children[r * M3_COLS + c]; if (node) node.classList.add('m3-match'); });
+  setTimeout(() => {
+    matches.forEach(([r, c]) => m3Grid[r][c] = -1);
+    for (let c = 0; c < M3_COLS; c++) {
+      let write = M3_ROWS - 1;
+      for (let r = M3_ROWS - 1; r >= 0; r--) {
+        if (m3Grid[r][c] >= 0) { m3Grid[write][c] = m3Grid[r][c]; if (write !== r) m3Grid[r][c] = -1; write--; }
+      }
+      for (let r = write; r >= 0; r--) m3Grid[r][c] = Math.floor(Math.random() * M3_COLORS);
+    }
+    m3Render();
+    setTimeout(m3ProcessMatches, 200);
+  }, 300);
+}
+
+function m3End() {
+  m3Busy = true;
+  document.getElementById('m3Final').textContent = m3Score;
+  document.getElementById('m3Done').style.display = '';
+}
 
 // ── 翻牌配对 ──
 const CARD_EMOJIS = ['🐶','🐱','🐰','🐻','🍀','⭐','🎀','🍓'];
