@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>发消息给迎春</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at center, #FDF8EE 0%, #F5EDD8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    padding: 24px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(180, 120, 80, 0.12);
+  }
+
+  h1 {
+    font-size: 18px;
+    color: #8b5858;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: #b07848;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  input, textarea {
+    width: 100%;
+    border: 1px solid rgba(196, 168, 130, 0.4);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #5a3a2a;
+    background: #fdfaf4;
+    outline: none;
+    margin-bottom: 16px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+
+  input:focus, textarea:focus {
+    border-color: #c4a882;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+  }
+
+  button {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #c4756a, #b06050);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 4px;
+  }
+
+  button:active { opacity: 0.8; }
+  button:disabled { opacity: 0.5; cursor: default; }
+
+  .status {
+    margin-top: 14px;
+    font-size: 13px;
+    text-align: center;
+    min-height: 20px;
+    color: #a07060;
+  }
+
+  .status.ok { color: #6a9e6a; }
+  .status.err { color: #c05050; }
+
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .preset-btn {
+    width: auto;
+    padding: 5px 12px;
+    background: #fdf0e4;
+    color: #a06040;
+    border: 1px solid rgba(196, 168, 130, 0.4);
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 0;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>发消息给迎春</h1>
+
+  <label>标题</label>
+  <input id="title" type="text" value="刘迎春的开心小角落" placeholder="通知标题">
+
+  <label>内容</label>
+  <div class="presets">
+    <button class="preset-btn" onclick="setPreset('想你了')">想你了</button>
+    <button class="preset-btn" onclick="setPreset('今天吃饭了吗？')">吃饭没</button>
+    <button class="preset-btn" onclick="setWeather()">重庆天气</button>
+  </div>
+  <textarea id="body" placeholder="写点什么…"></textarea>
+
+  <label>密码</label>
+  <input id="secret" type="password" placeholder="推送密码">
+
+  <button onclick="send()" id="sendBtn">发送</button>
+  <p class="status" id="status"></p>
+</div>
+
+<script>
+function setPreset(text) {
+  document.getElementById('body').value = text;
+}
+
+async function setWeather() {
+  const btn = event.target;
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=29.5647&longitude=106.5507&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FShanghai&forecast_days=1');
+    const data = await res.json();
+    const code = data.daily.weather_code[0];
+    const max = Math.round(data.daily.temperature_2m_max[0]);
+    const min = Math.round(data.daily.temperature_2m_min[0]);
+    const descs = {
+      0:'晴天', 1:'大部晴天', 2:'多云', 3:'阴天',
+      45:'有雾', 48:'浓雾', 51:'毛毛雨', 53:'小雨', 55:'中雨',
+      61:'小雨', 63:'中雨', 65:'大雨',
+      80:'阵雨', 81:'阵雨', 82:'强阵雨',
+      95:'雷阵雨', 96:'雷暴', 99:'强雷暴',
+    };
+    const desc = descs[code] || descs[Math.floor(code / 10) * 10] || '天气未知';
+    document.getElementById('body').value = `重庆今天${desc}，${min}°~${max}°`;
+  } catch {
+    document.getElementById('body').value = '重庆今天天气未知';
+  }
+  btn.disabled = false;
+}
+
+async function send() {
+  const title = document.getElementById('title').value.trim();
+  const body = document.getElementById('body').value.trim();
+  const secret = document.getElementById('secret').value.trim();
+  const status = document.getElementById('status');
+  const btn = document.getElementById('sendBtn');
+
+  if (!body) { status.className = 'status err'; status.textContent = '内容不能为空'; return; }
+  if (!secret) { status.className = 'status err'; status.textContent = '请输入密码'; return; }
+
+  btn.disabled = true;
+  status.className = 'status';
+  status.textContent = '发送中…';
+
+  try {
+    const res = await fetch('https://liuyingchun.com/api/push-send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, body, secret }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      status.className = 'status ok';
+      status.textContent = '发送成功';
+      document.getElementById('body').value = '';
+    } else {
+      status.className = 'status err';
+      status.textContent = data.error === 'unauthorized' ? '密码错误' : data.error === 'no subscription' ? '她还没订阅通知' : '发送失败';
+    }
+  } catch {
+    status.className = 'status err';
+    status.textContent = '网络错误，请重试';
+  }
+
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
