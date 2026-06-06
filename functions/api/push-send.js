@@ -116,31 +116,39 @@ export async function onRequestPost({ env, request }) {
     return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json', ...CORS } });
   }
 
-  const subJson = await env.LIUYINGCHUN_MOOD_KV.get('push_subscription');
+  const subJson = await env.LIUYINGCHUN_MOOD_KV.get('push_subscriptions');
   if (!subJson) {
     return new Response(JSON.stringify({ error: 'no subscription' }), { status: 404, headers: { 'Content-Type': 'application/json', ...CORS } });
   }
-  const subscription = JSON.parse(subJson);
-
-  const payload = JSON.stringify({ title: title || '刘迎春的开心小角落', body: body || '' });
-  const encrypted = await encryptPayload(subscription, payload);
-  const auth = await vapidHeader(subscription.endpoint, env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY);
-
-  const res = await fetch(subscription.endpoint, {
-    method: 'POST',
-    headers: {
-      'Authorization': auth,
-      'Content-Type': 'application/octet-stream',
-      'Content-Encoding': 'aes128gcm',
-      'TTL': '86400',
-    },
-    body: encrypted,
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    return new Response(JSON.stringify({ error: text, status: res.status }), { status: 500, headers: { 'Content-Type': 'application/json', ...CORS } });
+  const subs = Object.values(JSON.parse(subJson));
+  if (subs.length === 0) {
+    return new Response(JSON.stringify({ error: 'no subscription' }), { status: 404, headers: { 'Content-Type': 'application/json', ...CORS } });
   }
 
-  return new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json', ...CORS } });
+  const payload = JSON.stringify({ title: title || '刘迎春的开心小角落', body: body || '' });
+
+  const results = await Promise.all(subs.map(async sub => {
+    try {
+      const encrypted = await encryptPayload(sub, payload);
+      const auth = await vapidHeader(sub.endpoint, env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY);
+      const res = await fetch(sub.endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': auth,
+          'Content-Type': 'application/octet-stream',
+          'Content-Encoding': 'aes128gcm',
+          'TTL': '86400',
+        },
+        body: encrypted,
+      });
+      return { ok: res.ok, status: res.status };
+    } catch (e) {
+      return { ok: false, error: e.message };
+    }
+  }));
+
+  const failed = results.filter(r => !r.ok);
+  return new Response(JSON.stringify({ ok: true, sent: results.length, failed: failed.length }), {
+    headers: { 'Content-Type': 'application/json', ...CORS },
+  });
 }
