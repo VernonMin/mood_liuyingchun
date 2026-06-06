@@ -790,6 +790,57 @@
     transition: opacity 0.3s;
   }
 
+  /* 重庆天气卡片 */
+  .weather-card {
+    margin: 0 auto 18px;
+    width: 100%;
+    max-width: 320px;
+    background: linear-gradient(135deg, #fff8f0, #fdf0e4);
+    border: 1px solid rgba(196, 168, 130, 0.3);
+    border-radius: 16px;
+    padding: 12px 16px;
+  }
+  .weather-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .weather-icon { font-size: 28px; line-height: 1; }
+  .weather-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+  .weather-temp {
+    font-size: 20px;
+    font-weight: 700;
+    color: #8b5858;
+    line-height: 1;
+  }
+  .weather-desc {
+    font-size: 11px;
+    color: #b07848;
+    letter-spacing: 0.5px;
+  }
+  .weather-city {
+    font-size: 11px;
+    color: #c4a882;
+    letter-spacing: 1px;
+  }
+  .weather-tip {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #a07060;
+    line-height: 1.6;
+    border-top: 1px solid rgba(196, 168, 130, 0.2);
+    padding-top: 8px;
+  }
+  body.eye-care .weather-card {
+    background: linear-gradient(135deg, #fdf6e3, #f9f0d0);
+    border-color: rgba(210, 180, 100, 0.4);
+  }
+
   /* 分享按钮 */
   .share-row {
     display: flex;
@@ -2291,6 +2342,19 @@
       <span class="ca-flip-label" id="caFlipLabel">翻牌资格：0次</span>
       <button class="ca-flip-btn" id="caFlipBtn" onclick="openCdFlip()">开始翻牌 →</button>
     </div>
+  </div>
+
+  <!-- 重庆天气卡片 -->
+  <div class="weather-card" id="weatherCard" style="display:none">
+    <div class="weather-main">
+      <span class="weather-icon" id="weatherIcon"></span>
+      <div class="weather-info">
+        <span class="weather-temp" id="weatherTemp"></span>
+        <span class="weather-desc" id="weatherDesc"></span>
+      </div>
+      <span class="weather-city">重庆</span>
+    </div>
+    <p class="weather-tip" id="weatherTip"></p>
   </div>
 
   <div class="mood-section">
@@ -4553,6 +4617,55 @@ function openMonthly() {
   // 等 display:block 生效后再触发动画
   requestAnimationFrame(() => requestAnimationFrame(() => o.classList.add('open')));
 }
+// 重庆天气
+const WEATHER_MAP = {
+  0:  { icon: '☀️', desc: '晴天', tips: ['今天天气这么好，出门走走吗', '大晴天，防晒记得做'] },
+  1:  { icon: '🌤️', desc: '大部晴天', tips: ['天气不错，心情也跟着好一点'] },
+  2:  { icon: '⛅', desc: '多云', tips: ['多云天气，温度舒适，适合出门'] },
+  3:  { icon: '☁️', desc: '阴天', tips: ['阴天有点闷，多喝水', '阴天也要开心哦'] },
+  45: { icon: '🌫️', desc: '有雾', tips: ['重庆又起雾了，出门注意安全'] },
+  48: { icon: '🌫️', desc: '浓雾', tips: ['雾很大，出门小心点'] },
+  51: { icon: '🌦️', desc: '毛毛雨', tips: ['有点小雨，备个伞'] },
+  53: { icon: '🌦️', desc: '小雨', tips: ['在下雨，出门带伞'] },
+  55: { icon: '🌧️', desc: '中雨', tips: ['雨不小，能不出门就别出门'] },
+  61: { icon: '🌧️', desc: '小雨', tips: ['下雨了，出门记得带伞', '雨天路滑，走路慢点'] },
+  63: { icon: '🌧️', desc: '中雨', tips: ['雨挺大的，少出门', '雨天在家也很好'] },
+  65: { icon: '🌧️', desc: '大雨', tips: ['大雨，能不出门就别出门了'] },
+  71: { icon: '🌨️', desc: '小雪', tips: ['重庆下雪了？少见，注意保暖'] },
+  80: { icon: '🌦️', desc: '阵雨', tips: ['可能有阵雨，带伞保险'] },
+  81: { icon: '🌧️', desc: '阵雨', tips: ['有阵雨，出门带伞'] },
+  82: { icon: '🌧️', desc: '强阵雨', tips: ['雨很大，注意安全'] },
+  95: { icon: '⛈️', desc: '雷阵雨', tips: ['雷阵雨，尽量别出门', '打雷了，待在室内'] },
+  96: { icon: '⛈️', desc: '雷暴', tips: ['雷暴天气，不要出门'] },
+  99: { icon: '⛈️', desc: '强雷暴', tips: ['强雷暴，一定要待在室内'] },
+};
+
+async function loadWeather() {
+  try {
+    const res = await fetch(
+      'https://api.open-meteo.com/v1/forecast?latitude=29.5647&longitude=106.5507&current=temperature_2m,apparent_temperature,weather_code&timezone=Asia%2FShanghai'
+    );
+    const data = await res.json();
+    const cur = data.current;
+    const code = cur.weather_code;
+    const temp = Math.round(cur.temperature_2m);
+    const feel = Math.round(cur.apparent_temperature);
+
+    const info = WEATHER_MAP[code] || WEATHER_MAP[Math.floor(code / 10) * 10] || { icon: '🌡️', desc: '未知天气', tips: ['注意天气变化'] };
+    const tip = info.tips[Math.floor(Math.random() * info.tips.length)];
+
+    document.getElementById('weatherIcon').textContent = info.icon;
+    document.getElementById('weatherTemp').textContent = `${temp}°C`;
+    document.getElementById('weatherDesc').textContent = `${info.desc}，体感 ${feel}°C`;
+    document.getElementById('weatherTip').textContent = tip;
+    document.getElementById('weatherCard').style.display = 'block';
+  } catch (e) {
+    // 静默失败，不影响主页
+  }
+}
+
+loadWeather();
+
 function closeMonthly() {
   const o = document.getElementById('monthlyOverlay');
   o.classList.remove('open');
