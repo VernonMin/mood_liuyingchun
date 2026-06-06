@@ -3724,6 +3724,7 @@ let splashDismissed = false;
 function dismissSplash() {
   if (splashDismissed) return;
   splashDismissed = true;
+  initPush();
   playNextBgm();
   const splash = document.getElementById('splash');
   const main = document.getElementById('main');
@@ -4677,11 +4678,16 @@ function closeMonthly() {
 // ── Web Push 订阅 ─────────────────────────────────────────
 const VAPID_PUBLIC_KEY = 'BABOwp8uHSoRvdMLgXrxedbOppXd-bb7lr-GPv4SetQGmhzM1hiLwGbixtxvnno6gR8TCBc2nufGWQEqtJ-4FjU';
 
+// 先注册 SW（不需要用户手势）
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+
+// 订阅在用户点击欢迎屏时触发（用户手势）
 async function initPush() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
   try {
-    const reg = await navigator.serviceWorker.register('/sw.js');
-    await navigator.serviceWorker.ready;
+    const reg = await navigator.serviceWorker.ready;
     let sub = await reg.pushManager.getSubscription();
     if (!sub) {
       sub = await reg.pushManager.subscribe({
@@ -4698,8 +4704,6 @@ async function initPush() {
     // 静默失败
   }
 }
-
-initPush();
 </script>
 
 <!-- 心情月报遮罩 -->
