@@ -4673,6 +4673,33 @@ function closeMonthly() {
     if (!o.classList.contains('open')) o.classList.remove('visible');
   }, 320);
 }
+
+// ── Web Push 订阅 ─────────────────────────────────────────
+const VAPID_PUBLIC_KEY = 'BABOwp8uHSoRvdMLgXrxedbOppXd-bb7lr-GPv4SetQGmhzM1hiLwGbixtxvnno6gR8TCBc2nufGWQEqtJ-4FjU';
+
+async function initPush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.register('/sw.js');
+    await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: VAPID_PUBLIC_KEY,
+      });
+    }
+    await fetch('/api/push-subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sub),
+    });
+  } catch (e) {
+    // 静默失败
+  }
+}
+
+initPush();
 </script>
 
 <!-- 心情月报遮罩 -->
