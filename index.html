@@ -4643,20 +4643,19 @@ const WEATHER_MAP = {
 async function loadWeather() {
   try {
     const res = await fetch(
-      'https://api.open-meteo.com/v1/forecast?latitude=29.5647&longitude=106.5507&current=temperature_2m,apparent_temperature,weather_code&timezone=Asia%2FShanghai'
+      'https://api.open-meteo.com/v1/forecast?latitude=29.5647&longitude=106.5507&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FShanghai&forecast_days=1'
     );
     const data = await res.json();
-    const cur = data.current;
-    const code = cur.weather_code;
-    const temp = Math.round(cur.temperature_2m);
-    const feel = Math.round(cur.apparent_temperature);
+    const code = data.daily.weather_code[0];
+    const max  = Math.round(data.daily.temperature_2m_max[0]);
+    const min  = Math.round(data.daily.temperature_2m_min[0]);
 
     const info = WEATHER_MAP[code] || WEATHER_MAP[Math.floor(code / 10) * 10] || { icon: '🌡️', desc: '未知天气', tips: ['注意天气变化'] };
     const tip = info.tips[Math.floor(Math.random() * info.tips.length)];
 
     document.getElementById('weatherIcon').textContent = info.icon;
-    document.getElementById('weatherTemp').textContent = `${temp}°C`;
-    document.getElementById('weatherDesc').textContent = `${info.desc}，体感 ${feel}°C`;
+    document.getElementById('weatherTemp').textContent = `${min}°~${max}°`;
+    document.getElementById('weatherDesc').textContent = info.desc;
     document.getElementById('weatherTip').textContent = tip;
     document.getElementById('weatherCard').style.display = 'block';
   } catch (e) {
