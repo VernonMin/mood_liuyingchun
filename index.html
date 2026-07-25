@@ -790,55 +790,230 @@
     transition: opacity 0.3s;
   }
 
-  /* 重庆天气卡片 */
-  .weather-card {
+  /* 雅思词汇卡片 */
+  .ielts-card {
     margin: 0 auto 18px;
     width: 100%;
     max-width: 320px;
     background: linear-gradient(135deg, #fff8f0, #fdf0e4);
     border: 1px solid rgba(196, 168, 130, 0.3);
     border-radius: 16px;
-    padding: 12px 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
-  .weather-main {
+  .ielts-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(196, 168, 130, 0.12);
+  }
+  .ielts-main {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
   }
-  .weather-icon { font-size: 28px; line-height: 1; }
-  .weather-info {
+  .ielts-icon {
+    font-size: 28px;
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .ielts-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     flex: 1;
   }
-  .weather-temp {
-    font-size: 20px;
+  .ielts-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .ielts-title {
+    font-size: 18px;
     font-weight: 700;
     color: #8b5858;
     line-height: 1;
   }
-  .weather-desc {
+  .ielts-total {
     font-size: 11px;
     color: #b07848;
     letter-spacing: 0.5px;
+    white-space: nowrap;
   }
-  .weather-city {
+  .ielts-current {
+    font-size: 12px;
+    color: #a07060;
+    line-height: 1.6;
+  }
+  .ielts-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .ielts-pill {
     font-size: 11px;
-    color: #c4a882;
+    color: #9a6f50;
     letter-spacing: 1px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.62);
+    border: 1px solid rgba(196, 168, 130, 0.22);
   }
-  .weather-tip {
+  .ielts-tip {
     margin-top: 8px;
     font-size: 12px;
     color: #a07060;
     line-height: 1.6;
     border-top: 1px solid rgba(196, 168, 130, 0.2);
     padding-top: 8px;
+    min-height: 28px;
   }
-  body.eye-care .weather-card {
+  body.eye-care .ielts-card {
     background: linear-gradient(135deg, #fdf6e3, #f9f0d0);
     border-color: rgba(210, 180, 100, 0.4);
+  }
+  .ielts-summary-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 8px 0 16px;
+  }
+  .ielts-summary-pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #8b5858;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(196,168,130,0.28);
+  }
+  .ielts-levels {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ielts-level {
+    background: rgba(255,255,255,0.55);
+    border-radius: 18px;
+    border: 1px solid rgba(196,168,130,0.18);
+    overflow: hidden;
+  }
+  .ielts-level-head {
+    width: 100%;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    color: #6d4d40;
+    font-family: inherit;
+  }
+  .ielts-level-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ielts-level-toggle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.7);
+    color: #c4756a;
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .ielts-level-name {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .ielts-level-progress {
+    font-size: 12px;
+    color: #b07848;
+    white-space: nowrap;
+  }
+  .ielts-level-body {
+    display: none;
+    padding: 0 12px 12px;
+  }
+  .ielts-level.open .ielts-level-body {
+    display: block;
+  }
+  .ielts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ielts-list-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255,252,245,0.88);
+    border-radius: 14px;
+    padding: 12px;
+    border: 1px solid rgba(196,168,130,0.12);
+  }
+  .ielts-list-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .ielts-list-title {
+    font-size: 14px;
+    color: #6d4d40;
+    font-weight: 600;
+  }
+  .ielts-status-chip {
+    font-size: 11px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #f4ebdf;
+    color: #b07848;
+  }
+  .ielts-status-chip.doing {
+    background: #fdf0da;
+    color: #c47a2a;
+  }
+  .ielts-status-chip.done {
+    background: #e9f8ec;
+    color: #5e9b63;
+  }
+  .ielts-list-date {
+    font-size: 11px;
+    color: #b39b88;
+  }
+  .ielts-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .ielts-action-btn {
+    border: 1px solid rgba(196,168,130,0.26);
+    background: rgba(255,255,255,0.9);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #8b5858;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ielts-action-btn.active {
+    background: linear-gradient(135deg, #dba174, #c4756a);
+    border-color: transparent;
+    color: #fff;
+  }
+  .ielts-empty {
+    font-size: 13px;
+    color: #b39b88;
+    text-align: center;
+    padding: 22px 0 8px;
   }
 
   /* 分享按钮 */
@@ -2356,17 +2531,22 @@
     </div>
   </div>
 
-  <!-- 重庆天气卡片 -->
-  <div class="weather-card" id="weatherCard" style="display:none">
-    <div class="weather-main">
-      <span class="weather-icon" id="weatherIcon"></span>
-      <div class="weather-info">
-        <span class="weather-temp" id="weatherTemp"></span>
-        <span class="weather-desc" id="weatherDesc"></span>
+  <div class="ielts-card" id="ieltsCard" onclick="openIeltsModal()" style="display:none">
+    <div class="ielts-main">
+      <span class="ielts-icon">📘</span>
+      <div class="ielts-info">
+        <div class="ielts-title-row">
+          <span class="ielts-title">雅思核心词汇</span>
+          <span class="ielts-total" id="ieltsCardTotal"></span>
+        </div>
+        <div class="ielts-current" id="ieltsCardCurrent"></div>
+        <div class="ielts-meta">
+          <span class="ielts-pill" id="ieltsCardToday"></span>
+          <span class="ielts-pill" id="ieltsCardStreak"></span>
+        </div>
       </div>
-      <span class="weather-city">重庆</span>
     </div>
-    <p class="weather-tip" id="weatherTip"></p>
+    <p class="ielts-tip" id="ieltsCardTip"></p>
   </div>
 
   <div class="mood-section">
@@ -2447,6 +2627,23 @@
       <button class="bottom-modal-close" onclick="closeBottomModal('historyModal')">×</button>
     </div>
     <div class="mobile-history-grid" id="mobileHistoryList"></div>
+  </div>
+</div>
+
+<div class="bottom-modal-mask" id="ieltsModal" onclick="closeBottomModal('ieltsModal', event)">
+  <div class="bottom-modal-card">
+    <div class="bottom-modal-header">
+      <span class="bottom-modal-title">📘 迎春的雅思词汇</span>
+      <button class="bottom-modal-close" onclick="closeBottomModal('ieltsModal')">×</button>
+    </div>
+    <div class="ielts-summary-row">
+      <span class="ielts-summary-pill" id="ieltsSummaryTotal"></span>
+      <span class="ielts-summary-pill" id="ieltsSummaryCurrent"></span>
+      <span class="ielts-summary-pill" id="ieltsSummaryStreak"></span>
+    </div>
+    <div class="ielts-levels" id="ieltsLevels">
+      <div class="ielts-empty">加载中……</div>
+    </div>
   </div>
 </div>
 
@@ -2699,6 +2896,11 @@ function openFestivalsModal() {
   track('点击刘迎春的小节日');
   initFestivals();
   document.getElementById('festivalModal').classList.add('show');
+}
+
+function openIeltsModal() {
+  track('点击雅思词汇');
+  document.getElementById('ieltsModal').classList.add('show');
 }
 
 function openHistoryModal() {
@@ -4612,53 +4814,121 @@ function openMonthly() {
   // 等 display:block 生效后再触发动画
   requestAnimationFrame(() => requestAnimationFrame(() => o.classList.add('open')));
 }
-// 重庆天气
-const WEATHER_MAP = {
-  0:  { icon: '☀️', desc: '晴天', tips: ['今天大晴天呀，出门记得防晒哦'] },
-  1:  { icon: '🌤️', desc: '大部晴天', tips: ['天气挺好的呀，心情应该也不会太差吧'] },
-  2:  { icon: '⛅', desc: '多云', tips: ['多云天气温度挺舒服的，适合出门逛逛哦'] },
-  3:  { icon: '☁️', desc: '阴天', tips: ['阴天有点闷闷的，多喝点水呀', '阴天也没关系嘛，迎春今天也会很好的'] },
-  45: { icon: '🌫️', desc: '有雾', tips: ['重庆又起雾啦，出门走慢一点哦'] },
-  48: { icon: '🌫️', desc: '浓雾', tips: ['雾有点大呀，能见度低，小心一点哦'] },
-  51: { icon: '🌦️', desc: '毛毛雨', tips: ['有点毛毛雨呢，出门带把伞比较好哦'] },
-  53: { icon: '🌦️', desc: '小雨', tips: ['在下雨呢，记得带伞哦'] },
-  55: { icon: '🌧️', desc: '中雨', tips: ['雨不小呀，不着急的话等雨小一点再出门嘛'] },
-  61: { icon: '🌧️', desc: '小雨', tips: ['下雨啦，带把伞再出门哦', '雨天路会滑的，走路慢一点呀'] },
-  63: { icon: '🌧️', desc: '中雨', tips: ['雨挺大的呢，能在家就在家待着嘛', '雨天在家待着也挺好的呀'] },
-  65: { icon: '🌧️', desc: '大雨', tips: ['雨很大哦，尽量别出门啦'] },
-  71: { icon: '🌨️', desc: '小雪', tips: ['重庆下雪啦，少见呢，多穿一点哦'] },
-  80: { icon: '🌦️', desc: '阵雨', tips: ['可能会有阵雨呢，带把伞比较保险哦'] },
-  81: { icon: '🌧️', desc: '阵雨', tips: ['有阵雨呀，出门记得带伞哦'] },
-  82: { icon: '🌧️', desc: '强阵雨', tips: ['雨比较大呢，注意安全哦'] },
-  95: { icon: '⛈️', desc: '雷阵雨', tips: ['有雷阵雨呀，尽量待在室内哦', '打雷啦，在室内待着比较安全哦'] },
-  96: { icon: '⛈️', desc: '雷暴', tips: ['有雷暴呢，不要出门啦'] },
-  99: { icon: '⛈️', desc: '强雷暴', tips: ['雷暴很强呀，一定要待在室内哦'] },
-};
+let ieltsData = null;
+const ieltsOpenLevels = new Set();
 
-async function loadWeather() {
+function getIeltsStatusMeta(status) {
+  if (status === 'done') return { label: '已学', className: 'done' };
+  if (status === 'doing') return { label: '进行中', className: 'doing' };
+  return { label: '未学', className: '' };
+}
+
+function updateIeltsCard(data) {
+  const current = data.summary.currentItem
+    ? `当前在学：${data.summary.currentItem.levelTitle} · ${data.summary.currentItem.title}`
+    : '52 个词汇表都学完啦';
+  document.getElementById('ieltsCardTotal').textContent = `已完成 ${data.summary.completedLists}/${data.summary.totalLists}`;
+  document.getElementById('ieltsCardCurrent').textContent = current;
+  document.getElementById('ieltsCardToday').textContent = data.todayStudy.done ? '今天已学' : '今天还没学';
+  document.getElementById('ieltsCardStreak').textContent = `连续 ${data.summary.streakDays} 天`;
+  document.getElementById('ieltsCardTip').textContent = data.todayStudy.done
+    ? (data.todayStudy.note || '今天已经学过一点啦，迎春继续稳稳地往前走。')
+    : '点进去记一下今天学到哪了，学一点也算在往前走。';
+  document.getElementById('ieltsCard').style.display = 'block';
+}
+
+function renderIeltsModal(data) {
+  document.getElementById('ieltsSummaryTotal').textContent = `已完成 ${data.summary.completedLists}/${data.summary.totalLists}`;
+  document.getElementById('ieltsSummaryCurrent').textContent = data.summary.currentItem
+    ? `当前：${data.summary.currentItem.levelTitle} ${data.summary.currentItem.title}`
+    : '当前：全部学完啦';
+  document.getElementById('ieltsSummaryStreak').textContent = `连续 ${data.summary.streakDays} 天`;
+
+  const levelsEl = document.getElementById('ieltsLevels');
+  levelsEl.innerHTML = data.levels.map(level => {
+    const isOpen = ieltsOpenLevels.has(level.id);
+    const rows = level.lists.map(item => {
+      const meta = getIeltsStatusMeta(item.status);
+      const dateText = item.updatedDate ? `上次学习 ${item.updatedDate}` : '还没开始';
+      return `
+        <div class="ielts-list-item">
+          <div class="ielts-list-top">
+            <span class="ielts-list-title">${item.title}</span>
+            <span class="ielts-status-chip ${meta.className}">${meta.label}</span>
+          </div>
+          <div class="ielts-list-date">${dateText}</div>
+          <div class="ielts-actions">
+            <button class="ielts-action-btn ${item.status === 'todo' ? 'active' : ''}" onclick="updateIeltsList('${level.id}','${item.id}','todo')">未学</button>
+            <button class="ielts-action-btn ${item.status === 'doing' ? 'active' : ''}" onclick="updateIeltsList('${level.id}','${item.id}','doing')">进行中</button>
+            <button class="ielts-action-btn ${item.status === 'done' ? 'active' : ''}" onclick="updateIeltsList('${level.id}','${item.id}','done')">已学</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="ielts-level ${isOpen ? 'open' : ''}" id="ieltsLevel_${level.id}">
+        <button class="ielts-level-head" onclick="toggleIeltsLevel('${level.id}')">
+          <span class="ielts-level-left">
+            <span class="ielts-level-toggle">${isOpen ? '−' : '+'}</span>
+            <span class="ielts-level-name">${level.title}</span>
+          </span>
+          <span class="ielts-level-progress">${level.completed}/${level.total}</span>
+        </button>
+        <div class="ielts-level-body">
+          <div class="ielts-list">${rows}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleIeltsLevel(levelId) {
+  if (ieltsOpenLevels.has(levelId)) ieltsOpenLevels.delete(levelId);
+  else ieltsOpenLevels.add(levelId);
+  if (ieltsData) renderIeltsModal(ieltsData);
+}
+
+async function loadIeltsProgress() {
   try {
-    const res = await fetch(
-      'https://api.open-meteo.com/v1/forecast?latitude=29.5647&longitude=106.5507&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FShanghai&forecast_days=1'
-    );
+    const res = await fetch('/api/ielts_progress');
     const data = await res.json();
-    const code = data.daily.weather_code[0];
-    const max  = Math.round(data.daily.temperature_2m_max[0]);
-    const min  = Math.round(data.daily.temperature_2m_min[0]);
-
-    const info = WEATHER_MAP[code] || WEATHER_MAP[Math.floor(code / 10) * 10] || { icon: '🌡️', desc: '未知天气', tips: ['注意天气变化'] };
-    const tip = info.tips[Math.floor(Math.random() * info.tips.length)];
-
-    document.getElementById('weatherIcon').textContent = info.icon;
-    document.getElementById('weatherTemp').textContent = `${min}°~${max}°`;
-    document.getElementById('weatherDesc').textContent = info.desc;
-    document.getElementById('weatherTip').textContent = tip;
-    document.getElementById('weatherCard').style.display = 'block';
+    ieltsData = data;
+    if (!ieltsOpenLevels.size && data.summary.currentItem) {
+      ieltsOpenLevels.add(data.summary.currentItem.levelId);
+    }
+    updateIeltsCard(data);
+    renderIeltsModal(data);
   } catch (e) {
-    // 静默失败，不影响主页
+    document.getElementById('ieltsCard').style.display = 'block';
+    document.getElementById('ieltsCardTotal').textContent = '暂时没加载出来';
+    document.getElementById('ieltsCardCurrent').textContent = '等会儿再试试也行';
+    document.getElementById('ieltsCardToday').textContent = '雅思小进度';
+    document.getElementById('ieltsCardStreak').textContent = '先休息一下';
+    document.getElementById('ieltsCardTip').textContent = '网络慢了一点，不影响迎春今天继续学。';
   }
 }
 
-loadWeather();
+async function updateIeltsList(levelId, listId, status) {
+  try {
+    const res = await fetch('/api/ielts_progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ levelId, listId, status }),
+    });
+    const data = await res.json();
+    ieltsData = data;
+    updateIeltsCard(data);
+    renderIeltsModal(data);
+    if (data.praised && data.praiseMessage) {
+      showDogBubble(data.praiseMessage);
+      document.getElementById('ieltsCardTip').textContent = data.praiseMessage;
+    }
+  } catch (e) {
+    showDogBubble('这次没记上，再点一下试试 🐾');
+  }
+}
+
+loadIeltsProgress();
 
 function closeMonthly() {
   const o = document.getElementById('monthlyOverlay');
