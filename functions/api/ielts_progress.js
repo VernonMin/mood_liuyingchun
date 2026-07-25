@@ -14,10 +14,7 @@ const LEVEL_SPECS = [
 ];
 
 const PRAISE_LINES = [
-  '这个 Word List 学完了，迎春真行 🐾',
-  '又学完一个，迎春今天挺稳的',
-  '迎春又往前学完了一点，真不错',
-  '一个一个学下来，迎春真的很能坚持',
+  '刘迎春真棒',
 ];
 
 function getBeijingDate() {
