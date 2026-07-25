@@ -3721,7 +3721,6 @@ let splashDismissed = false;
 function dismissSplash() {
   if (splashDismissed) return;
   splashDismissed = true;
-  initPush();
   playNextBgm();
   const splash = document.getElementById('splash');
   const main = document.getElementById('main');
@@ -3733,6 +3732,7 @@ function dismissSplash() {
     main.classList.add('show');
     panel.classList.add('show');
     document.getElementById('historyPanel').classList.add('show');
+    setTimeout(() => { initPush(); }, 600);
 
     const g = document.getElementById('greeting');
     g.textContent = greetingText;
