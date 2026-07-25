@@ -824,7 +824,7 @@
   }
   .ielts-title-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 10px;
   }
@@ -834,11 +834,44 @@
     color: #8b5858;
     line-height: 1;
   }
-  .ielts-total {
+  .ielts-progress {
+    min-width: 122px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+  }
+  .ielts-progress-label-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .ielts-progress-label {
     font-size: 11px;
     color: #b07848;
     letter-spacing: 0.5px;
+  }
+  .ielts-progress-value {
+    font-size: 11px;
+    color: #8b5858;
+    font-weight: 700;
     white-space: nowrap;
+  }
+  .ielts-progress-track {
+    width: 100%;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(196, 168, 130, 0.18);
+    overflow: hidden;
+  }
+  .ielts-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #d89a72, #c4756a);
+    transition: width 0.28s ease;
   }
   .ielts-current {
     font-size: 12px;
@@ -2537,7 +2570,15 @@
       <div class="ielts-info">
         <div class="ielts-title-row">
           <span class="ielts-title">雅思单词卡片</span>
-          <span class="ielts-total" id="ieltsCardTotal"></span>
+          <div class="ielts-progress">
+            <div class="ielts-progress-label-row">
+              <span class="ielts-progress-label">词汇进度</span>
+              <span class="ielts-progress-value" id="ieltsCardTotal"></span>
+            </div>
+            <div class="ielts-progress-track">
+              <div class="ielts-progress-fill" id="ieltsCardProgressFill"></div>
+            </div>
+          </div>
         </div>
         <div class="ielts-current" id="ieltsCardCurrent"></div>
         <div class="ielts-meta">
@@ -4827,7 +4868,9 @@ function updateIeltsCard(data) {
   const current = data.summary.currentItem
     ? `当前在学：${data.summary.currentItem.levelTitle} · ${data.summary.currentItem.title}`
     : '52 个词汇表都学完啦';
-  document.getElementById('ieltsCardTotal').textContent = `已完成 ${data.summary.completedLists}/${data.summary.totalLists}`;
+  const ratio = data.summary.totalLists ? (data.summary.completedLists / data.summary.totalLists) * 100 : 0;
+  document.getElementById('ieltsCardTotal').textContent = `${data.summary.completedLists}/${data.summary.totalLists}`;
+  document.getElementById('ieltsCardProgressFill').style.width = `${ratio}%`;
   document.getElementById('ieltsCardCurrent').textContent = current;
   document.getElementById('ieltsCardToday').textContent = data.todayStudy.done ? '今天已学' : '今天还没学';
   document.getElementById('ieltsCardStreak').textContent = `连续 ${data.summary.streakDays} 天`;
