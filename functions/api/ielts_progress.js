@@ -22,6 +22,17 @@ function getBeijingDate() {
   return now.toISOString().slice(0, 10);
 }
 
+function getBeijingTimestamp() {
+  const now = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(now.getUTCDate()).padStart(2, '0');
+  const hours = String(now.getUTCHours()).padStart(2, '0');
+  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+08:00`;
+}
+
 function shiftBeijingDate(dateStr, deltaDays) {
   const [year, month, day] = dateStr.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day + deltaDays));
@@ -30,7 +41,7 @@ function shiftBeijingDate(dateStr, deltaDays) {
 
 function buildDefaultData() {
   return {
-    updatedAt: new Date().toISOString(),
+    updatedAt: getBeijingTimestamp(),
     checkins: [],
     levels: LEVEL_SPECS.map(level => ({
       id: level.id,
@@ -50,7 +61,7 @@ function normalizeData(data) {
   if (!data || !Array.isArray(data.levels)) return buildDefaultData();
   const defaultData = buildDefaultData();
   const levelMap = new Map((data.levels || []).map(level => [level.id, level]));
-  return {
+  const normalized = {
     updatedAt: data.updatedAt || defaultData.updatedAt,
     checkins: Array.isArray(data.checkins) ? data.checkins : [],
     levels: defaultData.levels.map(def => {
@@ -69,6 +80,14 @@ function normalizeData(data) {
       };
     }),
   };
+  const mergedCheckins = collectStudyDates(normalized);
+  const prevCheckins = Array.isArray(normalized.checkins) ? [...normalized.checkins].sort() : [];
+  if (JSON.stringify(prevCheckins) !== JSON.stringify(mergedCheckins)) {
+    normalized.checkins = mergedCheckins;
+    normalized.updatedAt = getBeijingTimestamp();
+    normalized.__needsSave = true;
+  }
+  return normalized;
 }
 
 function computeStreak(checkins) {
@@ -149,7 +168,13 @@ function buildResponse(data) {
 
 async function loadData(env) {
   const raw = await env.LIUYINGCHUN_MOOD_KV.get(KV_KEY, 'json');
-  return normalizeData(raw);
+  const normalized = normalizeData(raw);
+  if (normalized.__needsSave) {
+    const { __needsSave, ...saveData } = normalized;
+    await env.LIUYINGCHUN_MOOD_KV.put(KV_KEY, JSON.stringify(saveData));
+    return saveData;
+  }
+  return normalized;
 }
 
 export async function onRequestOptions() {
@@ -188,7 +213,7 @@ export async function onRequestPost({ env, request }) {
   list.updatedDate = today;
   if (status !== 'todo' && !data.checkins.includes(today)) data.checkins.push(today);
   data.checkins = [...new Set(data.checkins)].sort().slice(-180);
-  data.updatedAt = new Date().toISOString();
+  data.updatedAt = getBeijingTimestamp();
 
   await env.LIUYINGCHUN_MOOD_KV.put(KV_KEY, JSON.stringify(data));
 
