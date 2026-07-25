@@ -66,11 +66,19 @@ function normalizeData(data) {
 }
 
 function computeStreak(checkins) {
-  const unique = [...new Set(checkins)].sort().reverse();
+  const unique = new Set(checkins);
   const today = getBeijingDate();
   let cursor = today;
+  if (!unique.has(cursor)) {
+    const d = new Date(`${cursor}T00:00:00+08:00`);
+    d.setDate(d.getDate() - 1);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    cursor = `${year}-${month}-${day}`;
+  }
   let streak = 0;
-  while (unique.includes(cursor)) {
+  while (unique.has(cursor)) {
     streak += 1;
     const d = new Date(`${cursor}T00:00:00+08:00`);
     d.setDate(d.getDate() - 1);
