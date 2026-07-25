@@ -22,6 +22,12 @@ function getBeijingDate() {
   return now.toISOString().slice(0, 10);
 }
 
+function shiftBeijingDate(dateStr, deltaDays) {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + deltaDays));
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
+}
+
 function buildDefaultData() {
   return {
     updatedAt: new Date().toISOString(),
@@ -70,22 +76,12 @@ function computeStreak(checkins) {
   const today = getBeijingDate();
   let cursor = today;
   if (!unique.has(cursor)) {
-    const d = new Date(`${cursor}T00:00:00+08:00`);
-    d.setDate(d.getDate() - 1);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    cursor = `${year}-${month}-${day}`;
+    cursor = shiftBeijingDate(cursor, -1);
   }
   let streak = 0;
   while (unique.has(cursor)) {
     streak += 1;
-    const d = new Date(`${cursor}T00:00:00+08:00`);
-    d.setDate(d.getDate() - 1);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    cursor = `${year}-${month}-${day}`;
+    cursor = shiftBeijingDate(cursor, -1);
   }
   return streak;
 }
