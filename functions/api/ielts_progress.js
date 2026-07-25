@@ -90,7 +90,20 @@ function computeStreak(checkins) {
   return streak;
 }
 
+function collectStudyDates(data) {
+  const dates = new Set(Array.isArray(data.checkins) ? data.checkins : []);
+  for (const level of data.levels || []) {
+    for (const item of level.lists || []) {
+      if (item.status !== 'todo' && item.updatedDate) {
+        dates.add(item.updatedDate);
+      }
+    }
+  }
+  return [...dates].sort();
+}
+
 function buildResponse(data) {
+  const studyDates = collectStudyDates(data);
   const completedLists = data.levels.reduce(
     (sum, level) => sum + level.lists.filter(item => item.status === 'done').length,
     0
@@ -108,8 +121,8 @@ function buildResponse(data) {
   const today = getBeijingDate();
   const todayStudy = {
     date: today,
-    done: data.checkins.includes(today),
-    note: data.checkins.includes(today)
+    done: studyDates.includes(today),
+    note: studyDates.includes(today)
       ? `今天已经学到 ${currentLevel?.title || '词汇'} 了，迎春继续稳稳地往前走。`
       : '',
   };
@@ -120,7 +133,7 @@ function buildResponse(data) {
     summary: {
       totalLists,
       completedLists,
-      streakDays: computeStreak(data.checkins),
+      streakDays: computeStreak(studyDates),
       currentItem: currentItem ? {
         levelId: currentLevel.id,
         levelTitle: currentLevel.title,
