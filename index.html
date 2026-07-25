@@ -790,7 +790,7 @@
     transition: opacity 0.3s;
   }
 
-  /* 雅思词汇卡片 */
+  /* 雅思单词卡片 */
   .ielts-card {
     margin: 0 auto 18px;
     width: 100%;
@@ -2536,7 +2536,7 @@
       <span class="ielts-icon">📘</span>
       <div class="ielts-info">
         <div class="ielts-title-row">
-          <span class="ielts-title">雅思核心词汇</span>
+          <span class="ielts-title">雅思单词卡片</span>
           <span class="ielts-total" id="ieltsCardTotal"></span>
         </div>
         <div class="ielts-current" id="ieltsCardCurrent"></div>
@@ -2633,7 +2633,7 @@
 <div class="bottom-modal-mask" id="ieltsModal" onclick="closeBottomModal('ieltsModal', event)">
   <div class="bottom-modal-card">
     <div class="bottom-modal-header">
-      <span class="bottom-modal-title">📘 迎春的雅思词汇</span>
+      <span class="bottom-modal-title">📘 雅思单词卡片</span>
       <button class="bottom-modal-close" onclick="closeBottomModal('ieltsModal')">×</button>
     </div>
     <div class="ielts-summary-row">
@@ -2899,7 +2899,7 @@ function openFestivalsModal() {
 }
 
 function openIeltsModal() {
-  track('点击雅思词汇');
+  track('点击雅思单词卡片');
   document.getElementById('ieltsModal').classList.add('show');
 }
 
@@ -4902,7 +4902,7 @@ async function loadIeltsProgress() {
     document.getElementById('ieltsCard').style.display = 'block';
     document.getElementById('ieltsCardTotal').textContent = '暂时没加载出来';
     document.getElementById('ieltsCardCurrent').textContent = '等会儿再试试也行';
-    document.getElementById('ieltsCardToday').textContent = '雅思小进度';
+    document.getElementById('ieltsCardToday').textContent = '雅思单词卡片';
     document.getElementById('ieltsCardStreak').textContent = '先休息一下';
     document.getElementById('ieltsCardTip').textContent = '网络慢了一点，不影响迎春今天继续学。';
   }
