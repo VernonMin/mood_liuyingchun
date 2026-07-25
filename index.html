@@ -4047,10 +4047,7 @@ function playNextBgm() {
   bgm.src = bgmList[bgmIndex];
   bgm.volume = 0.35;
   bgm.load();
-  bgm.addEventListener('canplay', function handler() {
-    bgm.removeEventListener('canplay', handler);
-    bgm.play().catch(() => {});
-  });
+  bgm.play().catch(() => {});
 }
 
 function toggleBgm() {
