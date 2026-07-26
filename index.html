@@ -4616,7 +4616,7 @@ function renameDog() {
 (function initDog() {
   const w = document.getElementById('dogWidget');
   _dogY = window.innerHeight - 136;
-  w.style.display = 'flex';
+  w.style.display = 'none';
   w.style.right = 'auto';
   w.style.left = _dogX + 'px';
   w.style.top  = _dogY + 'px';
@@ -4625,8 +4625,7 @@ function renameDog() {
   _loadLastMood();
   _checkDailyGreet();
   _dogFlipDir();
-  _dogResume();
-  _dogInterval = setInterval(_dogStep, 35);
+  // 雪纳瑞挂件已隐藏，不再启动移动与交互逻辑
 
   function _pointerDown(e) {
     const t = e.touches ? e.touches[0] : e;
