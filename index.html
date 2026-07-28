@@ -277,8 +277,10 @@
     padding: 36px 24px;
     min-height: 108px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 14px;
     margin-bottom: 26px;
     border: 2px solid #e0c8c4;
     position: relative;
@@ -305,6 +307,89 @@
   .quote-text.show {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+
+  .relax-panel {
+    width: 100%;
+    display: none;
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .relax-panel.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .relax-notice {
+    background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,247,237,0.95));
+    border: 1px solid rgba(219,190,164,0.8);
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(220,180,145,0.12);
+    overflow: hidden;
+  }
+
+  .relax-notice-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(246,225,205,0.62);
+    color: #b5846e;
+    font-size: 11px;
+    letter-spacing: 1.4px;
+  }
+
+  .relax-notice-body {
+    padding: 16px 18px 18px;
+    font-size: 16px;
+    line-height: 1.75;
+    color: #94685c;
+    text-align: center;
+  }
+
+  .relax-chip-wrap {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+  }
+
+  .relax-chip {
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #f7e7d0, #fff5ea);
+    color: #9a6e5a;
+    font-size: 13px;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(222,190,154,0.16);
+    cursor: pointer;
+    transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .relax-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(222,190,154,0.22);
+  }
+
+  .relax-chip.pop {
+    opacity: 0;
+    transform: scale(0.74) rotate(-7deg);
+  }
+
+  .relax-finish {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 14px;
+    color: #b07a68;
+    letter-spacing: 1px;
+    min-height: 22px;
   }
 
   /* 按钮 */
@@ -2615,17 +2700,28 @@
     <span class="paw-deco">🐾</span>
     <div class="who-progress" id="whoProgress" style="display:none"></div>
     <div class="quote-text" id="quote">点下面的按钮试试看 🐾</div>
+    <div class="relax-panel" id="relaxPanel">
+      <div class="relax-notice">
+        <div class="relax-notice-head">
+          <span>轻松模式已开启</span>
+          <span>系统通知</span>
+        </div>
+        <div class="relax-notice-body" id="relaxNotice"></div>
+      </div>
+      <div class="relax-chip-wrap" id="relaxChips"></div>
+      <div class="relax-finish" id="relaxFinish"></div>
+    </div>
   </div>
 
   <div class="action-section">
     <div class="action-row">
-      <button class="btn btn-soothe" onclick="praise(this)">
+      <button class="btn btn-soothe" onclick="praise(this, 'soothe')">
         <span class="btn-label">哄我</span>
       </button>
-      <button class="btn btn-relax" onclick="praise(this)">
+      <button class="btn btn-relax" onclick="praise(this, 'relax')">
         <span class="btn-label">轻松一下</span>
       </button>
-      <button class="btn btn-luck" onclick="praise(this)">
+      <button class="btn btn-luck" onclick="praise(this, 'luck')">
         <span class="btn-label">来点好运</span>
       </button>
     </div>
@@ -2904,6 +3000,35 @@ const quotes = [
   { t: "你不是没脾气，是很多时候都把情绪收起来了", w: 1 },
   { t: "你不是普通小女孩，你是限定版轻松开心小选手", w: 1 },
   { t: "今天如果有点累，就先休息一下，小朋友本来就该被温柔对待。", w: 1 },
+];
+
+const RELAX_NOTICES = [
+  '系统检测到你今天需要先轻松一下，努力稍后再说。',
+  '已为你临时关闭一点内耗，剩下的交给放松处理。',
+  '报告：你现在最适合的任务不是上进，是先缓一缓。',
+  '轻松程序启动成功，今日烦恼请先去外面排队。',
+];
+
+const RELAX_CHIP_POOL = [
+  '上班',
+  '早起',
+  '压力',
+  '内耗',
+  '想太多',
+  '赶进度',
+  '皱眉',
+  '加班',
+  'emo',
+  '硬撑',
+  '没睡醒',
+  '瞎操心',
+];
+
+const RELAX_FINISH_LINES = [
+  '已成功清空一部分烦恼，请继续保持轻松。',
+  '烦恼处理完成，接下来适合先开心一点。',
+  '清理结束，今天允许你合法放空十分钟。',
+  '小压力已下线，剩下的时间请偏心自己。',
 ];
 
 // 按权重展开成抽奖池
@@ -3423,6 +3548,7 @@ const shinchanLines = [
 ];
 
 let lastActionBtn = null;
+let relaxRemaining = 0;
 
 function getActionButton(btn) {
   return btn || lastActionBtn || document.querySelector('.btn');
@@ -3488,7 +3614,7 @@ function whoShow() {
   track('你是这样的人');
 }
 
-async function praise(btn) {
+async function praise(btn, action = 'soothe') {
   lastActionBtn = btn || null;
   incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
@@ -3499,18 +3625,78 @@ async function praise(btn) {
   pc.classList.add('jiggle');
   if (isChildrensDayActivity()) cdPraiseHook();
 
-  const el = document.getElementById('quote');
-  el.classList.remove('show');
+  if (action === 'relax') {
+    startRelaxMode();
+    return;
+  }
 
-  // 固定文案
+  showQuoteLine(pickQuote());
+}
+
+function pickQuote() {
   let index;
   do { index = Math.floor(Math.random() * quotePool.length); }
   while (index === lastIndex);
   lastIndex = index;
+  return quotePool[index];
+}
+
+function showQuoteLine(text) {
+  const el = document.getElementById('quote');
+  const relaxPanel = document.getElementById('relaxPanel');
+  relaxPanel.classList.remove('show');
+  relaxPanel.style.display = 'none';
+  el.style.display = '';
+  el.classList.remove('show');
   setTimeout(() => {
-    el.textContent = quotePool[index];
+    el.textContent = text;
     el.classList.add('show');
   }, 150);
+}
+
+function startRelaxMode() {
+  const el = document.getElementById('quote');
+  const panel = document.getElementById('relaxPanel');
+  const notice = document.getElementById('relaxNotice');
+  const chipsWrap = document.getElementById('relaxChips');
+  const finish = document.getElementById('relaxFinish');
+
+  el.classList.remove('show');
+  el.style.display = 'none';
+
+  finish.textContent = '';
+  notice.textContent = RELAX_NOTICES[Math.floor(Math.random() * RELAX_NOTICES.length)];
+  chipsWrap.innerHTML = '';
+
+  const chips = [...RELAX_CHIP_POOL]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 4);
+  relaxRemaining = chips.length;
+
+  chips.forEach(label => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'relax-chip';
+    chip.textContent = label;
+    chip.onclick = () => popRelaxChip(chip);
+    chipsWrap.appendChild(chip);
+  });
+
+  panel.style.display = 'block';
+  requestAnimationFrame(() => panel.classList.add('show'));
+}
+
+function popRelaxChip(chip) {
+  if (chip.disabled) return;
+  chip.disabled = true;
+  chip.classList.add('pop');
+  setTimeout(() => chip.remove(), 180);
+  relaxRemaining -= 1;
+  if (relaxRemaining <= 0) {
+    document.getElementById('relaxFinish').textContent =
+      RELAX_FINISH_LINES[Math.floor(Math.random() * RELAX_FINISH_LINES.length)];
+    spawnEmojis(lastActionBtn);
+  }
 }
 
 function roundRect(ctx, x, y, w, h, r) {
