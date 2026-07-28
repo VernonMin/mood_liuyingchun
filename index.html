@@ -308,32 +308,75 @@
   }
 
   /* 按钮 */
-  .action-row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 8px;
-  }
-
-  .btn {
-    background: #C4956A;
-    color: white;
-    border: none;
-    padding: 15px 16px;
-    font-size: 17px;
-    font-weight: 700;
-    border-radius: 75px;
-    cursor: pointer;
-    letter-spacing: 2px;
-    box-shadow: 0 6px 20px rgba(196,149,106,0.35);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .action-section {
+    margin-top: 12px;
+    padding: 16px 12px 10px;
+    border-radius: 30px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.64), rgba(255,248,243,0.84)),
+      radial-gradient(circle at top, rgba(248,220,203,0.18), transparent 58%);
+    border: 1px solid rgba(221,190,171,0.38);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.78);
     position: relative;
     overflow: hidden;
   }
 
+  .action-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.55), transparent 58%);
+    pointer-events: none;
+  }
+
+  .action-row {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .btn {
+    color: #8f6254;
+    border: 1px solid rgba(206,166,138,0.7);
+    padding: 0 18px;
+    min-height: 76px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 22px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    box-shadow: 0 10px 24px rgba(209,176,149,0.14);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-soothe {
+    background: linear-gradient(135deg, rgba(249,225,217,0.96), rgba(248,238,229,0.92));
+  }
+
+  .btn-relax {
+    background: linear-gradient(135deg, rgba(247,231,208,0.96), rgba(252,241,228,0.92));
+  }
+
+  .btn-luck {
+    grid-column: 1 / -1;
+    width: min(100%, 232px);
+    justify-self: center;
+    background: linear-gradient(135deg, rgba(244,229,194,0.98), rgba(251,243,218,0.94));
+  }
+
   .btn:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 10px 28px rgba(196,149,106,0.45);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px rgba(196,149,106,0.2);
+    border-color: rgba(196,149,106,0.9);
   }
 
   .btn:active {
@@ -354,29 +397,63 @@
   .btn:active::after {
     width: 320px; height: 320px;
   }
+
+  .btn-label {
+    display: block;
+    font-size: 24px;
+    line-height: 1;
+    color: #8c5f4f;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
   .who-progress { text-align: right; font-size: 11px; color: #c4a882; margin-bottom: 8px; letter-spacing: 1px; }
   .who-q    { display: block; margin-bottom: 14px; }
   .who-trait{ display: inline-block; font-size: 13px; color: #fff; background: #C4956A; border-radius: 20px; padding: 3px 16px; letter-spacing: 2px; font-weight: 700; margin-bottom: 10px; }
   .who-basis{ display: block; font-size: 13px; color: #b09070; font-style: italic; }
   .btn-who {
-    background: transparent;
-    color: #C4956A;
-    border: 2px solid #C4956A;
-    padding: 11px 52px;
-    font-size: 15px;
+    background: rgba(255,255,255,0.56);
+    color: #b07a68;
+    border: 1px solid rgba(205,170,149,0.7);
+    padding: 10px 18px;
+    font-size: 13px;
     font-weight: 600;
-    border-radius: 75px;
+    border-radius: 999px;
     cursor: pointer;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: block;
-    margin: 10px auto 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px auto 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
   }
-  .btn-who:active { transform: scale(0.96); }
+  .btn-who:hover {
+    transform: translateY(-1px);
+    border-color: rgba(196,149,106,0.86);
+    background: rgba(255,255,255,0.78);
+  }
+  .btn-who:active { transform: scale(0.97); }
 
   @media (max-width: 780px) {
+    .action-section {
+      padding: 14px 10px 8px;
+    }
+
     .action-row {
       grid-template-columns: 1fr;
+    }
+
+    .btn {
+      min-height: 72px;
+      padding: 0 16px;
+    }
+
+    .btn-luck {
+      width: 100%;
+    }
+
+    .btn-label {
+      font-size: 22px;
     }
   }
 
@@ -2540,12 +2617,20 @@
     <div class="quote-text" id="quote">点下面的按钮试试看 🐾</div>
   </div>
 
-  <div class="action-row">
-    <button class="btn" onclick="praise(this)">哄我</button>
-    <button class="btn" onclick="praise(this)">轻松一下</button>
-    <button class="btn" onclick="praise(this)">来点好运</button>
+  <div class="action-section">
+    <div class="action-row">
+      <button class="btn btn-soothe" onclick="praise(this)">
+        <span class="btn-label">哄我</span>
+      </button>
+      <button class="btn btn-relax" onclick="praise(this)">
+        <span class="btn-label">轻松一下</span>
+      </button>
+      <button class="btn btn-luck" onclick="praise(this)">
+        <span class="btn-label">来点好运</span>
+      </button>
+    </div>
   </div>
-  <button class="btn-who" onclick="whoShow()">刘迎春的优点</button>
+  <button class="btn-who" onclick="whoShow()">看看刘迎春的优点</button>
 
   <div class="share-row">
     <button class="share-btn" id="shareBtn" onclick="doShare()">
