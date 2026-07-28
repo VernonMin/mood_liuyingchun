@@ -308,16 +308,23 @@
   }
 
   /* 按钮 */
+  .action-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+
   .btn {
     background: #C4956A;
     color: white;
     border: none;
-    padding: 16px 52px;
-    font-size: 18px;
+    padding: 15px 16px;
+    font-size: 17px;
     font-weight: 700;
     border-radius: 75px;
     cursor: pointer;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     box-shadow: 0 6px 20px rgba(196,149,106,0.35);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -366,6 +373,12 @@
     margin: 10px auto 0;
   }
   .btn-who:active { transform: scale(0.96); }
+
+  @media (max-width: 780px) {
+    .action-row {
+      grid-template-columns: 1fr;
+    }
+  }
 
   /* 计数 */
   .counter {
@@ -2527,7 +2540,11 @@
     <div class="quote-text" id="quote">点下面的按钮试试看 🐾</div>
   </div>
 
-  <button class="btn" onclick="praise()">夸 我 ！</button>
+  <div class="action-row">
+    <button class="btn" onclick="praise(this)">哄我</button>
+    <button class="btn" onclick="praise(this)">轻松一下</button>
+    <button class="btn" onclick="praise(this)">来点好运</button>
+  </div>
   <button class="btn-who" onclick="whoShow()">刘迎春的优点</button>
 
   <div class="share-row">
@@ -2789,36 +2806,19 @@
 
 <script>
 const quotes = [
-  { t: "晚上路灯模模糊糊的，但刘迎春每次都找到回来的路了。", w: 1 },
-  { t: "刘迎春今天好好的，就已经很好了。", w: 1 },
-  { t: "早起不是为自己，晚归也不是，迎春今天辛苦了。", w: 1 },
-  { t: "姐姐有刘迎春，其实挺幸运的。", w: 1 },
-  { t: "不是自己的娃，却耐着性子陪下来了，不容易的。", w: 1 },
-  { t: "刘迎春比她自己想的还厉害。", w: 1 },
-  { t: "认床的人，找到家的方向，睡得比谁都香。", w: 1 },
-  { t: "刘迎春没啥耐心，但给出去的耐心，大概自己都数不过来了。", w: 1 },
-  { t: "上班摸摸鱼，刘迎春知道怎么对自己好的。", w: 1 },
-  { t: "不声不响帮了很多，自己可能都没意识到。", w: 1 },
-  { t: "两头跑的日子，不是谁都撑得住，刘迎春撑住了。", w: 1 },
-  { t: "刘迎春这个人，值得别人好好对待。", w: 1 },
-  { t: "你的快乐比对错重要多了。", w: 2 },
-  // 专属文案
-  { t: "晚上视线不太好，世界对刘迎春来说可能模模糊糊，但她每次都可以走回来。", w: 1 },
-  // 旅行文案（旅行期间启用）
-  // { t: "旅途中遇到的每件小事，都是只属于刘迎春的故事。", w: 1 },
-  // { t: "出门在外，希望刘迎春今天也有小惊喜。", w: 1 },
-  // { t: "异乡的风景再好看，也要记得好好吃饭。", w: 1 },
-  // { t: "遇到喜欢的地方，多停一会儿，不用赶。", w: 1 },
-  // { t: "快走的时候多拍几张，留着以后慢慢翻。", w: 1 },
-  // { t: "行程排得再满，也要留一顿饭好好坐下来吃。", w: 1 },
-  // { t: "陌生的街道随便走走，有时候比打卡更好玩。", w: 1 },
-  // { t: "走了这么远，希望刘迎春回来的时候带着满满的故事。", w: 1 },
-  // { t: "走过的每条街，都悄悄变成了刘迎春的回忆。", w: 1 },
-  // { t: "旅途里最好的照片，往往是没想到要拍的那一张。", w: 1 },
-  // { t: "旅途里某个不起眼的下午，往往是最值得记住的。", w: 1 },
-  // { t: "玩累了坐下来发会儿呆，也是旅行的一部分。", w: 1 },
-  // { t: "离家这么远，今天有没有吃到让自己开心的东西。", w: 1 },
-  // { t: "在外面的日子有限，希望刘迎春把每一天都装满。", w: 1 },
+  { t: "May life be gentle with you, and may happiness come easily.", w: 1 },
+  { t: "你不用一直逞强，做个开心的小朋友就很好了", w: 1 },
+  { t: "刘迎春今天最重要的任务，就是让自己再开心一点", w: 1 },
+  { t: "希望刘迎春今天有被这个世界偷偷偏爱一点", w: 1 },
+  { t: "刘迎春今天好好的，就已经很好了", w: 1 },
+  { t: "你的快乐比对错重要多了", w: 1 },
+  { t: "刘迎春可以慢一点点，笨一点点，懒一点点，反正还是很招人喜欢", w: 1 },
+  { t: "有些人是热闹型可爱，刘迎春是越相处越觉得珍贵那种", w: 1 },
+  { t: "刘迎春只要好好的，就会让人觉得很多事情都没那么糟", w: 1 },
+  { t: "刘迎春可以偶尔摆烂，偶尔偷懒，偶尔什么都不想管，这也没关系", w: 1 },
+  { t: "你不是没脾气，是很多时候都把情绪收起来了", w: 1 },
+  { t: "你不是普通小女孩，你是限定版轻松开心小选手", w: 1 },
+  { t: "今天如果有点累，就先休息一下，小朋友本来就该被温柔对待。", w: 1 },
 ];
 
 // 按权重展开成抽奖池
@@ -3337,10 +3337,16 @@ const shinchanLines = [
   '嘿嘿！迎春被夸了！',
 ];
 
-function launchShinchan() {
+let lastActionBtn = null;
+
+function getActionButton(btn) {
+  return btn || lastActionBtn || document.querySelector('.btn');
+}
+
+function launchShinchan(btn) {
   const line = shinchanLines[Math.floor(Math.random() * shinchanLines.length)];
-  const btn = document.querySelector('.btn');
-  const rect = btn.getBoundingClientRect();
+  const anchorBtn = getActionButton(btn);
+  const rect = anchorBtn.getBoundingClientRect();
   const imgW = 70;
   const vw = window.innerWidth;
 
@@ -3397,10 +3403,11 @@ function whoShow() {
   track('你是这样的人');
 }
 
-async function praise() {
+async function praise(btn) {
+  lastActionBtn = btn || null;
   incrementCount();
   document.getElementById('shareBtn').classList.add('ready');
-  launchShinchan();
+  launchShinchan(btn);
   const pc = document.getElementById('praiseCounter');
   pc.classList.remove('jiggle');
   void pc.offsetWidth;
@@ -3625,9 +3632,9 @@ async function downloadImage(e) {
   a.click();
 }
 
-function spawnEmojis() {
-  const btn = document.querySelector('.btn');
-  const rect = btn.getBoundingClientRect();
+function spawnEmojis(btn) {
+  const anchorBtn = getActionButton(btn);
+  const rect = anchorBtn.getBoundingClientRect();
   for (let i = 0; i < 7; i++) {
     setTimeout(() => {
       const el = document.createElement('div');

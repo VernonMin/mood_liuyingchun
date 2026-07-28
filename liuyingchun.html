@@ -104,12 +104,18 @@
     transform: translateY(0);
   }
 
+  .action-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
   .btn {
     background: linear-gradient(135deg, #ff6b9d, #ff8c42);
     color: white;
     border: none;
-    padding: 18px 50px;
-    font-size: 20px;
+    padding: 18px 16px;
+    font-size: 18px;
     font-weight: 700;
     border-radius: 50px;
     cursor: pointer;
@@ -142,6 +148,12 @@
 
   .btn:active::after {
     width: 300px; height: 300px;
+  }
+
+  @media (max-width: 640px) {
+    .action-row {
+      grid-template-columns: 1fr;
+    }
   }
 
   .counter {
@@ -203,38 +215,44 @@
     <div class="quote-text" id="quote">← 点下面那个按钮试试</div>
   </div>
 
-  <button class="btn" onclick="praise()">夸 我 ！</button>
+  <div class="action-row">
+    <button class="btn" onclick="praise(this)">哄我</button>
+    <button class="btn" onclick="praise(this)">轻松一下</button>
+    <button class="btn" onclick="praise(this)">来点好运</button>
+  </div>
 
   <p class="counter">已被夸了 <span id="count">0</span> 次，越夸越厉害</p>
 </div>
 
 <script>
 const quotes = [
-  "刘迎春今天出门，太阳特意多照了3秒，还道了歉。",
-  "据气象局报告：刘迎春今日心情良好，全国气温自动回升2°C。",
-  "联合国紧急开会，议题：如何复刻刘迎春的气质？\n结论：不可能，散会。",
-  "最新科研成果：每天看一眼刘迎春，可治疗98%的坏心情（疗效过于显著，研究被叫停）。",
-  "刘迎春路过的地方，花都开得特别用力，生怕配不上她。",
-  "国际美学协会宣布：刘迎春的颜值已超出评分上限，评分系统已崩溃，暂停服务。",
-  "据悉，刘迎春昨晚睡了个好觉，世界和平指数上升17个百分点。",
-  "刘迎春今天打了个哈欠，旁边的人当场觉得活着真好。",
-  "经权威认证：刘迎春今天也是全宇宙段位最高的存在，没有之一。",
-  "刘迎春喝了杯奶茶，奶茶表示：这是本茶有史以来最高光的时刻。",
-  "全球顶尖科学家齐聚研究刘迎春为什么这么厉害，最终集体沉默、集体服气。",
-  "刘迎春今日发了一条消息，收件人当场感到人生有了意义。",
-  "刘迎春今天也很好看。\n（这不是夸奖，这是客观事实描述。）",
-  "考古学家发现：历史上所有关于「天才」的记载，其实都是在描述刘迎春。",
-  "刘迎春今天笑了一下，附近花店当天售罄——大家都觉得花该向她学习。",
-  "据不完全统计，刘迎春随手做的事情，别人努力一辈子也未必能复刻。",
-  "刘迎春今天呼吸了，空气感到无比荣幸。",
-  "有人问 AI 世界上谁最厉害，AI 沉默了三秒，打出了「刘迎春」三个字。",
+  "May life be gentle with you, and may happiness come easily.",
+  "你不用一直逞强，做个开心的小朋友就很好了",
+  "刘迎春今天最重要的任务，就是让自己再开心一点",
+  "希望刘迎春今天有被这个世界偷偷偏爱一点",
+  "刘迎春今天好好的，就已经很好了",
+  "你的快乐比对错重要多了",
+  "刘迎春可以慢一点点，笨一点点，懒一点点，反正还是很招人喜欢",
+  "有些人是热闹型可爱，刘迎春是越相处越觉得珍贵那种",
+  "刘迎春只要好好的，就会让人觉得很多事情都没那么糟",
+  "刘迎春可以偶尔摆烂，偶尔偷懒，偶尔什么都不想管，这也没关系",
+  "你不是没脾气，是很多时候都把情绪收起来了",
+  "你不是普通小女孩，你是限定版轻松开心小选手",
+  "今天如果有点累，就先休息一下，小朋友本来就该被温柔对待。",
 ];
 
 const emojis = ['🌟','✨','🎉','🥳','💫','🌸','🎊','⭐','🔥','💖'];
 let count = 0;
 let lastIndex = -1;
 
-function praise() {
+let lastActionBtn = null;
+
+function getActionButton(btn) {
+  return btn || lastActionBtn || document.querySelector('.btn');
+}
+
+function praise(btn) {
+  lastActionBtn = btn || null;
   let index;
   do { index = Math.floor(Math.random() * quotes.length); }
   while (index === lastIndex);
@@ -251,12 +269,12 @@ function praise() {
   document.getElementById('count').textContent = count;
 
   launchConfetti();
-  spawnEmojis();
+  spawnEmojis(btn);
 }
 
-function spawnEmojis() {
-  const btn = document.querySelector('.btn');
-  const rect = btn.getBoundingClientRect();
+function spawnEmojis(btn) {
+  const anchorBtn = getActionButton(btn);
+  const rect = anchorBtn.getBoundingClientRect();
   for (let i = 0; i < 6; i++) {
     setTimeout(() => {
       const el = document.createElement('div');
