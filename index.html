@@ -394,14 +394,6 @@
   .relax-sticker.s3 { bottom: 42px; left: 22px; transform: rotate(-7deg); }
   .relax-sticker.s4 { bottom: 30px; right: 18px; transform: rotate(8deg); }
 
-  .relax-footer {
-    margin-top: 12px;
-    text-align: center;
-    font-size: 13px;
-    color: #b48472;
-    letter-spacing: 1px;
-  }
-
   @keyframes relaxBounce {
     0% { opacity: 0; transform: translateY(26px) scale(0.86); }
     68% { opacity: 1; transform: translateY(-8px) scale(1.04); }
@@ -487,13 +479,6 @@
     background: linear-gradient(135deg, rgba(247,231,208,0.96), rgba(252,241,228,0.92));
   }
 
-  .btn-luck {
-    grid-column: 1 / -1;
-    width: min(100%, 232px);
-    justify-self: center;
-    background: linear-gradient(135deg, rgba(244,229,194,0.98), rgba(251,243,218,0.94));
-  }
-
   .btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 16px 30px rgba(196,149,106,0.2);
@@ -567,10 +552,6 @@
     .btn {
       min-height: 72px;
       padding: 0 16px;
-    }
-
-    .btn-luck {
-      width: 100%;
     }
 
     .btn-label {
@@ -2745,7 +2726,6 @@
         <div class="relax-sticker s3" id="relaxSticker3"></div>
         <div class="relax-sticker s4" id="relaxSticker4"></div>
       </div>
-      <div class="relax-footer" id="relaxFinish"></div>
     </div>
   </div>
 
@@ -2756,9 +2736,6 @@
       </button>
       <button class="btn btn-relax" onclick="praise(this, 'relax')">
         <span class="btn-label">轻松一下</span>
-      </button>
-      <button class="btn btn-luck" onclick="praise(this, 'luck')">
-        <span class="btn-label">来点好运</span>
       </button>
     </div>
   </div>
@@ -3054,13 +3031,6 @@ const RELAX_STICKERS = [
   '开心优先级 +1',
   '今天先别懂事',
   '允许短暂犯懒',
-];
-
-const RELAX_FINISH_LINES = [
-  '小新认证：这位小朋友今天适合被逗开心一点。',
-  '整活完毕，接下来请继续把快乐排在前面。',
-  '轻松一下成功，剩下的事情晚点再说也来得及。',
-  '今日搞怪加成已生效，请放心做个轻轻松松的小朋友。',
 ];
 
 // 按权重展开成抽奖池
@@ -3688,7 +3658,6 @@ function startRelaxMode() {
   const el = document.getElementById('quote');
   const panel = document.getElementById('relaxPanel');
   const notice = document.getElementById('relaxNotice');
-  const finish = document.getElementById('relaxFinish');
   const stickerEls = [
     document.getElementById('relaxSticker1'),
     document.getElementById('relaxSticker2'),
@@ -3699,7 +3668,6 @@ function startRelaxMode() {
   el.classList.remove('show');
   el.style.display = 'none';
 
-  finish.textContent = RELAX_FINISH_LINES[Math.floor(Math.random() * RELAX_FINISH_LINES.length)];
   notice.textContent = RELAX_NOTICES[Math.floor(Math.random() * RELAX_NOTICES.length)];
   const stickers = [...RELAX_STICKERS].sort(() => Math.random() - 0.5).slice(0, 4);
   stickerEls.forEach((el, idx) => {
